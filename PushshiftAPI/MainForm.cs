@@ -1,4 +1,5 @@
-﻿using Presentation;
+﻿using Microsoft.Win32;
+using Presentation;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -75,7 +76,14 @@ namespace PushshiftAPI
 
         private void rtbResponse_LinkClicked(object sender, LinkClickedEventArgs e)
         {
-            Process.Start("Chrome.exe", e.LinkText);
+            string browserName = GetSystemDefaultBrowser();
+            if (string.IsNullOrEmpty(browserName))
+            {
+                MessageBox.Show("Could not determine the default browser", "ERROR");
+                return;
+            }
+
+            Process.Start(browserName, e.LinkText);
         }
 
         private async void btnSearch_Click(object sender, EventArgs e)
@@ -125,6 +133,46 @@ namespace PushshiftAPI
             else
             {
                 return "asc";
+            }
+        }
+
+        private string GetSystemDefaultBrowser()
+        {
+            // based on https://stackoverflow.com/a/17599201
+
+            const string userChoice = @"Software\Microsoft\Windows\Shell\Associations\UrlAssociations\http\UserChoice";
+            string progId;
+            using (RegistryKey userChoiceKey = Registry.CurrentUser.OpenSubKey(userChoice))
+            {
+                if (userChoiceKey == null)
+                {
+                    return string.Empty;
+                }
+
+                object progIdValue = userChoiceKey.GetValue("Progid");
+                if (progIdValue == null)
+                {
+                    return string.Empty;
+                }
+
+                progId = progIdValue.ToString();
+                switch (progId)
+                {
+                    case "IE.HTTP":
+                        return "iexplore.exe";
+                    case "FirefoxURL":
+                        return "firefox.exe";
+                    case "ChromeHTML":
+                        return "chrome.exe";
+                    case "OperaStable":
+                        return "opera.exe";
+                    case "SafariHTML":
+                        return "safari.exe";
+                    case "AppXq0fevzme2pys62n3e0fbqa7peapykr8v":
+                        return "msedge.exe";
+                    default:
+                        return string.Empty;
+                }
             }
         }
 
