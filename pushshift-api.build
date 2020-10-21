@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="credit_card_statement_processor" default="build" basedir=".">
+
+    <!-- **************************************************************** -->
+    <!-- Properties                                                       -->
+    <!-- **************************************************************** -->
+
+    <property name="project.dir" value="${project::get-base-directory()}" />
+    <property name="project.name" value="${project::get-name()}" />
+
+    <property name="dotnet.filename" value="dotnet" />
+
+    <property name="src.dir" value="${project.dir}/src" />
+    <property name="stg.dir" value="${project.dir}/stg" />
+    <property name="tst.dir" value="${project.dir}/tst" />
+
+    <property name="interface.dir" value="${src.dir}/interface" />
+
+    <if test="${not property::exists('dotnet.configuration')}">
+        <property name="dotnet.configuration" value="Release" />
+    </if>
+    <if test="${not property::exists('dotnet.version.dir')}">
+        <property name="dotnet.version.dir" value="netcoreapp2.2" />
+    </if>
+
+    <!-- **************************************************************** -->
+    <!-- Public tasks                                                     -->
+    <!-- **************************************************************** -->
+
+    <!-- Clean up the project component(s) -->
+    <target name="clean">
+        <call target="__local-clean" />
+        <call target="__clean-components" />
+    </target>
+
+    <!-- Build the project component(s) -->
+    <target name="build">
+        <call target="__build-components" />
+    </target>
+
+    <!-- Distribute the project component(s) (to the stage directory) -->
+    <target name="dist">
+        <call target="__publish-components" />
+        <call target="__stage-applications" />
+    </target>
+
+    <!-- Run all nant tasks in Release mode -->
+    <target name="release">
+        <call target="clean" />
+        <call target="build" />
+        <call target="test" />
+        <call target="dist" />
+    </target>
+
+    <!-- Test the project component(s) -->
+    <target name="test">
+        <call target="__test-nunit" />
+    </target>
+
+    <!-- **************************************************************** -->
+    <!-- Private filesets (useful for sharing fileset definitions)        -->
+    <!-- NOTE: fileset contents are determined each time they're included -->
+    <!-- **************************************************************** -->
+
+    <patternset id="application-includes.patternset">
+        <include name="**/*" />
+        <exclude name="*.pdb" />
+    </patternset>
+
+    <fileset id="test-build.fileset" basedir=".">
+        <include name="${project.dir}/CreditCardActivityMonitor.sln" />
+    </fileset>
+ 
+
+    <!-- *********************************************** -->
+    <!-- Private tasks (useful for individual execution) -->
+    <!-- *********************************************** -->
+
+    <target name="__build-components">
+        <property name="action" value="build" />
+        <property name="dotnet.verbosity" value="quiet" />
+        <call target="__dotnet-action" />
+    </target>
+
+    <target name="__clean-components">
+        <property name="action" value="clean" />
+        <property name="dotnet.verbosity" value="quiet" />
+        <call target="__dotnet-action" />
+    </target>
+
+    <target name="__dotnet-action">
+        <foreach item="File" property="buildfile">
+            <in>
+                <items refid="test-build.fileset" />
+            </in>
+            <do>
+                <property name="buildfile.dir" value="${path::get-directory-name(buildfile)}" />
+                <property name="buildfile.name" value="${path::get-file-name(buildfile)}" />
+                <echo />
+                <echo message="Auto-${action}ing ${buildfile}..." />
+                <echo />
+                <exec workingdir="${buildfile.dir}" program="${dotnet.filename}">
+                    <arg value="${action}" />
+                    <arg value="${buildfile.name}" />
+                    <arg value="--configuration" />
+                    <arg value="${dotnet.configuration}" />
+                    <arg value="--verbosity" />
+                    <arg value="${dotnet.verbosity}" />
+                </exec>
+            </do>
+        </foreach>
+    </target>
+
+    <target name="__local-clean">
+        <delete>
+            <fileset basedir="${stg.dir}">
+                <include name="**/*" />
+            </fileset>
+        </delete>
+    </target>
+
+    <target name="__publish-components">
+        <property name="action" value="publish" />
+        <property name="dotnet.verbosity" value="quiet" />
+        <call target="__dotnet-action" />
+    </target>
+
+    <target name="__stage-applications">
+        <mkdir dir="${stg.dir}" />
+        <property name="publish.dir" value="${interface.dir}/bin/${dotnet.configuration}/${dotnet.version.dir}/publish" />
+        <echo message="${publish.dir}" />
+        <copy todir="${stg.dir}">
+            <fileset basedir="${publish.dir}">
+                <patternset refid="application-includes.patternset" />
+            </fileset>
+        </copy>
+    </target>
+
+    <target name="__test-nunit">
+        <property name="action" value="test" />
+        <property name="dotnet.verbosity" value="minimal" />
+        <call target="__dotnet-action" />
+    </target>
+
+</project>
+
