@@ -1,5 +1,6 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using System;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -13,7 +14,6 @@ namespace Presentation
         #region Constants
 
         private static readonly DateTime START_DATE = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-
         private const string URL = "https://api.pushshift.io/reddit/search/comment";
 
         #endregion
@@ -31,8 +31,9 @@ namespace Presentation
 
         #region Properties
 
-        public string Response { get; set; }
         public string Counter { get; set; }
+        public string Response { get; set; }
+
         private HttpClient HttpClient { get; set; }
 
         #endregion
@@ -52,20 +53,26 @@ namespace Presentation
             string responseJson = await response.Content.ReadAsStringAsync();
             RedditData data = JsonConvert.DeserializeObject<RedditData>(responseJson);
 
-            if (data.Contents.Length == 0)
+            RedditInfo[] contents = data.Contents;
+            if (options.ShowExactMatches)
+            {
+                contents = data.Contents.Where(c => c.Body.Contains(options.Query)).ToArray();
+            }
+
+            if (contents.Length == 0)
             {
                 Response = "Nothing found...";
                 return;
             }
 
-            Counter = $"Showing {data.Contents.Length} items";
+            Counter = $"Showing {contents.Length} items";
 
             StringBuilder sb = new StringBuilder();
 
             sb.AppendLine($"API call: {response.RequestMessage.RequestUri}");
             sb.AppendLine();
 
-            foreach (RedditInfo content in data.Contents)
+            foreach (RedditInfo content in contents)
             {
                 sb.AppendLine($"Subreddit: {content.Subreddit}");
                 sb.AppendLine($"    Score: {content.Score}");

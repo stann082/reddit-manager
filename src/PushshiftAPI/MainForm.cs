@@ -3,8 +3,10 @@ using Presentation;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 namespace PushshiftAPI
@@ -23,6 +25,9 @@ namespace PushshiftAPI
         public MainForm()
         {
             InitializeComponent();
+            DefaultSelectionBackColor = rtbResponse.SelectionBackColor;
+            DefaultSelectionColor = rtbResponse.SelectionColor;
+
             Presenter = new PushshiftApiPresenter();
 
             chkPeriodFilter_CheckedChanged(null, EventArgs.Empty);
@@ -48,8 +53,8 @@ namespace PushshiftAPI
 
         public string ScoreGreaterThan { get { return txtGreaterThan.Text; } }
         public string ScoreLessThan { get { return txtLessThan.Text; } }
+        public bool ShowExactMatches { get { return chkShowExactMatches.Checked; } }
         public string SortDirection { get { return GetSortDirection(); } }
-
         public string SortType { get { return ddlSortBy.SelectedItem.ToString(); } }
         public long StartDateUnixTimeStamp { get { return ToUnixTime(dpStartDate.Value); } }
         public long StopDateUnixTimeStamp { get { return ToUnixTime(dpStopDate.Value); } }
@@ -59,20 +64,61 @@ namespace PushshiftAPI
 
         public string UserName { get { return txtUserName.Text; } }
 
-        private string AutoCompleteSaveDir { get; set; }
         private string AutoCompleteQueryFilePath { get; set; }
+        private string AutoCompleteSaveDir { get; set; }
         private string AutoCompleteSubredditFilePath { get; set; }
         private string AutoCompleteUserNameFilePath { get; set; }
 
+        private Color DefaultSelectionBackColor { get; set; }
+        private Color DefaultSelectionColor { get; set; }
+
         private PushshiftApiPresenter Presenter { get; set; }
 
-        string[] SavedQueries { get; set; }
-        string[] SavedSubreddits { get; set; }
-        string[] SavedUserNames { get; set; }
+        private string[] SavedQueries { get; set; }
+        private string[] SavedSubreddits { get; set; }
+        private string[] SavedUserNames { get; set; }
 
         #endregion
 
         #region Event Handlers
+
+        private async void btnSearch_Click(object sender, EventArgs e)
+        {
+            ToggleControls(false);
+            SaveAutoCompletes();
+
+            await Presenter.BuildResponseContent(this);
+            lblCounter.Text = Presenter.Counter;
+            rtbResponse.Text = Presenter.Response;
+
+            HighlightQuery();
+
+            ToggleControls(true);
+            lblCounter.Focus();
+        }
+
+        private void chkHighlightQuery_CheckedChanged(object sender, EventArgs e)
+        {
+            if (chkHighlightQuery.Checked)
+            {
+                return;
+            }
+
+            rtbResponse.SelectionStart = 0;
+            rtbResponse.SelectionLength = rtbResponse.Text.Length;
+            rtbResponse.SelectionBackColor = DefaultSelectionBackColor;
+            rtbResponse.SelectionColor = DefaultSelectionColor;
+        }
+
+        private void chkPeriodFilter_CheckedChanged(object sender, EventArgs e)
+        {
+            tblFilterByPeriod.Enabled = chkPeriodFilter.Checked;
+        }
+
+        private void rdoFilterByScoreSortOrder_CheckedChanged(object sender, EventArgs e)
+        {
+            rdoAscending.Checked = !rdoDescending.Checked;
+        }
 
         private void rtbResponse_LinkClicked(object sender, LinkClickedEventArgs e)
         {
@@ -84,28 +130,6 @@ namespace PushshiftAPI
             }
 
             Process.Start(browserName, e.LinkText);
-        }
-
-        private async void btnSearch_Click(object sender, EventArgs e)
-        {
-            ToggleControls(false);
-            SaveAutoCompletes();
-
-            await Presenter.BuildResponseContent(this);
-            lblCounter.Text = Presenter.Counter;
-            rtbResponse.Text = Presenter.Response;
-
-            ToggleControls(true);
-        }
-
-        private void chkPeriodFilter_CheckedChanged(object sender, EventArgs e)
-        {
-            tblFilterByPeriod.Enabled = chkPeriodFilter.Checked;
-        }
-
-        private void rdoFilterByScoreSortOrder_CheckedChanged(object sender, EventArgs e)
-        {
-            rdoAscending.Checked = !rdoDescending.Checked;
         }
 
         private void textBox_KeyDown(object sender, KeyEventArgs e)
@@ -176,17 +200,19 @@ namespace PushshiftAPI
             }
         }
 
-        private void ToggleControls(bool enable)
+        private void HighlightQuery()
         {
-            btnSearch.Enabled = enable;
-            tblFilterByPeriod.Enabled = enable;
-            tblFilterByPeriodCheckBox.Enabled = enable;
-            tblFilterByScore.Enabled = enable;
-            tblFilterByScoreLabel.Enabled = enable;
-            tblGeneral.Enabled = enable;
-            tblSortByDirection.Enabled = enable;
-            tblSortByType.Enabled = enable;
-            chkPeriodFilter_CheckedChanged(null, EventArgs.Empty);
+            if (!chkHighlightQuery.Checked)
+            {
+                return;
+            }
+
+            foreach (Match match in Regex.Matches(rtbResponse.Text, $"\\b{Query}\\b", RegexOptions.IgnoreCase))
+            {
+                rtbResponse.Select(match.Index, Query.Length);
+                rtbResponse.SelectionColor = Color.White;
+                rtbResponse.SelectionBackColor = Color.Blue;
+            }
         }
 
         private void InitializeAutoCompleteSaveDir()
@@ -273,6 +299,20 @@ namespace PushshiftAPI
             textBox.AutoCompleteSource = AutoCompleteSource.CustomSource;
         }
 
+        private void ToggleControls(bool enable)
+        {
+            btnSearch.Enabled = enable;
+            tblFilterByPeriod.Enabled = enable;
+            tblFilterByPeriodCheckBox.Enabled = enable;
+            tblFilterByScore.Enabled = enable;
+            tblFilterByScoreLabel.Enabled = enable;
+            tblGeneral.Enabled = enable;
+            tblSortByDirection.Enabled = enable;
+            tblSortByType.Enabled = enable;
+            tlpTextOptions.Enabled = enable;
+            chkPeriodFilter_CheckedChanged(null, EventArgs.Empty);
+        }
+
         private long ToUnixTime(DateTime dateTime)
         {
             return (long)(dateTime.ToUniversalTime() - START_DATE).TotalSeconds;
@@ -281,5 +321,4 @@ namespace PushshiftAPI
         #endregion
 
     }
-
 }

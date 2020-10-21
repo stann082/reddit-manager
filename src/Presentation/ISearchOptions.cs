@@ -7,6 +7,7 @@
 
         string Query { get; }
 
+        bool ShowExactMatches { get; }
         string ScoreGreaterThan { get; }
         string ScoreLessThan { get; }
         string SortDirection { get; }

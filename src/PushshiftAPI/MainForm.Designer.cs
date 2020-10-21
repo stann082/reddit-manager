@@ -1,4 +1,5 @@
-﻿namespace PushshiftAPI
+﻿
+namespace PushshiftAPI
 {
     partial class MainForm
     {
@@ -61,6 +62,9 @@
             this.tblSortByType = new System.Windows.Forms.TableLayoutPanel();
             this.label1 = new System.Windows.Forms.Label();
             this.ddlSortBy = new System.Windows.Forms.ComboBox();
+            this.tlpTextOptions = new System.Windows.Forms.TableLayoutPanel();
+            this.chkHighlightQuery = new System.Windows.Forms.CheckBox();
+            this.chkShowExactMatches = new System.Windows.Forms.CheckBox();
             this.tblGeneral.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             this.tblFilterByPeriod.SuspendLayout();
@@ -69,6 +73,7 @@
             this.tblFilterByScoreLabel.SuspendLayout();
             this.tblSortByDirection.SuspendLayout();
             this.tblSortByType.SuspendLayout();
+            this.tlpTextOptions.SuspendLayout();
             this.SuspendLayout();
             // 
             // lblUserName
@@ -141,10 +146,10 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.rtbResponse.Font = new System.Drawing.Font("Arial", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.rtbResponse.Location = new System.Drawing.Point(242, 10);
+            this.rtbResponse.Location = new System.Drawing.Point(242, 43);
             this.rtbResponse.Name = "rtbResponse";
             this.rtbResponse.ReadOnly = true;
-            this.rtbResponse.Size = new System.Drawing.Size(1106, 772);
+            this.rtbResponse.Size = new System.Drawing.Size(1106, 739);
             this.rtbResponse.TabIndex = 8;
             this.rtbResponse.Text = "";
             this.rtbResponse.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.rtbResponse_LinkClicked);
@@ -434,11 +439,49 @@
             this.ddlSortBy.Size = new System.Drawing.Size(173, 21);
             this.ddlSortBy.TabIndex = 19;
             // 
+            // tlpTextOptions
+            // 
+            this.tlpTextOptions.ColumnCount = 2;
+            this.tlpTextOptions.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 14.02715F));
+            this.tlpTextOptions.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 85.97285F));
+            this.tlpTextOptions.Controls.Add(this.chkShowExactMatches, 1, 0);
+            this.tlpTextOptions.Controls.Add(this.chkHighlightQuery, 0, 0);
+            this.tlpTextOptions.Location = new System.Drawing.Point(243, 10);
+            this.tlpTextOptions.Name = "tlpTextOptions";
+            this.tlpTextOptions.RowCount = 1;
+            this.tlpTextOptions.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tlpTextOptions.Size = new System.Drawing.Size(1105, 27);
+            this.tlpTextOptions.TabIndex = 18;
+            // 
+            // chkHighlightQuery
+            // 
+            this.chkHighlightQuery.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.chkHighlightQuery.AutoSize = true;
+            this.chkHighlightQuery.Location = new System.Drawing.Point(3, 5);
+            this.chkHighlightQuery.Name = "chkHighlightQuery";
+            this.chkHighlightQuery.Size = new System.Drawing.Size(127, 17);
+            this.chkHighlightQuery.TabIndex = 0;
+            this.chkHighlightQuery.Text = "Highlight query in text";
+            this.chkHighlightQuery.UseVisualStyleBackColor = true;
+            this.chkHighlightQuery.CheckedChanged += new System.EventHandler(this.chkHighlightQuery_CheckedChanged);
+            // 
+            // chkShowExactMatches
+            // 
+            this.chkShowExactMatches.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.chkShowExactMatches.AutoSize = true;
+            this.chkShowExactMatches.Location = new System.Drawing.Point(157, 5);
+            this.chkShowExactMatches.Name = "chkShowExactMatches";
+            this.chkShowExactMatches.Size = new System.Drawing.Size(125, 17);
+            this.chkShowExactMatches.TabIndex = 1;
+            this.chkShowExactMatches.Text = "Show exact matches";
+            this.chkShowExactMatches.UseVisualStyleBackColor = true;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1360, 794);
+            this.Controls.Add(this.tlpTextOptions);
             this.Controls.Add(this.tblSortByType);
             this.Controls.Add(this.tblSortByDirection);
             this.Controls.Add(this.tblFilterByScore);
@@ -467,6 +510,8 @@
             this.tblSortByDirection.PerformLayout();
             this.tblSortByType.ResumeLayout(false);
             this.tblSortByType.PerformLayout();
+            this.tlpTextOptions.ResumeLayout(false);
+            this.tlpTextOptions.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -506,6 +551,9 @@
         private System.Windows.Forms.TableLayoutPanel tblSortByType;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ComboBox ddlSortBy;
+        private System.Windows.Forms.TableLayoutPanel tlpTextOptions;
+        private System.Windows.Forms.CheckBox chkHighlightQuery;
+        private System.Windows.Forms.CheckBox chkShowExactMatches;
     }
 }
 
