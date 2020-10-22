@@ -35,9 +35,9 @@ namespace PushshiftAPI
             ddlSortBy.DataSource = new string[] { "created_utc", "score" };
             txtTotalResults.Text = "100";
 
-            SavedQueries = new string[0];
-            SavedSubreddits = new string[0];
-            SavedUserNames = new string[0];
+            SavedQueries = Array.Empty<string>();
+            SavedSubreddits = Array.Empty<string>();
+            SavedUserNames = Array.Empty<string>();
 
             InitializeAutoCompleteSaveDir();
             PrePopulateFields();

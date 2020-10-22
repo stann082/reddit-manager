@@ -13,14 +13,23 @@
     <property name="src.dir" value="${project.dir}/src" />
     <property name="stg.dir" value="${project.dir}/stg" />
     <property name="tst.dir" value="${project.dir}/tst" />
+    <property name="rpr.dir" value="${tst.dir}/rpr" />
 
-    <property name="interface.dir" value="${src.dir}/interface" />
+    <property name="etc.dir" value="${project.dir}/etc" />
+    <property name="conf.dir" value="${etc.dir}/conf" />
+    <property name="inc.dir" value="${etc.dir}/inc" />
+    <property name="include.filename" value="${inc.dir}/property-overrides.include" />
+
+        <!-- Include properties from file (properties immutable after defined) -->
+    <if test="${file::exists(include.filename)}">
+        <include buildfile="${include.filename}" />
+    </if>
 
     <if test="${not property::exists('dotnet.configuration')}">
         <property name="dotnet.configuration" value="Release" />
     </if>
     <if test="${not property::exists('dotnet.version.dir')}">
-        <property name="dotnet.version.dir" value="netcoreapp2.2" />
+        <property name="dotnet.version.dir" value="net5.0-windows" />
     </if>
 
     <!-- **************************************************************** -->
@@ -40,16 +49,17 @@
 
     <!-- Distribute the project component(s) (to the stage directory) -->
     <target name="dist">
-        <call target="__publish-components" />
         <call target="__stage-applications" />
     </target>
 
-    <!-- Run all nant tasks in Release mode -->
-    <target name="release">
-        <call target="clean" />
-        <call target="build" />
-        <call target="test" />
-        <call target="dist" />
+    <!-- Generate static code analysis report -->
+    <target name="report">
+        <call target="__execute-sonarqube-report" />
+    </target>
+
+    <!-- Restore the project component(s) -->
+    <target name="restore">
+        <call target="__restore-components" />
     </target>
 
     <!-- Test the project component(s) -->
@@ -68,9 +78,8 @@
     </patternset>
 
     <fileset id="test-build.fileset" basedir=".">
-        <include name="${project.dir}/CreditCardActivityMonitor.sln" />
+        <include name="${project.dir}/PushshiftAPI.sln" />
     </fileset>
- 
 
     <!-- *********************************************** -->
     <!-- Private tasks (useful for individual execution) -->
@@ -97,18 +106,46 @@
                 <property name="buildfile.dir" value="${path::get-directory-name(buildfile)}" />
                 <property name="buildfile.name" value="${path::get-file-name(buildfile)}" />
                 <echo />
-                <echo message="Auto-${action}ing ${buildfile}..." />
+                <echo message="Auto-${action} ${buildfile}..." />
                 <echo />
                 <exec workingdir="${buildfile.dir}" program="${dotnet.filename}">
                     <arg value="${action}" />
                     <arg value="${buildfile.name}" />
-                    <arg value="--configuration" />
-                    <arg value="${dotnet.configuration}" />
+                    <arg value="--configuration" unless="${action=='restore'}" />
+                    <arg value="${dotnet.configuration}" unless="${action=='restore'}" />
                     <arg value="--verbosity" />
                     <arg value="${dotnet.verbosity}" />
                 </exec>
             </do>
         </foreach>
+    </target>
+
+    <target name="__execute-coverage-report">
+        <exec workingdir="${tst.dir}" program="${dotnet.filename}">
+            <arg value="dotcover"/>
+            <arg value="test"/>
+            <arg value='--dcXML="${conf.dir}/coverage.xml"'/>
+        </exec>
+    </target>
+
+    <target name="__execute-sonarqube-report">
+        <call target="__clean-components" />
+        <call target="__restore-components" />
+
+        <exec program="${dotnet.filename}">
+            <arg value="sonarscanner"/>
+            <arg value="begin"/>
+            <arg value='/k:"PushshiftAPI"'/>
+            <arg value='/s:${conf.dir}/sonar-config.xml'/>
+        </exec>
+
+        <call target="__build-components" />
+        <call target="__execute-coverage-report" failonerror="false" />
+
+        <exec program="${dotnet.filename}">
+            <arg value="sonarscanner"/>
+            <arg value="end"/>
+        </exec>
     </target>
 
     <target name="__local-clean">
@@ -117,20 +154,24 @@
                 <include name="**/*" />
             </fileset>
         </delete>
+        <delete>
+            <fileset basedir="${rpr.dir}">
+                <include name="**/*" />
+            </fileset>
+        </delete>
     </target>
 
-    <target name="__publish-components">
-        <property name="action" value="publish" />
+    <target name="__restore-components">
+        <property name="action" value="restore" />
         <property name="dotnet.verbosity" value="quiet" />
         <call target="__dotnet-action" />
     </target>
 
     <target name="__stage-applications">
         <mkdir dir="${stg.dir}" />
-        <property name="publish.dir" value="${interface.dir}/bin/${dotnet.configuration}/${dotnet.version.dir}/publish" />
-        <echo message="${publish.dir}" />
+        <property name="pushshift-api.dir" value="${src.dir}/PushshiftAPI/bin/${dotnet.configuration}/${dotnet.version.dir}" />
         <copy todir="${stg.dir}">
-            <fileset basedir="${publish.dir}">
+            <fileset basedir="${pushshift-api.dir}">
                 <patternset refid="application-includes.patternset" />
             </fileset>
         </copy>

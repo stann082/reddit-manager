@@ -11,7 +11,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tst", "tst", "{47F6825B-4E6
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PresentationTest", "tst\PresentationTest.csproj", "{00E8C2D6-15C7-4B99-B0E5-5144CB6C3F85}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PushshiftAPI", "src\PushshiftAPI\PushshiftAPI.csproj", "{C4929ECD-6DF0-4833-8E52-4B50CDAC29BB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PushshiftAPI", "src\PushshiftAPI\PushshiftAPI.csproj", "{C4929ECD-6DF0-4833-8E52-4B50CDAC29BB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C124FCA4-F7AE-4DCC-BBFA-F15D04005BE3}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
