@@ -14,4 +14,8 @@
     <ProjectReference Include="..\src\Presentation\Presentation.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <DotNetCliToolReference Include="JetBrains.dotCover.DotNetCliTool" Version="2020.2.4" />
+  </ItemGroup>
+  
 </Project>

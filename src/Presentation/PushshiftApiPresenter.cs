@@ -14,7 +14,7 @@ namespace Presentation
         #region Constants
 
         private static readonly DateTime START_DATE = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-        private const string URL = "https://api.pushshift.io/reddit/search/comment";
+        private const string BASE_URL = "https://api.pushshift.io/reddit/search/comment";
 
         #endregion
 
@@ -23,7 +23,7 @@ namespace Presentation
         public PushshiftApiPresenter()
         {
             HttpClient = new HttpClient();
-            HttpClient.BaseAddress = new Uri(URL);
+            HttpClient.BaseAddress = new Uri(BASE_URL);
             HttpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
@@ -109,7 +109,7 @@ namespace Presentation
         private string BuildUrlParameters(ISearchOptions options)
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append("?");
+            sb.Append('?');
 
             if (!string.IsNullOrEmpty(options.Query))
             {
