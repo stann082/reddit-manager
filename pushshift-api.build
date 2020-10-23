@@ -11,7 +11,6 @@
     <property name="dotnet.filename" value="dotnet" />
 
     <property name="src.dir" value="${project.dir}/src" />
-    <property name="stg.dir" value="${project.dir}/stg" />
     <property name="tst.dir" value="${project.dir}/tst" />
     <property name="rpr.dir" value="${tst.dir}/rpr" />
 
@@ -19,6 +18,8 @@
     <property name="conf.dir" value="${etc.dir}/conf" />
     <property name="inc.dir" value="${etc.dir}/inc" />
     <property name="include.filename" value="${inc.dir}/property-overrides.include" />
+
+    <property name="stg.dir" value="C:/apps/PushshiftAPI" />
 
         <!-- Include properties from file (properties immutable after defined) -->
     <if test="${file::exists(include.filename)}">
@@ -180,11 +181,6 @@
     </target>
 
     <target name="__local-clean">
-        <delete>
-            <fileset basedir="${stg.dir}">
-                <include name="**/*" />
-            </fileset>
-        </delete>
         <delete>
             <fileset basedir="${rpr.dir}">
                 <include name="**/*" />
