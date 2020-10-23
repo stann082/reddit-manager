@@ -9,7 +9,7 @@ namespace Domain
 
         #region Public Methods
 
-        public Task<RedditData> GetRedditData(string requestUri)
+        public virtual Task<RedditData> GetRedditData(string requestUri)
         {
             return null;
         }

@@ -5,7 +5,7 @@
 
         #region Public Methods
 
-        public IRedditApiService CreateRedditService()
+        public virtual IRedditApiService CreateRedditService()
         {
             return NullRedditApiService.Singleton;
         }

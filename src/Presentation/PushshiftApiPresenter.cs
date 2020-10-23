@@ -41,6 +41,12 @@ namespace Presentation
             string requestUri = builder.Build();
 
             RedditData data = await Service.GetRedditData(requestUri);
+            if (data == null)
+            {
+                Response = "Something went wrong...";
+                return;
+            }
+
             RedditInfo[] contents = data.Contents;
             if (options.ShowExactMatches)
             {

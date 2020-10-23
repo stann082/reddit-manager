@@ -44,6 +44,7 @@
 
     <!-- Run the coverage report -->
     <target name="cover">
+        <call target="__execute-domain-test-coverage" />
         <call target="__execute-presentation-test-coverage" />
         <call target="__execute-service-test-coverage" />
         <call target="__merge-dotcover-files" />
@@ -126,6 +127,14 @@
                 </exec>
             </do>
         </foreach>
+    </target>
+
+    <target name="__execute-domain-test-coverage">
+        <exec workingdir="${tst.dir}/DomainTest" program="${dotnet.filename}">
+            <arg value="dotcover"/>
+            <arg value="test"/>
+            <arg value='--dcXML="coverage.xml"'/>
+        </exec>
     </target>
 
     <target name="__execute-presentation-test-coverage">
