@@ -130,27 +130,18 @@
     </target>
 
     <target name="__execute-domain-test-coverage">
-        <exec workingdir="${tst.dir}/DomainTest" program="${dotnet.filename}">
-            <arg value="dotcover"/>
-            <arg value="test"/>
-            <arg value='--dcXML="coverage.xml"'/>
-        </exec>
+        <property name="tst-unit.dir" value="${tst.dir}/DomainTest" />
+        <call target="__execute-test-coverage" />
     </target>
 
     <target name="__execute-presentation-test-coverage">
-        <exec workingdir="${tst.dir}/PresentationTest" program="${dotnet.filename}">
-            <arg value="dotcover"/>
-            <arg value="test"/>
-            <arg value='--dcXML="coverage.xml"'/>
-        </exec>
+        <property name="tst-unit.dir" value="${tst.dir}/PresentationTest" />
+        <call target="__execute-test-coverage" />
     </target>
 
     <target name="__execute-service-test-coverage">
-        <exec workingdir="${tst.dir}/ServiceTest" program="${dotnet.filename}">
-            <arg value="dotcover"/>
-            <arg value="test"/>
-            <arg value='--dcXML="coverage.xml"'/>
-        </exec>
+        <property name="tst-unit.dir" value="${tst.dir}/ServiceTest" />
+        <call target="__execute-test-coverage" />
     </target>
 
     <target name="__execute-sonarqube-report">
@@ -170,6 +161,14 @@
         <exec program="${dotnet.filename}">
             <arg value="sonarscanner"/>
             <arg value="end"/>
+        </exec>
+    </target>
+
+    <target name="__execute-test-coverage">
+        <exec workingdir="${tst-unit.dir}" program="${dotnet.filename}">
+            <arg value="dotcover"/>
+            <arg value="test"/>
+            <arg value='--dcXML="coverage.xml"'/>
         </exec>
     </target>
 

@@ -10,7 +10,7 @@
     </IncludeFilters>
     <ExcludeFilters>
       <FilterEntry>
-        <ClassMask>Null*</ClassMask>
+        <ClassMask>Domain.*.Null*</ClassMask>
       </FilterEntry>
     </ExcludeFilters>
   </Filters>
