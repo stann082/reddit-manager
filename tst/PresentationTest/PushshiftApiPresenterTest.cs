@@ -25,5 +25,11 @@ namespace PresentationTest
 
         #endregion
 
+        [TearDown]
+        public void TearDown()
+        {
+
+        }
+
     }
 }

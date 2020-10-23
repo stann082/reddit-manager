@@ -42,6 +42,14 @@
         <call target="__clean-components" />
     </target>
 
+    <!-- Run the coverage report -->
+    <target name="cover">
+        <call target="__execute-presentation-test-coverage" />
+        <call target="__execute-service-test-coverage" />
+        <call target="__merge-dotcover-files" />
+        <call target="__generate-coverage-report" />
+    </target>
+
     <!-- Build the project component(s) -->
     <target name="build">
         <call target="__build-components" />
@@ -120,11 +128,19 @@
         </foreach>
     </target>
 
-    <target name="__execute-coverage-report">
-        <exec workingdir="${tst.dir}" program="${dotnet.filename}">
+    <target name="__execute-presentation-test-coverage">
+        <exec workingdir="${tst.dir}/PresentationTest" program="${dotnet.filename}">
             <arg value="dotcover"/>
             <arg value="test"/>
-            <arg value='--dcXML="${conf.dir}/coverage.xml"'/>
+            <arg value='--dcXML="coverage.xml"'/>
+        </exec>
+    </target>
+
+    <target name="__execute-service-test-coverage">
+        <exec workingdir="${tst.dir}/ServiceTest" program="${dotnet.filename}">
+            <arg value="dotcover"/>
+            <arg value="test"/>
+            <arg value='--dcXML="coverage.xml"'/>
         </exec>
     </target>
 
@@ -148,6 +164,13 @@
         </exec>
     </target>
 
+    <target name="__generate-coverage-report">
+        <exec program="dotcover">
+            <arg value="r"/>
+            <arg value="${tst.dir}/report.xml"/>
+        </exec>
+    </target>
+
     <target name="__local-clean">
         <delete>
             <fileset basedir="${stg.dir}">
@@ -159,6 +182,13 @@
                 <include name="**/*" />
             </fileset>
         </delete>
+    </target>
+
+    <target name="__merge-dotcover-files">
+        <exec program="dotcover">
+            <arg value="m"/>
+            <arg value="${tst.dir}/merge.xml"/>
+        </exec>
     </target>
 
     <target name="__restore-components">

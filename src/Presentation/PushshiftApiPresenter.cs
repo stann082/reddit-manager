@@ -12,7 +12,6 @@ namespace Presentation
         #region Constants
 
         private static readonly DateTime START_DATE = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-        private const string BASE_URL = "https://api.pushshift.io/reddit/search/comment";
 
         #endregion
 

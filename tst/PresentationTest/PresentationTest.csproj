@@ -5,9 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="rpr\**" />
-    <EmbeddedResource Remove="rpr\**" />
-    <None Remove="rpr\**" />
+    <None Remove="coverage.xml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -17,11 +15,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\Presentation\Presentation.csproj" />
+    <DotNetCliToolReference Include="JetBrains.dotCover.DotNetCliTool" Version="2020.2.4" />
   </ItemGroup>
 
   <ItemGroup>
-    <DotNetCliToolReference Include="JetBrains.dotCover.DotNetCliTool" Version="2020.2.4" />
+    <ProjectReference Include="..\..\src\Presentation\Presentation.csproj" />
   </ItemGroup>
   
 </Project>
