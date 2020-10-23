@@ -60,14 +60,14 @@
         <call target="__stage-applications" />
     </target>
 
-    <!-- Generate static code analysis report -->
-    <target name="report">
-        <call target="__execute-sonarqube-report" />
-    </target>
-
     <!-- Restore the project component(s) -->
     <target name="restore">
         <call target="__restore-components" />
+    </target>
+
+    <!-- Generate static code analysis report -->
+    <target name="sonar">
+        <call target="__execute-sonarqube-report" />
     </target>
 
     <!-- Test the project component(s) -->
@@ -156,7 +156,7 @@
         </exec>
 
         <call target="__build-components" />
-        <call target="__execute-coverage-report" failonerror="false" />
+        <call target="cover" failonerror="false" />
 
         <exec program="${dotnet.filename}">
             <arg value="sonarscanner"/>
