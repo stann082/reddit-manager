@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CoverageParams>
+  <Output>../rpr/service-test.dcvr</Output>
+
+  <Filters>
+    <IncludeFilters>
+      <FilterEntry>
+        <ModuleMask>Service</ModuleMask>
+      </FilterEntry>
+    </IncludeFilters>
+  </Filters>
+
+</CoverageParams>

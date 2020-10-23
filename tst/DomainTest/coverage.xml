@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CoverageParams>
+  <Output>../rpr/domain-test.dcvr</Output>
+
+  <Filters>
+    <IncludeFilters>
+      <FilterEntry>
+        <ModuleMask>Domain</ModuleMask>
+      </FilterEntry>
+    </IncludeFilters>
+    <ExcludeFilters>
+      <FilterEntry>
+        <ClassMask>Null*</ClassMask>
+      </FilterEntry>
+    </ExcludeFilters>
+  </Filters>
+
+</CoverageParams>

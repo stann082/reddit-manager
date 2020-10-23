@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace Presentation
+namespace Domain
 {
     public class RedditInfo
     {
