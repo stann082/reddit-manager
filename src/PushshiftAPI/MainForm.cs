@@ -4,6 +4,7 @@ using Presentation;
 using Service;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
@@ -133,7 +134,14 @@ namespace PushshiftAPI
                 return;
             }
 
-            Process.Start(browserName, e.LinkText);
+            try
+            {
+                Process.Start(browserName, e.LinkText);
+            }
+            catch (Win32Exception ex)
+            {
+                MessageBox.Show(ex.Message, "ERROR");
+            }
         }
 
         private void textBox_KeyDown(object sender, KeyEventArgs e)
@@ -191,13 +199,13 @@ namespace PushshiftAPI
                     case "FirefoxURL":
                         return "firefox.exe";
                     case "ChromeHTML":
-                        return "chrome.exe";
+                        return @"C:\Program Files\Google\Chrome\Application\chrome.exe";
                     case "OperaStable":
                         return "opera.exe";
                     case "SafariHTML":
                         return "safari.exe";
                     case "AppXq0fevzme2pys62n3e0fbqa7peapykr8v":
-                        return "msedge.exe";
+                        return @"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe";
                     default:
                         return string.Empty;
                 }
