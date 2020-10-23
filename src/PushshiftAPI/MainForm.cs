@@ -1,4 +1,5 @@
-﻿using Microsoft.Win32;
+﻿using Domain;
+using Microsoft.Win32;
 using Presentation;
 using System;
 using System.Collections.Generic;
@@ -25,6 +26,8 @@ namespace PushshiftAPI
         public MainForm()
         {
             InitializeComponent();
+            PresentationEnvironment.Singleton.InitializeServices();
+
             DefaultSelectionBackColor = rtbResponse.SelectionBackColor;
             DefaultSelectionColor = rtbResponse.SelectionColor;
 

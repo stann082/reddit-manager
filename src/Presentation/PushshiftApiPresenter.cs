@@ -1,8 +1,6 @@
-using Newtonsoft.Json;
+using Domain;
 using System;
 using System.Linq;
-using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -22,9 +20,7 @@ namespace Presentation
 
         public PushshiftApiPresenter()
         {
-            HttpClient = new HttpClient();
-            HttpClient.BaseAddress = new Uri(BASE_URL);
-            HttpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            Service = ServiceFactoryProxy.Singleton.CreateRedditService();
         }
 
         #endregion
@@ -34,7 +30,7 @@ namespace Presentation
         public string Counter { get; set; }
         public string Response { get; set; }
 
-        private HttpClient HttpClient { get; set; }
+        private IRedditApiService Service { get; set; }
 
         #endregion
 
@@ -42,17 +38,10 @@ namespace Presentation
 
         public async Task BuildResponseContent(ISearchOptions options)
         {
-            string requestUri = BuildUrlParameters(options);
-            HttpResponseMessage response = await HttpClient.GetAsync(requestUri);
-            if (!response.IsSuccessStatusCode)
-            {
-                Response = "Could not connect to Reddit servers...";
-                return;
-            }
+            UrlParameterBuilder builder = new UrlParameterBuilder(options);
+            string requestUri = builder.Build();
 
-            string responseJson = await response.Content.ReadAsStringAsync();
-            RedditData data = JsonConvert.DeserializeObject<RedditData>(responseJson);
-
+            RedditData data = await Service.GetRedditData(requestUri);
             RedditInfo[] contents = data.Contents;
             if (options.ShowExactMatches)
             {
@@ -69,7 +58,7 @@ namespace Presentation
 
             StringBuilder sb = new StringBuilder();
 
-            sb.AppendLine($"API call: {response.RequestMessage.RequestUri}");
+            sb.AppendLine($"API call: {Constants.BASE_URL}{requestUri}");
             sb.AppendLine();
 
             foreach (RedditInfo content in contents)
@@ -105,53 +94,6 @@ namespace Presentation
         #endregion
 
         #region Helper Methods
-
-        private string BuildUrlParameters(ISearchOptions options)
-        {
-            StringBuilder sb = new StringBuilder();
-            sb.Append('?');
-
-            if (!string.IsNullOrEmpty(options.Query))
-            {
-                string formattedText = options.Query.Replace(' ', '+');
-                sb.Append($"q={formattedText}");
-            }
-
-            if (!string.IsNullOrEmpty(options.UserName))
-            {
-                sb.Append($"&author={options.UserName}");
-            }
-
-            if (!string.IsNullOrEmpty(options.Subreddit))
-            {
-                sb.Append($"&subreddit={options.Subreddit}");
-            }
-
-            if (!string.IsNullOrEmpty(options.TotalResults))
-            {
-                sb.Append($"&size={options.TotalResults}");
-            }
-
-            if (options.IsPeriodSearchEnabled)
-            {
-                sb.Append($"&after={options.StartDateUnixTimeStamp}&before={options.StopDateUnixTimeStamp}");
-            }
-
-            if (!string.IsNullOrEmpty(options.ScoreGreaterThan))
-            {
-                sb.Append($"&score=>{options.ScoreGreaterThan}");
-            }
-
-            if (!string.IsNullOrEmpty(options.ScoreLessThan))
-            {
-                sb.Append($"&score=<{options.ScoreLessThan}");
-            }
-
-            sb.Append($"&sort_type={options.SortType}");
-            sb.Append($"&sort={options.SortDirection}");
-
-            return sb.ToString();
-        }
 
         private DateTime FromUnixTime(double unixTimeStamp)
         {
