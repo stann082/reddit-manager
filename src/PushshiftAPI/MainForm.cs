@@ -1,13 +1,10 @@
-﻿using Domain;
-using Microsoft.Win32;
+using Domain;
 using Presentation;
 using Service;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
-using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
@@ -29,6 +26,7 @@ namespace PushshiftAPI
         {
             InitializeComponent();
             ServiceFactoryProxy.Singleton = new ServiceFactory();
+            Environment.Initialize();
 
             DefaultSelectionBackColor = rtbResponse.SelectionBackColor;
             DefaultSelectionColor = rtbResponse.SelectionColor;
@@ -40,11 +38,6 @@ namespace PushshiftAPI
             ddlSortBy.DataSource = new string[] { "created_utc", "score" };
             txtTotalResults.Text = "100";
 
-            SavedQueries = Array.Empty<string>();
-            SavedSubreddits = Array.Empty<string>();
-            SavedUserNames = Array.Empty<string>();
-
-            InitializeAutoCompleteSaveDir();
             PrePopulateFields();
         }
 
@@ -69,19 +62,12 @@ namespace PushshiftAPI
 
         public string UserName { get { return txtUserName.Text; } }
 
-        private string AutoCompleteQueryFilePath { get; set; }
-        private string AutoCompleteSaveDir { get; set; }
-        private string AutoCompleteSubredditFilePath { get; set; }
-        private string AutoCompleteUserNameFilePath { get; set; }
-
         private Color DefaultSelectionBackColor { get; set; }
         private Color DefaultSelectionColor { get; set; }
 
-        private PushshiftApiPresenter Presenter { get; set; }
+        private ApplicationEnvironment Environment { get { return ApplicationEnvironment.Singleton; } }
 
-        private string[] SavedQueries { get; set; }
-        private string[] SavedSubreddits { get; set; }
-        private string[] SavedUserNames { get; set; }
+        private PushshiftApiPresenter Presenter { get; set; }
 
         #endregion
 
@@ -90,7 +76,7 @@ namespace PushshiftAPI
         private async void btnSearch_Click(object sender, EventArgs e)
         {
             ToggleControls(false);
-            SaveAutoCompletes();
+            Environment.SaveAutoCompletes(this);
 
             await Presenter.BuildResponseContent(this);
             lblCounter.Text = Presenter.Counter;
@@ -127,7 +113,7 @@ namespace PushshiftAPI
 
         private void rtbResponse_LinkClicked(object sender, LinkClickedEventArgs e)
         {
-            string browserName = GetSystemDefaultBrowser();
+            string browserName = Environment.WebBrowserFilePath;
             if (string.IsNullOrEmpty(browserName))
             {
                 MessageBox.Show("Could not determine the default browser", "ERROR");
@@ -172,46 +158,6 @@ namespace PushshiftAPI
             }
         }
 
-        private string GetSystemDefaultBrowser()
-        {
-            // based on https://stackoverflow.com/a/17599201
-
-            const string userChoice = @"Software\Microsoft\Windows\Shell\Associations\UrlAssociations\http\UserChoice";
-            string progId;
-            using (RegistryKey userChoiceKey = Registry.CurrentUser.OpenSubKey(userChoice))
-            {
-                if (userChoiceKey == null)
-                {
-                    return string.Empty;
-                }
-
-                object progIdValue = userChoiceKey.GetValue("Progid");
-                if (progIdValue == null)
-                {
-                    return string.Empty;
-                }
-
-                progId = progIdValue.ToString();
-                switch (progId)
-                {
-                    case "IE.HTTP":
-                        return "iexplore.exe";
-                    case "FirefoxURL":
-                        return "firefox.exe";
-                    case "ChromeHTML":
-                        return @"C:\Program Files\Google\Chrome\Application\chrome.exe";
-                    case "OperaStable":
-                        return "opera.exe";
-                    case "SafariHTML":
-                        return "safari.exe";
-                    case "AppXq0fevzme2pys62n3e0fbqa7peapykr8v":
-                        return @"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe";
-                    default:
-                        return string.Empty;
-                }
-            }
-        }
-
         private void HighlightQuery()
         {
             if (!chkHighlightQuery.Checked)
@@ -227,82 +173,17 @@ namespace PushshiftAPI
             }
         }
 
-        private void InitializeAutoCompleteSaveDir()
-        {
-            string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            AutoCompleteSaveDir = Path.Combine(appDataPath, "PushshiftAPI", "autocomplete");
-            if (!Directory.Exists(AutoCompleteSaveDir))
-            {
-                Directory.CreateDirectory(AutoCompleteSaveDir);
-            }
-
-            AutoCompleteQueryFilePath = Path.Combine(AutoCompleteSaveDir, "query");
-            AutoCompleteSubredditFilePath = Path.Combine(AutoCompleteSaveDir, "subreddit");
-            AutoCompleteUserNameFilePath = Path.Combine(AutoCompleteSaveDir, "username");
-        }
-
         private void PrePopulateFields()
         {
-            if (File.Exists(AutoCompleteQueryFilePath))
-            {
-                SavedQueries = File.ReadAllLines(AutoCompleteQueryFilePath);
-                txtQuery.Text = SavedQueries.LastOrDefault();
-
-                SetAutoCompleteField(txtQuery, SavedQueries);
-            }
-
-            if (File.Exists(AutoCompleteUserNameFilePath))
-            {
-                SavedUserNames = File.ReadAllLines(AutoCompleteUserNameFilePath);
-                txtUserName.Text = SavedUserNames.LastOrDefault();
-
-                SetAutoCompleteField(txtUserName, SavedUserNames);
-            }
-
-            if (File.Exists(AutoCompleteSubredditFilePath))
-            {
-                SavedSubreddits = File.ReadAllLines(AutoCompleteSubredditFilePath);
-                txtSubreddit.Text = SavedSubreddits.LastOrDefault();
-
-                SetAutoCompleteField(txtSubreddit, SavedSubreddits);
-            }
-        }
-
-        private void SaveAutoCompletes()
-        {
-            List<string> savedQueries = SavedQueries.ToList();
-            if (savedQueries.Contains(txtQuery.Text))
-            {
-                savedQueries.Remove(txtQuery.Text);
-            }
-
-            savedQueries.Add(txtQuery.Text);
-            SavedQueries = savedQueries.ToArray();
-            File.WriteAllLines(AutoCompleteQueryFilePath, SavedQueries);
-
-            List<string> savedUserNames = SavedUserNames.ToList();
-            if (savedUserNames.Contains(txtUserName.Text))
-            {
-                savedUserNames.Remove(txtUserName.Text);
-            }
-
-            savedUserNames.Add(txtUserName.Text);
-            SavedUserNames = savedUserNames.ToArray();
-            File.WriteAllLines(AutoCompleteUserNameFilePath, SavedUserNames);
-
-            List<string> savedSubreddits = SavedSubreddits.ToList();
-            if (savedSubreddits.Contains(txtSubreddit.Text))
-            {
-                savedSubreddits.Remove(txtSubreddit.Text);
-            }
-
-            savedSubreddits.Add(txtSubreddit.Text);
-            SavedSubreddits = savedSubreddits.ToArray();
-            File.WriteAllLines(AutoCompleteSubredditFilePath, SavedSubreddits);
+            SetAutoCompleteField(txtQuery, Environment.SavedQueries);
+            SetAutoCompleteField(txtUserName, Environment.SavedUserNames);
+            SetAutoCompleteField(txtSubreddit, Environment.SavedSubreddits);
         }
 
         private void SetAutoCompleteField(TextBox textBox, string[] allowedTypes)
         {
+            textBox.Text = allowedTypes.LastOrDefault();
+
             AutoCompleteStringCollection autoCompleteList = new AutoCompleteStringCollection();
             autoCompleteList.AddRange(allowedTypes);
 
