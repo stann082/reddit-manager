@@ -12,6 +12,9 @@
       <FilterEntry>
         <ClassMask>Domain.*.Null*</ClassMask>
       </FilterEntry>
+      <FilterEntry>
+        <ClassMask>Domain.EnvironmentProperties</ClassMask>
+      </FilterEntry>
     </ExcludeFilters>
   </Filters>
 
