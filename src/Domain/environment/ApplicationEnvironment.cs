@@ -44,6 +44,33 @@ namespace Domain
             InitializeWebBrowserFilePath();
         }
 
+        public void InitializeAutoCompleteSaves()
+        {
+            AutoCompleteSaveDir = EnvironmentProperties.AutoCompleteSaveDir;
+            if (!Directory.Exists(AutoCompleteSaveDir))
+            {
+                Directory.CreateDirectory(AutoCompleteSaveDir);
+            }
+
+            AutoCompleteQueryFilePath = Path.Combine(AutoCompleteSaveDir, "query");
+            if (File.Exists(AutoCompleteQueryFilePath))
+            {
+                SavedQueries = File.ReadAllLines(AutoCompleteQueryFilePath);
+            }
+
+            AutoCompleteSubredditFilePath = Path.Combine(AutoCompleteSaveDir, "subreddit");
+            if (File.Exists(AutoCompleteSubredditFilePath))
+            {
+                SavedSubreddits = File.ReadAllLines(AutoCompleteSubredditFilePath);
+            }
+
+            AutoCompleteUserNameFilePath = Path.Combine(AutoCompleteSaveDir, "username");
+            if (File.Exists(AutoCompleteUserNameFilePath))
+            {
+                SavedUserNames = File.ReadAllLines(AutoCompleteUserNameFilePath);
+            }
+        }
+
         public void SaveAutoCompletes(ISearchOptions options)
         {
             List<string> savedQueries = SavedQueries.ToList();
@@ -80,33 +107,6 @@ namespace Domain
         #endregion
 
         #region Helper Methods
-
-        private void InitializeAutoCompleteSaves()
-        {
-            AutoCompleteSaveDir = EnvironmentProperties.AutoCompleteSaveDir;
-            if (!Directory.Exists(AutoCompleteSaveDir))
-            {
-                Directory.CreateDirectory(AutoCompleteSaveDir);
-            }
-
-            AutoCompleteQueryFilePath = Path.Combine(AutoCompleteSaveDir, "query");
-            if (File.Exists(AutoCompleteQueryFilePath))
-            {
-                SavedQueries = File.ReadAllLines(AutoCompleteQueryFilePath);
-            }
-
-            AutoCompleteSubredditFilePath = Path.Combine(AutoCompleteSaveDir, "subreddit");
-            if (File.Exists(AutoCompleteSubredditFilePath))
-            {
-                SavedSubreddits = File.ReadAllLines(AutoCompleteSubredditFilePath);
-            }
-
-            AutoCompleteUserNameFilePath = Path.Combine(AutoCompleteSaveDir, "username");
-            if (File.Exists(AutoCompleteUserNameFilePath))
-            {
-                SavedUserNames = File.ReadAllLines(AutoCompleteUserNameFilePath);
-            }
-        }
 
         private void InitializeWebBrowserFilePath()
         {

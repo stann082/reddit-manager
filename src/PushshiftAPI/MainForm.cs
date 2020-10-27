@@ -76,7 +76,6 @@ namespace PushshiftAPI
         private async void btnSearch_Click(object sender, EventArgs e)
         {
             ToggleControls(false);
-            Environment.SaveAutoCompletes(this);
 
             await Presenter.BuildResponseContent(this);
             lblCounter.Text = Presenter.Counter;
@@ -86,6 +85,10 @@ namespace PushshiftAPI
 
             ToggleControls(true);
             lblCounter.Focus();
+
+            Environment.SaveAutoCompletes(this);
+            Environment.InitializeAutoCompleteSaves();
+            PrePopulateFields();
         }
 
         private void chkHighlightQuery_CheckedChanged(object sender, EventArgs e)
