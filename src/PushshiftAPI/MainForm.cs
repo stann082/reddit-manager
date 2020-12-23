@@ -16,7 +16,7 @@ namespace PushshiftAPI
 
         #region Constants
 
-        private static readonly DateTime START_DATE = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+        private static readonly DateTime START_DATE = new(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
 
         #endregion
 
@@ -35,7 +35,8 @@ namespace PushshiftAPI
 
             chkPeriodFilter_CheckedChanged(null, EventArgs.Empty);
             rdoDescending.Checked = true;
-            ddlSortBy.DataSource = new string[] { "created_utc", "score" };
+            ddlQueryType.DataSource = new[] { "comment", "submission" };
+            ddlSortBy.DataSource = new[] { "created_utc", "score" };
             txtTotalResults.Text = "100";
 
             PrePopulateFields();
@@ -45,27 +46,28 @@ namespace PushshiftAPI
 
         #region Properties
 
-        public bool IsPeriodSearchEnabled { get { return chkPeriodFilter.Checked; } }
+        public bool IsPeriodSearchEnabled => chkPeriodFilter.Checked;
 
-        public string Query { get { return txtQuery.Text; } }
+        public string Query => txtQuery.Text;
+        public QueryType QueryType => GetQueryType();
 
-        public string ScoreGreaterThan { get { return txtGreaterThan.Text; } }
-        public string ScoreLessThan { get { return txtLessThan.Text; } }
-        public bool ShowExactMatches { get { return chkShowExactMatches.Checked; } }
-        public string SortDirection { get { return GetSortDirection(); } }
-        public string SortType { get { return ddlSortBy.SelectedItem.ToString(); } }
-        public long StartDateUnixTimeStamp { get { return ToUnixTime(dpStartDate.Value); } }
-        public long StopDateUnixTimeStamp { get { return ToUnixTime(dpStopDate.Value); } }
-        public string Subreddit { get { return txtSubreddit.Text; } }
+        public string ScoreGreaterThan => txtGreaterThan.Text;
+        public string ScoreLessThan => txtLessThan.Text;
+        public bool ShowExactMatches => chkShowExactMatches.Checked;
+        public string SortDirection => GetSortDirection();
+        public string SortType => ddlSortBy.SelectedItem.ToString();
+        public long StartDateUnixTimeStamp => ToUnixTime(dpStartDate.Value);
+        public long StopDateUnixTimeStamp => ToUnixTime(dpStopDate.Value);
+        public string Subreddit => txtSubreddit.Text;
 
-        public string TotalResults { get { return txtTotalResults.Text; } }
+        public string TotalResults => txtTotalResults.Text;
 
-        public string UserName { get { return txtUserName.Text; } }
+        public string UserName => txtUserName.Text;
 
         private Color DefaultSelectionBackColor { get; set; }
         private Color DefaultSelectionColor { get; set; }
 
-        private ApplicationEnvironment Environment { get { return ApplicationEnvironment.Singleton; } }
+        private ApplicationEnvironment Environment => ApplicationEnvironment.Singleton;
 
         private PushshiftApiPresenter Presenter { get; set; }
 
@@ -144,6 +146,21 @@ namespace PushshiftAPI
         #endregion
 
         #region Helper Methods
+
+        private QueryType GetQueryType()
+        {
+            if (ddlQueryType.SelectedItem.ToString() == "comment")
+            {
+                return QueryType.Comment;
+            }
+
+            if (ddlQueryType.SelectedItem.ToString() == "submission")
+            {
+                return QueryType.Submission;
+            }
+
+            return QueryType.Comment;
+        }
 
         private string GetSortDirection()
         {

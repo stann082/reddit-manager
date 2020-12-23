@@ -9,7 +9,12 @@ namespace Domain
 
         #region Public Methods
 
-        public virtual Task<RedditData> GetRedditData(string requestUri)
+        public virtual Task<IRedditData> GetCommentData(string requestUri)
+        {
+            return null;
+        }
+
+        public virtual Task<IRedditData> GetSubmissionData(string requestUri)
         {
             return null;
         }

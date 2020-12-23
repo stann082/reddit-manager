@@ -1,4 +1,4 @@
-﻿using Domain;
+using Domain;
 using Newtonsoft.Json;
 using System;
 using System.Net.Http;
@@ -15,7 +15,6 @@ namespace Service
         public RedditApiService()
         {
             HttpClient = new HttpClient();
-            HttpClient.BaseAddress = new Uri(Constants.BASE_URL);
             HttpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
@@ -29,16 +28,42 @@ namespace Service
 
         #region Public Methods
 
-        public async Task<RedditData> GetRedditData(string requestUri)
+        public async Task<IRedditData> GetCommentData(string requestUri)
         {
+            return await GetData<CommentData>(requestUri, QueryType.Comment.ToString().ToLower());
+        }
+
+        public async Task<IRedditData> GetSubmissionData(string requestUri)
+        {
+            return await GetData<SubmissionData>(requestUri, QueryType.Submission.ToString().ToLower());
+        }
+
+        #endregion
+
+        #region Helper Methods
+
+        private async Task<T> GetData<T>(string requestUri, string queryType)
+        {
+            HttpClient.BaseAddress = new Uri($"{Constants.BASE_URL}/{queryType}");
+
             HttpResponseMessage response = await HttpClient.GetAsync(requestUri);
             if (!response.IsSuccessStatusCode)
             {
-                return null;
+                return default;
             }
 
             string responseJson = await response.Content.ReadAsStringAsync();
-            RedditData data = JsonConvert.DeserializeObject<RedditData>(responseJson);
+
+            T data = default;
+            try
+            {
+                data = JsonConvert.DeserializeObject<T>(responseJson);
+            }
+            catch (Exception)
+            {
+                // TODO: log exception
+            }
+
             return data;
         }
 

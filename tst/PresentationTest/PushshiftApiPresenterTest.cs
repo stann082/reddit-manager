@@ -16,7 +16,7 @@ namespace PresentationTest
         public void SetUp()
         {
             MockService = ServiceFactoryProxy.Singleton.CreateRedditService() as MockRedditApiService;
-            MockService.Data = CreateMockRedditData();
+            MockService.CommentData = CreateMockRedditData();
 
             Presenter = new PushshiftApiPresenter();
         }
@@ -38,7 +38,7 @@ namespace PresentationTest
         public void TestBlueSky_BuildResponseContent_ShowExactMatches()
         {
             // set-up
-            MockSearchOptions options = new MockSearchOptions();
+            MockSearchOptions options = new();
             options.Query = "Test and";
             options.ShowExactMatches = true;
 
@@ -58,9 +58,9 @@ namespace PresentationTest
         public void TestNonBlueSky_BuildResponseContent_NothingFound()
         {
             // set-up
-            MockService.Data.Contents = new RedditInfo[0];
+            OverrideProperty(MockService.CommentData, "Comments", new Comment[0]);
 
-            MockSearchOptions options = new MockSearchOptions();
+            MockSearchOptions options = new();
             options.Query = "Test and";
             options.ShowExactMatches = true;
 
@@ -76,9 +76,9 @@ namespace PresentationTest
         public void TestNonBlueSky_BuildResponseContent_SomethingWentWrong()
         {
             // set-up
-            MockService.Data = null;
+            MockService.CommentData = null;
 
-            MockSearchOptions options = new MockSearchOptions();
+            MockSearchOptions options = new();
             options.Query = "Test and";
             options.ShowExactMatches = true;
 
@@ -100,11 +100,11 @@ namespace PresentationTest
 
         #region Helper Methods
 
-        private RedditData CreateMockRedditData()
+        private CommentData CreateMockRedditData()
         {
-            RedditData data = new RedditData();
+            CommentData data = new();
 
-            RedditInfo info1 = new RedditInfo();
+            Comment info1 = new();
             info1.Author = "Author #1";
             info1.Body = "Test message #1";
             info1.CreatedUtc = 1603480418;
@@ -112,7 +112,7 @@ namespace PresentationTest
             info1.Score = 1;
             info1.Subreddit = "Test";
 
-            RedditInfo info2 = new RedditInfo();
+            Comment info2 = new();
             info2.Author = "Author #2";
             info2.Body = "Test and message #2";
             info2.CreatedUtc = 1603480287;
@@ -121,7 +121,7 @@ namespace PresentationTest
             info2.Subreddit = "Test";
             info2.UpdatedUtc = 1603483194;
 
-            data.Contents = new RedditInfo[] { info1, info2 };
+            OverrideProperty(data, "Comments", new Comment[] { info1, info2 });
             return data;
         }
 

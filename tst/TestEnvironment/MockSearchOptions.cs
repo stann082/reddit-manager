@@ -10,6 +10,7 @@ namespace TestEnvironment
         public bool IsPeriodSearchEnabled { get; set; }
 
         public string Query { get; set; }
+        public QueryType QueryType { get; set; }
 
         public string ScoreGreaterThan { get; set; }
         public string ScoreLessThan { get; set; }

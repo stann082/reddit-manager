@@ -1,13 +1,14 @@
 ﻿using Domain;
+using TestEnvironment;
 
 namespace PresentationTest
 {
-    public abstract class AbstractPresentationTest
+    public abstract class AbstractPresentationTest : AbstractTest
     {
 
         #region Constructors
 
-        public AbstractPresentationTest()
+        protected AbstractPresentationTest()
         {
             ServiceFactoryProxy.Singleton = new MockServiceFactory();
         }

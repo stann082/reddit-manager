@@ -1,4 +1,4 @@
-﻿using Domain;
+using Domain;
 using NUnit.Framework;
 using System.Threading.Tasks;
 
@@ -19,25 +19,36 @@ namespace ServiceTest
         #region Blue Sky Tests
 
         [Test]
-        public async Task TestBlueSky_GetRedditData()
+        public async Task TestBlueSky_GetCommentData()
         {
             // exercise
             string requestUri = "?q=test&subreddit=AskReddit&size=5&sort_type=created_utc&sort=desc";
-            RedditData data = await Service.GetRedditData(requestUri);
+            IRedditData data = await Service.GetCommentData(requestUri);
 
             // post-conditions
             Assert.AreEqual(5, data.Contents.Length);
         }
 
         [Test]
-        public async Task TestBlueSky_GetRedditData_NothingFound()
+        public async Task TestBlueSky_GetCommentData_NothingFound()
         {
             // exercise
             string requestUri = "?q=dfjdshdfdsjfsdlfdsfcjdslhff87487r48ch&subreddit=AskReddit&size=5&sort_type=created_utc&sort=desc";
-            RedditData data = await Service.GetRedditData(requestUri);
+            IRedditData data = await Service.GetCommentData(requestUri);
 
             // post-conditions
             Assert.IsEmpty(data.Contents);
+        }
+
+        [Test]
+        public async Task TestBlueSky_GetSubmissionData()
+        {
+            // exercise
+            string requestUri = "?q=test&subreddit=AskReddit&size=5&sort_type=created_utc&sort=desc";
+            IRedditData data = await Service.GetSubmissionData(requestUri);
+
+            // post-conditions
+            Assert.AreEqual(5, data.Contents.Length);
         }
 
         #endregion
@@ -45,10 +56,10 @@ namespace ServiceTest
         #region Non Blue Sky Tests
 
         [Test]
-        public async Task TestNonBlueSky_GetRedditData_BadUri()
+        public async Task TestNonBlueSky_GetCommentData_BadUri()
         {
             // exercise
-            RedditData data = await Service.GetRedditData("bleh");
+            IRedditData data = await Service.GetCommentData("bleh");
 
             // post-conditions
             Assert.IsNull(data);

@@ -5,7 +5,8 @@ namespace Domain
     public interface IRedditApiService
     {
 
-        Task<RedditData> GetRedditData(string requestUri);
+        Task<IRedditData> GetCommentData(string requestUri);
+        Task<IRedditData> GetSubmissionData(string requestUri);
 
     }
 }
