@@ -19,6 +19,7 @@
 *.userosscache
 *.sln.docstates
 etc/conf/*
+inc/
 
 # User-specific directories
 etc/inc/

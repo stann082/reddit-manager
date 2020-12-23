@@ -19,8 +19,6 @@
     <property name="inc.dir" value="${etc.dir}/inc" />
     <property name="include.filename" value="${inc.dir}/property-overrides.include" />
 
-    <property name="stg.dir" value="C:/apps/PushshiftAPI" />
-
         <!-- Include properties from file (properties immutable after defined) -->
     <if test="${file::exists(include.filename)}">
         <include buildfile="${include.filename}" />
@@ -31,6 +29,9 @@
     </if>
     <if test="${not property::exists('dotnet.version.dir')}">
         <property name="dotnet.version.dir" value="net5.0-windows" />
+    </if>
+    <if test="${not property::exists('stg.dir')}">
+        <property name="stg.dir" value="C:/apps/PushshiftAPI" />
     </if>
 
     <!-- **************************************************************** -->
