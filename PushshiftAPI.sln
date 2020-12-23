@@ -24,9 +24,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain", "src\Domain\Domain
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceTest", "tst\ServiceTest\ServiceTest.csproj", "{056EF98D-E6BC-4E29-98E9-65ABC106CD65}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DomainTest", "tst\DomainTest\DomainTest.csproj", "{8EB79145-9340-458D-B488-FE49FBC7FFB9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DomainTest", "tst\DomainTest\DomainTest.csproj", "{8EB79145-9340-458D-B488-FE49FBC7FFB9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestEnvironment", "tst\TestEnvironment\TestEnvironment.csproj", "{EAF8D9B7-ED5C-41ED-BA16-97EBC94F9524}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestEnvironment", "tst\TestEnvironment\TestEnvironment.csproj", "{EAF8D9B7-ED5C-41ED-BA16-97EBC94F9524}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

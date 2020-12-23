@@ -8,15 +8,21 @@ namespace PresentationTest
 
         #region Public Methods
 
-        public RedditData Data { get; set; }
+        public CommentData CommentData { get; set; }
+        public SubmissionData SubmissionData { get; set; }
 
         #endregion
 
         #region Public Methods
 
-        public override Task<RedditData> GetRedditData(string requestUri)
+        public override Task<IRedditData> GetCommentData(string requestUri)
         {
-            return Task<RedditData>.Factory.StartNew(() => Data);
+            return Task<IRedditData>.Factory.StartNew(() => CommentData);
+        }
+
+        public override Task<IRedditData> GetSubmissionData(string requestUri)
+        {
+            return Task<IRedditData>.Factory.StartNew(() => SubmissionData);
         }
 
         #endregion

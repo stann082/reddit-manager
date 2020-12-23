@@ -1,18 +1,19 @@
 ﻿using Domain;
 using NUnit.Framework;
+using TestEnvironment;
 
 namespace DomainTest
 {
     [TestFixture]
-    public class RedditDataTest
+    public class SubmissionDataTest : AbstractTest
     {
 
-        private RedditData Data;
+        private SubmissionData Data;
 
         [SetUp]
         public void SetUp()
         {
-            Data = new RedditData();
+            Data = new SubmissionData();
         }
 
         #region Blue Sky Tests
@@ -21,10 +22,10 @@ namespace DomainTest
         public void TestBlueSky_Coverage()
         {
             // pre-conditions
-            Assert.IsNull(Data.Contents);
+            Assert.IsEmpty(Data.Contents);
 
             // exercise
-            Data.Contents = new RedditInfo[] { new RedditInfo() };
+            OverrideProperty(Data, "Submissions", new Submission[] { new() });
 
             // post-conditions
             Assert.AreEqual(1, Data.Contents.Length);

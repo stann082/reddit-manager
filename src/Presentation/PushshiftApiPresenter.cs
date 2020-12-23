@@ -11,7 +11,7 @@ namespace Presentation
 
         #region Constants
 
-        private static readonly DateTime START_DATE = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+        private static readonly DateTime START_DATE = new(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
 
         #endregion
 
@@ -26,8 +26,8 @@ namespace Presentation
 
         #region Properties
 
-        public string Counter { get; set; }
-        public string Response { get; set; }
+        public string Counter { get; private set; }
+        public string Response { get; private set; }
 
         private IRedditApiService Service { get; set; }
 
@@ -35,38 +35,51 @@ namespace Presentation
 
         #region Public Methods
 
+        private async Task<IRedditData> GetRedditData(string requestUri, QueryType queryType)
+        {
+            switch (queryType)
+            {
+                case QueryType.Comment:
+                    return await Service.GetCommentData(requestUri);
+                case QueryType.Submission:
+                    return await Service.GetSubmissionData(requestUri);
+                default:
+                    return null;
+            }
+        }
+
         public async Task BuildResponseContent(ISearchOptions options)
         {
-            UrlParameterBuilder builder = new UrlParameterBuilder(options);
+            UrlParameterBuilder builder = new(options);
             string requestUri = builder.Build();
 
-            RedditData data = await Service.GetRedditData(requestUri);
+            IRedditData data = await GetRedditData(requestUri, options.QueryType);
             if (data == null)
             {
                 Response = "Something went wrong...";
                 return;
             }
 
-            RedditInfo[] contents = data.Contents;
+            IContent[] comments = data.Contents;
             if (options.ShowExactMatches)
             {
-                contents = data.Contents.Where(c => c.Body.Contains(options.Query)).ToArray();
+                comments = data.Contents.Where(c => c.Text.Contains(options.Query)).ToArray();
             }
 
-            if (contents.Length == 0)
+            if (comments.Length == 0)
             {
                 Response = "Nothing found...";
                 return;
             }
 
-            Counter = $"Showing {contents.Length} items";
+            Counter = $"Showing {comments.Length} items";
 
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new();
 
-            sb.AppendLine($"API call: {Constants.BASE_URL}{requestUri}");
+            sb.AppendLine($"API call: {Constants.BASE_URL}/{options.QueryType}{requestUri}");
             sb.AppendLine();
 
-            foreach (RedditInfo content in contents)
+            foreach (IContent content in comments)
             {
                 sb.AppendLine($"Subreddit: {content.Subreddit}");
                 sb.AppendLine($"    Score: {content.Score}");
@@ -85,8 +98,8 @@ namespace Presentation
 
                 sb.AppendLine();
 
-                content.Body = content.Body.Replace("&gt;", "*****");
-                sb.AppendLine(content.Body);
+                string text = content.Text.Replace("&gt;", "*****");
+                sb.AppendLine(text);
                 sb.AppendLine($"Link: https://www.reddit.com{content.Permalink}");
 
                 sb.AppendLine();
@@ -100,10 +113,15 @@ namespace Presentation
 
         #region Helper Methods
 
-        private DateTime FromUnixTime(double unixTimeStamp)
+        private DateTime FromUnixTime(double? unixTimeStamp)
         {
+            if (!unixTimeStamp.HasValue)
+            {
+                return START_DATE;
+            }
+
             DateTime dtDateTime = START_DATE;
-            dtDateTime = dtDateTime.AddSeconds(unixTimeStamp).ToLocalTime();
+            dtDateTime = dtDateTime.AddSeconds(unixTimeStamp.Value).ToLocalTime();
             return dtDateTime;
         }
 

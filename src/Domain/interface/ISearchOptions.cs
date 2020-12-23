@@ -6,6 +6,7 @@
         bool IsPeriodSearchEnabled { get; }
 
         string Query { get; }
+        QueryType QueryType { get; }
 
         bool ShowExactMatches { get; }
         string ScoreGreaterThan { get; }
