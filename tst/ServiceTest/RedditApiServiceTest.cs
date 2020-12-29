@@ -22,7 +22,7 @@ namespace ServiceTest
         public async Task TestBlueSky_GetCommentData()
         {
             // exercise
-            string requestUri = "?q=test&subreddit=AskReddit&size=5&sort_type=created_utc&sort=desc";
+            string requestUri = "comment?q=test&subreddit=AskReddit&size=5&sort_type=created_utc&sort=desc";
             IRedditData data = await Service.GetCommentData(requestUri);
 
             // post-conditions
@@ -33,7 +33,7 @@ namespace ServiceTest
         public async Task TestBlueSky_GetCommentData_NothingFound()
         {
             // exercise
-            string requestUri = "?q=dfjdshdfdsjfsdlfdsfcjdslhff87487r48ch&subreddit=AskReddit&size=5&sort_type=created_utc&sort=desc";
+            string requestUri = "comment?q=dfjdshdfdsjfsdlfdsfcjdslhff87487r48ch&subreddit=AskReddit&size=5&sort_type=created_utc&sort=desc";
             IRedditData data = await Service.GetCommentData(requestUri);
 
             // post-conditions
@@ -44,7 +44,7 @@ namespace ServiceTest
         public async Task TestBlueSky_GetSubmissionData()
         {
             // exercise
-            string requestUri = "?q=test&subreddit=AskReddit&size=5&sort_type=created_utc&sort=desc";
+            string requestUri = "submission?q=test&subreddit=AskReddit&size=5&sort_type=created_utc&sort=desc";
             IRedditData data = await Service.GetSubmissionData(requestUri);
 
             // post-conditions

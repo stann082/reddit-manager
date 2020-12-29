@@ -79,9 +79,19 @@ namespace PushshiftAPI
         {
             ToggleControls(false);
 
-            await Presenter.BuildResponseContent(this);
-            lblCounter.Text = Presenter.Counter;
-            rtbResponse.Text = Presenter.Response;
+            try
+            {
+                await Presenter.BuildResponseContent(this);
+                lblCounter.Text = Presenter.Counter;
+                rtbResponse.Text = Presenter.Response;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "ERROR");
+                Environment.LogError(ex);
+                ToggleControls(true);
+                return;
+            }
 
             HighlightQuery();
 

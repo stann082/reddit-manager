@@ -51,7 +51,7 @@ namespace Presentation
         public async Task BuildResponseContent(ISearchOptions options)
         {
             UrlParameterBuilder builder = new(options);
-            string requestUri = builder.Build();
+            string requestUri = builder.Build(options.QueryType.ToString().ToLower());
 
             IRedditData data = await GetRedditData(requestUri, options.QueryType);
             if (data == null)

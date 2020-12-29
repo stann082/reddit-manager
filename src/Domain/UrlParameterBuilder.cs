@@ -22,10 +22,10 @@ namespace Domain
 
         #region Public Methods
 
-        public string Build()
+        public string Build(string queryType)
         {
-            StringBuilder sb = new StringBuilder();
-            sb.Append('?');
+            StringBuilder sb = new();
+            sb.Append($"{queryType}?");
 
             if (!string.IsNullOrEmpty(Options.Query))
             {

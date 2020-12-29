@@ -15,6 +15,7 @@ namespace Service
         public RedditApiService()
         {
             HttpClient = new HttpClient();
+            HttpClient.BaseAddress = new Uri($"{Constants.BASE_URL}");
             HttpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
@@ -22,6 +23,7 @@ namespace Service
 
         #region Properties
 
+        private ApplicationEnvironment Environment => ApplicationEnvironment.Singleton;
         private HttpClient HttpClient { get; set; }
 
         #endregion
@@ -30,22 +32,20 @@ namespace Service
 
         public async Task<IRedditData> GetCommentData(string requestUri)
         {
-            return await GetData<CommentData>(requestUri, QueryType.Comment.ToString().ToLower());
+            return await GetData<CommentData>(requestUri);
         }
 
         public async Task<IRedditData> GetSubmissionData(string requestUri)
         {
-            return await GetData<SubmissionData>(requestUri, QueryType.Submission.ToString().ToLower());
+            return await GetData<SubmissionData>(requestUri);
         }
 
         #endregion
 
         #region Helper Methods
 
-        private async Task<T> GetData<T>(string requestUri, string queryType)
+        private async Task<T> GetData<T>(string requestUri)
         {
-            HttpClient.BaseAddress = new Uri($"{Constants.BASE_URL}/{queryType}");
-
             HttpResponseMessage response = await HttpClient.GetAsync(requestUri);
             if (!response.IsSuccessStatusCode)
             {
@@ -59,9 +59,9 @@ namespace Service
             {
                 data = JsonConvert.DeserializeObject<T>(responseJson);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // TODO: log exception
+                Environment.LogError(ex);
             }
 
             return data;

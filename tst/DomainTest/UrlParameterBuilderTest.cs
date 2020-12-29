@@ -37,10 +37,10 @@ namespace DomainTest
             Builder = new UrlParameterBuilder(Options);
 
             // exercise
-            string requestUri = Builder.Build();
+            string requestUri = Builder.Build("comment");
 
             // post-conditions
-            string expectedUri = "?q=just+a+test&author=Author&subreddit=Test&size=5&after=1603480418&before=1603483346&score=>10&score=<20&sort_type=score&sort=desc";
+            string expectedUri = "comment?q=just+a+test&author=Author&subreddit=Test&size=5&after=1603480418&before=1603483346&score=>10&score=<20&sort_type=score&sort=desc";
             Assert.AreEqual(expectedUri, requestUri);
         }
 

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -34,12 +35,17 @@ namespace Domain
         private string AutoCompleteSubredditFilePath { get; set; }
         private string AutoCompleteUserNameFilePath { get; set; }
 
+        private ILogger Logger { get; set; }
+
         #endregion
 
         #region Public Methods
 
         public void Initialize()
         {
+            ILoggerFactory loggerFactory = new LoggerFactory();
+            Logger = loggerFactory.CreateLogger<ApplicationEnvironment>();
+
             InitializeAutoCompleteSaves();
             InitializeWebBrowserFilePath();
         }
@@ -69,6 +75,12 @@ namespace Domain
             {
                 SavedUserNames = File.ReadAllLines(AutoCompleteUserNameFilePath);
             }
+        }
+
+        public void LogError(Exception exception)
+        {
+            Logger.LogError(exception.Message);
+            Logger.LogError(exception.StackTrace);
         }
 
         public void SaveAutoCompletes(ISearchOptions options)
