@@ -85,7 +85,9 @@
 
     <patternset id="application-includes.patternset">
         <include name="**/*" />
+        <exclude name="**/logs" />
         <exclude name="*.pdb" />
+        <exclude name="*.RoslynCA.*" />
     </patternset>
 
     <fileset id="test-build.fileset" basedir=".">

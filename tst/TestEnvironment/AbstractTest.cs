@@ -1,10 +1,20 @@
-﻿using NUnit.Framework;
+﻿using Domain;
+using NUnit.Framework;
 using System.Reflection;
 
 namespace TestEnvironment
 {
     public abstract class AbstractTest
     {
+
+        #region Constructors
+
+        protected AbstractTest()
+        {
+            ApplicationLogger.Singleton = new MockApplicationLogger();
+        }
+
+        #endregion
 
         #region Shared Methods
 

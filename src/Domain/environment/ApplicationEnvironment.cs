@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -9,7 +8,14 @@ namespace Domain
     public class ApplicationEnvironment
     {
 
-        public static ApplicationEnvironment Singleton = new ApplicationEnvironment();
+        public static ApplicationEnvironment Singleton = new();
+
+        #region Constants
+
+        private const string ENV_KEY_LOG_DIR = "LOG_DIR";
+        private const string ENV_VALUE_LOG_DIR = "logs";
+
+        #endregion
 
         #region Constructors
 
@@ -35,7 +41,7 @@ namespace Domain
         private string AutoCompleteSubredditFilePath { get; set; }
         private string AutoCompleteUserNameFilePath { get; set; }
 
-        private ILogger Logger { get; set; }
+        private IApplicationLogger Logger => ApplicationLogger.Singleton;
 
         #endregion
 
@@ -43,9 +49,7 @@ namespace Domain
 
         public void Initialize()
         {
-            ILoggerFactory loggerFactory = new LoggerFactory();
-            Logger = loggerFactory.CreateLogger<ApplicationEnvironment>();
-
+            InitializeLogging();
             InitializeAutoCompleteSaves();
             InitializeWebBrowserFilePath();
         }
@@ -119,6 +123,35 @@ namespace Domain
         #endregion
 
         #region Helper Methods
+
+        private static string GetEnvironmentVariable(string key, string defaultValue)
+        {
+            try
+            {
+                string value = Environment.GetEnvironmentVariable(key);
+                if (value == null)
+                {
+                    ApplicationLogger.Singleton.LogWarn("ENVVAR with key [{0}] not found. Using default value of [{1}].", key, defaultValue);
+                    return defaultValue;
+                }
+                else
+                {
+                    ApplicationLogger.Singleton.LogInfo("ENVVAR with key [{0}] found. Using configured value of [{1}].", key, value);
+                    return value;
+                }
+            }
+            catch (Exception ex)
+            {
+                ApplicationLogger.Singleton.LogError(ex);
+                return defaultValue;
+            }
+        }
+
+        private void InitializeLogging()
+        {
+            string logDir = GetEnvironmentVariable(ENV_KEY_LOG_DIR, ENV_VALUE_LOG_DIR);
+            ApplicationLogger.Singleton.Initialize(logDir);
+        }
 
         private void InitializeWebBrowserFilePath()
         {
