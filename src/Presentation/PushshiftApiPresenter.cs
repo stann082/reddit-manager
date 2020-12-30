@@ -76,7 +76,7 @@ namespace Presentation
 
             StringBuilder sb = new();
 
-            sb.AppendLine($"API call: {Constants.BASE_URL}/{options.QueryType}{requestUri}");
+            sb.AppendLine($"API call: {Constants.BASE_URL}{requestUri}");
             sb.AppendLine();
 
             foreach (IContent content in comments)
