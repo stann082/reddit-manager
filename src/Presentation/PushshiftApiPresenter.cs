@@ -56,7 +56,7 @@ namespace Presentation
             IRedditData data = await GetRedditData(requestUri, options.QueryType);
             if (data == null)
             {
-                Response = "Something went wrong...";
+                Response = "Something went wrong... Please check the logs";
                 return;
             }
 

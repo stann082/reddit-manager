@@ -86,7 +86,7 @@ namespace PresentationTest
             Presenter.BuildResponseContent(options).Wait();
 
             // post-conditions
-            Assert.AreEqual("Something went wrong...", Presenter.Response);
+            Assert.AreEqual("Something went wrong... Please check the logs", Presenter.Response);
             Assert.IsNull(Presenter.Counter);
         }
 
