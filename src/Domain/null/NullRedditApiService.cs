@@ -11,12 +11,12 @@ namespace Domain
 
         public virtual Task<IRedditData> GetCommentData(string requestUri)
         {
-            return null;
+            return (Task<IRedditData>)Task.CompletedTask;
         }
 
         public virtual Task<IRedditData> GetSubmissionData(string requestUri)
         {
-            return null;
+            return (Task<IRedditData>)Task.CompletedTask;
         }
 
         #endregion
