@@ -236,20 +236,6 @@ namespace PushshiftAPI
             chkPeriodFilter_CheckedChanged(null, EventArgs.Empty);
         }
 
-        private void ToggleControl(bool enable2)
-        {
-            btnSearch.Enabled = enable2;
-            tblFilterByPeriod.Enabled = enable2;
-            tblFilterByPeriodCheckBox.Enabled = enable2;
-            tblFilterByScore.Enabled = enable2;
-            tblFilterByScoreLabel.Enabled = enable2;
-            tblGeneral.Enabled = enable2;
-            tblSortByDirection.Enabled = enable2;
-            tblSortByType.Enabled = enable2;
-            tlpTextOptions.Enabled = enable2;
-            chkPeriodFilter_CheckedChanged(null, EventArgs.Empty);
-        }
-
         private long ToUnixTime(DateTime dateTime)
         {
             return (long)(dateTime.ToUniversalTime() - START_DATE).TotalSeconds;
