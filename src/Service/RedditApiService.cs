@@ -49,6 +49,7 @@ namespace Service
             HttpResponseMessage response = await HttpClient.GetAsync(requestUri);
             if (!response.IsSuccessStatusCode)
             {
+                Environment.LogError($"Response code: {response.StatusCode}");
                 return default;
             }
 

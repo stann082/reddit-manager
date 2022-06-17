@@ -83,8 +83,13 @@ namespace Domain
 
         public void LogError(Exception exception)
         {
-            Logger.LogError(exception.Message);
+            LogError(exception.Message);
             Logger.LogError(exception.StackTrace);
+        }
+
+        public void LogError(string errorMessage)
+        {
+            Logger.LogError(errorMessage);
         }
 
         public void SaveAutoCompletes(ISearchOptions options)
