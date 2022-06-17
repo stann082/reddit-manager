@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\domain\domain.csproj" />
+    <ProjectReference Include="..\presentation\presentation.csproj" />
+    <ProjectReference Include="..\service\service.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -3,30 +3,32 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30204.135
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Presentation", "src\Presentation\Presentation.csproj", "{E9527127-DA14-41A7-A3C1-D6EE60FA63AC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "presentation", "src\presentation\presentation.csproj", "{E9527127-DA14-41A7-A3C1-D6EE60FA63AC}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{5E14C745-57F9-47AF-BBC0-F12FD9D06E9E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tst", "tst", "{47F6825B-4E66-4970-8C09-928E5F992822}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PresentationTest", "tst\PresentationTest\PresentationTest.csproj", "{00E8C2D6-15C7-4B99-B0E5-5144CB6C3F85}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "presentation-test", "tst\presentation-test\presentation-test.csproj", "{00E8C2D6-15C7-4B99-B0E5-5144CB6C3F85}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PushshiftAPI", "src\PushshiftAPI\PushshiftAPI.csproj", "{C4929ECD-6DF0-4833-8E52-4B50CDAC29BB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "win", "src\win\win.csproj", "{C4929ECD-6DF0-4833-8E52-4B50CDAC29BB}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C124FCA4-F7AE-4DCC-BBFA-F15D04005BE3}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Service", "src\Service\Service.csproj", "{8FD31802-EA4D-4C71-B5C3-0687B24C614E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "service", "src\service\service.csproj", "{8FD31802-EA4D-4C71-B5C3-0687B24C614E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain", "src\Domain\Domain.csproj", "{8041C879-761F-498F-8FE3-16597B08BE40}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "domain", "src\domain\domain.csproj", "{8041C879-761F-498F-8FE3-16597B08BE40}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceTest", "tst\ServiceTest\ServiceTest.csproj", "{056EF98D-E6BC-4E29-98E9-65ABC106CD65}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "service-test", "tst\service-test\service-test.csproj", "{056EF98D-E6BC-4E29-98E9-65ABC106CD65}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DomainTest", "tst\DomainTest\DomainTest.csproj", "{8EB79145-9340-458D-B488-FE49FBC7FFB9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "domain-test", "tst\domain-test\domain-test.csproj", "{8EB79145-9340-458D-B488-FE49FBC7FFB9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestEnvironment", "tst\TestEnvironment\TestEnvironment.csproj", "{EAF8D9B7-ED5C-41ED-BA16-97EBC94F9524}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "test-environment", "tst\test-environment\test-environment.csproj", "{EAF8D9B7-ED5C-41ED-BA16-97EBC94F9524}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "api", "src\api\api.csproj", "{0219EBCC-ADEF-48C2-903C-5C0FCA25EF23}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -66,6 +68,10 @@ Global
 		{EAF8D9B7-ED5C-41ED-BA16-97EBC94F9524}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EAF8D9B7-ED5C-41ED-BA16-97EBC94F9524}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EAF8D9B7-ED5C-41ED-BA16-97EBC94F9524}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0219EBCC-ADEF-48C2-903C-5C0FCA25EF23}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0219EBCC-ADEF-48C2-903C-5C0FCA25EF23}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0219EBCC-ADEF-48C2-903C-5C0FCA25EF23}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0219EBCC-ADEF-48C2-903C-5C0FCA25EF23}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -79,6 +85,7 @@ Global
 		{056EF98D-E6BC-4E29-98E9-65ABC106CD65} = {47F6825B-4E66-4970-8C09-928E5F992822}
 		{8EB79145-9340-458D-B488-FE49FBC7FFB9} = {47F6825B-4E66-4970-8C09-928E5F992822}
 		{EAF8D9B7-ED5C-41ED-BA16-97EBC94F9524} = {47F6825B-4E66-4970-8C09-928E5F992822}
+		{0219EBCC-ADEF-48C2-903C-5C0FCA25EF23} = {5E14C745-57F9-47AF-BBC0-F12FD9D06E9E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {DD6FAB0C-9008-4F23-8ED5-5CAA55ACF626}

@@ -1,7 +1,7 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,8 +19,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Domain\Domain.csproj" />
-    <ProjectReference Include="..\..\src\Service\Service.csproj" />
+    <ProjectReference Include="..\..\src\presentation\presentation.csproj" />
+    <ProjectReference Include="..\test-environment\test-environment.csproj" />
   </ItemGroup>
   
 </Project>
