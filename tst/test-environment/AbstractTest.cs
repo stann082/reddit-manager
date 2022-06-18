@@ -1,5 +1,4 @@
-﻿using Domain;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using System.Reflection;
 
 namespace TestEnvironment
@@ -11,7 +10,8 @@ namespace TestEnvironment
 
         protected AbstractTest()
         {
-            ApplicationLogger.Singleton = new MockApplicationLogger();
+            // TODO: disable logging
+            //Log.Logger = null;
         }
 
         #endregion

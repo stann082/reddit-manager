@@ -1,3 +1,4 @@
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -41,7 +42,7 @@ namespace Domain
         private string AutoCompleteSubredditFilePath { get; set; }
         private string AutoCompleteUserNameFilePath { get; set; }
 
-        private IApplicationLogger Logger => ApplicationLogger.Singleton;
+        private ILogger Logger => Log.Logger;
 
         #endregion
 
@@ -49,7 +50,6 @@ namespace Domain
 
         public void Initialize()
         {
-            InitializeLogging();
             InitializeAutoCompleteSaves();
             InitializeWebBrowserFilePath();
         }
@@ -84,12 +84,12 @@ namespace Domain
         public void LogError(Exception exception)
         {
             LogError(exception.Message);
-            Logger.LogError(exception.StackTrace);
+            Logger.Error(exception.StackTrace);
         }
 
         public void LogError(string errorMessage)
         {
-            Logger.LogError(errorMessage);
+            Logger.Error(errorMessage);
         }
 
         public void SaveAutoCompletes(ISearchOptions options)
@@ -128,35 +128,6 @@ namespace Domain
         #endregion
 
         #region Helper Methods
-
-        private static string GetEnvironmentVariable(string key, string defaultValue)
-        {
-            try
-            {
-                string value = Environment.GetEnvironmentVariable(key);
-                if (value == null)
-                {
-                    ApplicationLogger.Singleton.LogWarn("ENVVAR with key [{0}] not found. Using default value of [{1}].", key, defaultValue);
-                    return defaultValue;
-                }
-                else
-                {
-                    ApplicationLogger.Singleton.LogInfo("ENVVAR with key [{0}] found. Using configured value of [{1}].", key, value);
-                    return value;
-                }
-            }
-            catch (Exception ex)
-            {
-                ApplicationLogger.Singleton.LogError(ex);
-                return defaultValue;
-            }
-        }
-
-        private void InitializeLogging()
-        {
-            string logDir = GetEnvironmentVariable(ENV_KEY_LOG_DIR, ENV_VALUE_LOG_DIR);
-            ApplicationLogger.Singleton.Initialize(logDir);
-        }
 
         private void InitializeWebBrowserFilePath()
         {

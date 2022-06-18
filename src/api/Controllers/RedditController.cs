@@ -9,17 +9,6 @@ namespace api.Controllers;
 public class RedditController : ControllerBase
 {
 
-    private readonly ILogger<RedditController> _logger;
-
-    #region Constructors
-
-    public RedditController(ILogger<RedditController> logger)
-    {
-        _logger = logger;
-    }
-
-    #endregion
-
     #region Endpoints
 
     [HttpPost(Name = "Search")]
