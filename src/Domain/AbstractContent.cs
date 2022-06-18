@@ -9,6 +9,8 @@ namespace Domain
 
         protected string GetQuote(string message)
         {
+            // TODO: implement message/quote pairs
+            return null;
             if (!message.Contains("&gt;"))
             {
                 return null;

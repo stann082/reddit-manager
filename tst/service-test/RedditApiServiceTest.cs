@@ -1,5 +1,6 @@
 using Domain;
 using NUnit.Framework;
+using Service;
 using System.Threading.Tasks;
 
 namespace ServiceTest
@@ -11,7 +12,7 @@ namespace ServiceTest
         [SetUp]
         public void SetUp()
         {
-            Service = ServiceFactoryProxy.Singleton.CreateRedditService();
+            Service = new RedditApiService();
         }
 
         private IRedditApiService Service;

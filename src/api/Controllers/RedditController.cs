@@ -9,13 +9,28 @@ namespace api.Controllers;
 public class RedditController : ControllerBase
 {
 
+    #region Constructors
+
+    public RedditController(IRedditApiService service)
+    {
+        Service = service;
+    }
+
+    #endregion
+
+    #region Variables
+
+    private IRedditApiService Service;
+
+    #endregion
+
     #region Endpoints
 
     [HttpPost(Name = "Search")]
-    public async Task<IRedditData> Search([FromBody] object value)
+    public async Task<IRedditData> Search([FromBody] SearchRequestModel model)
     {
-        SearchPresenter presenter = new SearchPresenter();
-        return await presenter.GetRedditData(Constants.BASE_URL, QueryType.Comment);
+        SearchPresenter presenter = new SearchPresenter(Service);
+        return await presenter.GetData(model);
     }
 
     #endregion

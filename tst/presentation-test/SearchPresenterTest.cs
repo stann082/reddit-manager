@@ -15,10 +15,9 @@ namespace PresentationTest
         [SetUp]
         public void SetUp()
         {
-            MockService = ServiceFactoryProxy.Singleton.CreateRedditService() as MockRedditApiService;
+            MockService = new MockRedditApiService();
             MockService.CommentData = CreateMockRedditData();
-
-            Presenter = new SearchPresenter();
+            Presenter = new SearchPresenter(MockService);
         }
 
         #region Blue Sky Tests
@@ -27,7 +26,7 @@ namespace PresentationTest
         public void TestBlueSky_BuildResponseContent()
         {
             // exercise
-            Presenter.BuildResponseContent(new MockSearchOptions()).Wait();
+            Presenter.GetData(new MockSearchOptions()).Wait();
 
             // post-conditions
             Assert.IsNotEmpty(Presenter.Response);
@@ -43,7 +42,7 @@ namespace PresentationTest
             options.ShowExactMatches = true;
 
             // exercise
-            Presenter.BuildResponseContent(options).Wait();
+            Presenter.GetData(options).Wait();
 
             // post-conditions
             Assert.IsNotEmpty(Presenter.Response);
@@ -65,7 +64,7 @@ namespace PresentationTest
             options.ShowExactMatches = true;
 
             // exercise
-            Presenter.BuildResponseContent(options).Wait();
+            Presenter.GetData(options).Wait();
 
             // post-conditions
             Assert.AreEqual("Nothing found...", Presenter.Response);
@@ -83,7 +82,7 @@ namespace PresentationTest
             options.ShowExactMatches = true;
 
             // exercise
-            Presenter.BuildResponseContent(options).Wait();
+            Presenter.GetData(options).Wait();
 
             // post-conditions
             Assert.AreEqual("Something went wrong... Please check the logs", Presenter.Response);

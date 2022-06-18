@@ -10,7 +10,6 @@ namespace ServiceTest
 
         public AbstractServiceTest()
         {
-            ServiceFactoryProxy.Singleton = new ServiceFactory();
         }
 
         #endregion

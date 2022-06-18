@@ -1,5 +1,4 @@
-﻿using Domain;
-using TestEnvironment;
+﻿using TestEnvironment;
 
 namespace PresentationTest
 {
@@ -10,7 +9,6 @@ namespace PresentationTest
 
         protected AbstractPresentationTest()
         {
-            ServiceFactoryProxy.Singleton = new MockServiceFactory();
         }
 
         #endregion

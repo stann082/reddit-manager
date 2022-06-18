@@ -25,13 +25,12 @@ namespace PushshiftAPI
         public MainForm()
         {
             InitializeComponent();
-            ServiceFactoryProxy.Singleton = new ServiceFactory();
             Environment.Initialize();
 
             DefaultSelectionBackColor = rtbResponse.SelectionBackColor;
             DefaultSelectionColor = rtbResponse.SelectionColor;
 
-            Presenter = new SearchPresenter();
+            Presenter = new SearchPresenter(new RedditApiService());
 
             chkPeriodFilter_CheckedChanged(null, EventArgs.Empty);
             rdoDescending.Checked = true;
@@ -81,7 +80,7 @@ namespace PushshiftAPI
 
             try
             {
-                await Presenter.BuildResponseContent(this);
+                await Presenter.GetData(this);
                 lblCounter.Text = Presenter.Counter;
                 rtbResponse.Text = Presenter.Response;
             }

@@ -1,7 +1,6 @@
 using Domain;
+using Serilog;
 using System;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Presentation
@@ -17,9 +16,9 @@ namespace Presentation
 
         #region Constructors
 
-        public SearchPresenter()
+        public SearchPresenter(IRedditApiService service)
         {
-            Service = ServiceFactoryProxy.Singleton.CreateRedditService();
+            Service = service;
         }
 
         #endregion
@@ -35,7 +34,26 @@ namespace Presentation
 
         #region Public Methods
 
-        public async Task<IRedditData> GetRedditData(string requestUri, QueryType queryType)
+        public async Task<IRedditData> GetData(ISearchOptions options)
+        {
+            UrlParameterBuilder builder = new(options);
+            string requestUri = builder.Build(options.QueryType.ToString().ToLower());
+
+            IRedditData data = await GetRedditData(requestUri, options.QueryType);
+            if (data == null)
+            {
+                Log.Error("Something went wrong... Please check the logs");
+                return null;
+            }
+
+            return data;
+        }
+
+        #endregion
+
+        #region Helper Methods
+
+        private async Task<IRedditData> GetRedditData(string requestUri, QueryType queryType)
         {
             switch (queryType)
             {
@@ -46,83 +64,6 @@ namespace Presentation
                 default:
                     return null;
             }
-        }
-
-        public async Task BuildResponseContent(ISearchOptions options)
-        {
-            UrlParameterBuilder builder = new(options);
-            string requestUri = builder.Build(options.QueryType.ToString().ToLower());
-
-            IRedditData data = await GetRedditData(requestUri, options.QueryType);
-            if (data == null)
-            {
-                Response = "Something went wrong... Please check the logs";
-                return;
-            }
-
-            IContent[] comments = data.Contents;
-            if (options.ShowExactMatches)
-            {
-                comments = data.Contents.Where(c => c.Message.Contains(options.Query)).ToArray();
-            }
-
-            if (comments.Length == 0)
-            {
-                Response = "Nothing found...";
-                return;
-            }
-
-            Counter = $"Showing {comments.Length} items";
-
-            StringBuilder sb = new();
-
-            sb.AppendLine($"API call: {Constants.BASE_URL}{requestUri}");
-            sb.AppendLine();
-
-            foreach (IContent content in comments)
-            {
-                sb.AppendLine($"Subreddit: {content.Subreddit}");
-                sb.AppendLine($"    Score: {content.Score}");
-                sb.AppendLine($"  Created: {FromUnixTime(content.CreatedUtc)}");
-
-                DateTime updatedTime = FromUnixTime(content.UpdatedUtc);
-                if (updatedTime > START_DATE)
-                {
-                    sb.AppendLine($"  Updated: {updatedTime}");
-                }
-
-                if (string.IsNullOrEmpty(options.UserName))
-                {
-                    sb.AppendLine($"   Author: https://www.reddit.com/u/{content.Author}");
-                }
-
-                sb.AppendLine();
-
-                string text = content.Message.Replace("&gt;", "*****");
-                sb.AppendLine(text);
-                sb.AppendLine($"Link: https://www.reddit.com{content.Permalink}");
-
-                sb.AppendLine();
-                sb.AppendLine();
-            }
-
-            Response = sb.ToString();
-        }
-
-        #endregion
-
-        #region Helper Methods
-
-        private DateTime FromUnixTime(double? unixTimeStamp)
-        {
-            if (!unixTimeStamp.HasValue)
-            {
-                return START_DATE;
-            }
-
-            DateTime dtDateTime = START_DATE;
-            dtDateTime = dtDateTime.AddSeconds(unixTimeStamp.Value).ToLocalTime();
-            return dtDateTime;
         }
 
         #endregion
