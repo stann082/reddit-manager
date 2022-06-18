@@ -6,10 +6,10 @@ using TestEnvironment;
 namespace PresentationTest
 {
     [TestFixture]
-    public class PushshiftApiPresenterTest : AbstractPresentationTest
+    public class SearchPresenterTest : AbstractPresentationTest
     {
 
-        private PushshiftApiPresenter Presenter;
+        private SearchPresenter Presenter;
         private MockRedditApiService MockService;
 
         [SetUp]
@@ -18,7 +18,7 @@ namespace PresentationTest
             MockService = ServiceFactoryProxy.Singleton.CreateRedditService() as MockRedditApiService;
             MockService.CommentData = CreateMockRedditData();
 
-            Presenter = new PushshiftApiPresenter();
+            Presenter = new SearchPresenter();
         }
 
         #region Blue Sky Tests
@@ -106,7 +106,7 @@ namespace PresentationTest
 
             Comment info1 = new();
             info1.Author = "Author #1";
-            info1.Body = "Test message #1";
+            info1.Message = "Test message #1";
             info1.CreatedUtc = 1603480418;
             info1.RetrievedOn = 1603483346;
             info1.Score = 1;
@@ -114,7 +114,7 @@ namespace PresentationTest
 
             Comment info2 = new();
             info2.Author = "Author #2";
-            info2.Body = "Test and message #2";
+            info2.Message = "Test and message #2";
             info2.CreatedUtc = 1603480287;
             info2.RetrievedOn = 1603483194;
             info2.Score = 5;

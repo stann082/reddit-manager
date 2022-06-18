@@ -2,7 +2,7 @@ using Newtonsoft.Json;
 
 namespace Domain
 {
-    public class Submission : IContent
+    public class Submission : AbstractContent, IContent
     {
 
         #region Properties
@@ -19,20 +19,23 @@ namespace Domain
         [JsonProperty("locked")]
         public bool Locked { get; set; }
 
+        [JsonProperty("selftext")]
+        public string Message { get; set; }
+
         [JsonProperty("no_follow")]
         public bool NoFollow { get; set; }
 
         [JsonProperty("permalink")]
         public string Permalink { get; set; }
 
+        [JsonProperty("quote")]
+        public string Quote => GetQuote(Message);
+
         [JsonProperty("retrieved_on")]
         public long RetrievedOn { get; set; }
 
         [JsonProperty("score")]
         public int Score { get; set; }
-
-        [JsonProperty("selftext")]
-        public string SelfText { get; set; }
 
         [JsonProperty("send_replies")]
         public bool SendReplies { get; set; }
@@ -47,13 +50,9 @@ namespace Domain
         public string SubredditId { get; set; }
 
         [JsonIgnore]
-        public string Text => SelfText;
-
-        [JsonIgnore]
         public long? UpdatedUtc => null;
 
         #endregion
 
     }
-
 }

@@ -31,7 +31,7 @@ namespace PushshiftAPI
             DefaultSelectionBackColor = rtbResponse.SelectionBackColor;
             DefaultSelectionColor = rtbResponse.SelectionColor;
 
-            Presenter = new PushshiftApiPresenter();
+            Presenter = new SearchPresenter();
 
             chkPeriodFilter_CheckedChanged(null, EventArgs.Empty);
             rdoDescending.Checked = true;
@@ -69,7 +69,7 @@ namespace PushshiftAPI
 
         private ApplicationEnvironment Environment => ApplicationEnvironment.Singleton;
 
-        private PushshiftApiPresenter Presenter { get; set; }
+        private SearchPresenter Presenter { get; set; }
 
         #endregion
 

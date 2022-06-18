@@ -23,7 +23,7 @@ namespace DomainTest
             // pre-conditions
             Assert.IsNull(Info.Author);
             Assert.IsNull(Info.AuthorFullName);
-            Assert.IsNull(Info.Body);
+            Assert.IsNull(Info.Message);
             Assert.AreEqual(0, Info.CreatedUtc);
             Assert.IsNull(Info.Id);
             Assert.IsFalse(Info.IsSubmitter);
@@ -44,7 +44,7 @@ namespace DomainTest
             // exercise
             Info.Author = "Author";
             Info.AuthorFullName = "AuthorFullName";
-            Info.Body = "Body";
+            Info.Message = "Body";
             Info.CreatedUtc = 1688755646;
             Info.Id = "Id";
             Info.IsSubmitter = true;
@@ -65,7 +65,7 @@ namespace DomainTest
             // post-conditions
             Assert.AreEqual("Author", Info.Author);
             Assert.AreEqual("AuthorFullName", Info.AuthorFullName);
-            Assert.AreEqual("Body", Info.Body);
+            Assert.AreEqual("Body", Info.Message);
             Assert.AreEqual(1688755646, Info.CreatedUtc);
             Assert.AreEqual("Id", Info.Id);
             Assert.IsTrue(Info.IsSubmitter);

@@ -12,7 +12,9 @@
         int Score { get; }
         string Subreddit { get; }
 
-        string Text { get; }
+        string Message { get; }
+
+        string Quote { get; }
 
         long? UpdatedUtc { get; }
 

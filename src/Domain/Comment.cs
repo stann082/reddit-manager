@@ -2,7 +2,7 @@ using Newtonsoft.Json;
 
 namespace Domain
 {
-    public class Comment : IContent
+    public class Comment : AbstractContent, IContent
     {
 
         #region Properties
@@ -12,9 +12,6 @@ namespace Domain
 
         [JsonProperty("author_fullname")]
         public string AuthorFullName { get; set; }
-
-        [JsonProperty("body")]
-        public string Body { get; set; }
 
         [JsonProperty("created_utc")]
         public long CreatedUtc { get; set; }
@@ -31,6 +28,9 @@ namespace Domain
         [JsonProperty("locked")]
         public bool Locked { get; set; }
 
+        [JsonProperty("body")]
+        public string Message { get; set; }
+
         [JsonProperty("no_follow")]
         public bool NoFollow { get; set; }
 
@@ -39,6 +39,9 @@ namespace Domain
 
         [JsonProperty("permalink")]
         public string Permalink { get; set; }
+
+        [JsonProperty("quote")]
+        public string Quote => GetQuote(Message);
 
         [JsonProperty("retrieved_on")]
         public long RetrievedOn { get; set; }
@@ -55,8 +58,6 @@ namespace Domain
         [JsonProperty("subreddit")]
         public string Subreddit { get; set; }
 
-        public string Text => Body;
-
         [JsonProperty("subreddit_id")]
         public string SubredditId { get; set; }
 
@@ -67,6 +68,6 @@ namespace Domain
         public long? UpdatedUtc { get; set; }
 
         #endregion
-    }
 
+    }
 }

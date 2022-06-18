@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Presentation
 {
-    public class PushshiftApiPresenter
+    public class SearchPresenter
     {
 
         #region Constants
@@ -17,7 +17,7 @@ namespace Presentation
 
         #region Constructors
 
-        public PushshiftApiPresenter()
+        public SearchPresenter()
         {
             Service = ServiceFactoryProxy.Singleton.CreateRedditService();
         }
@@ -35,7 +35,7 @@ namespace Presentation
 
         #region Public Methods
 
-        private async Task<IRedditData> GetRedditData(string requestUri, QueryType queryType)
+        public async Task<IRedditData> GetRedditData(string requestUri, QueryType queryType)
         {
             switch (queryType)
             {
@@ -63,7 +63,7 @@ namespace Presentation
             IContent[] comments = data.Contents;
             if (options.ShowExactMatches)
             {
-                comments = data.Contents.Where(c => c.Text.Contains(options.Query)).ToArray();
+                comments = data.Contents.Where(c => c.Message.Contains(options.Query)).ToArray();
             }
 
             if (comments.Length == 0)
@@ -98,7 +98,7 @@ namespace Presentation
 
                 sb.AppendLine();
 
-                string text = content.Text.Replace("&gt;", "*****");
+                string text = content.Message.Replace("&gt;", "*****");
                 sb.AppendLine(text);
                 sb.AppendLine($"Link: https://www.reddit.com{content.Permalink}");
 
