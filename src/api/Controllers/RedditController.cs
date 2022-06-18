@@ -20,7 +20,7 @@ public class RedditController : ControllerBase
 
     #region Variables
 
-    private IRedditApiService Service;
+    private readonly IRedditApiService Service;
 
     #endregion
 

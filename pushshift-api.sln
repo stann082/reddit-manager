@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30204.135
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32602.215
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "presentation", "src\presentation\presentation.csproj", "{E9527127-DA14-41A7-A3C1-D6EE60FA63AC}"
 EndProject
@@ -10,8 +10,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tst", "tst", "{47F6825B-4E66-4970-8C09-928E5F992822}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "presentation-test", "tst\presentation-test\presentation-test.csproj", "{00E8C2D6-15C7-4B99-B0E5-5144CB6C3F85}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "win", "src\win\win.csproj", "{C4929ECD-6DF0-4833-8E52-4B50CDAC29BB}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C124FCA4-F7AE-4DCC-BBFA-F15D04005BE3}"
 	ProjectSection(SolutionItems) = preProject
@@ -28,7 +26,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "domain-test", "tst\domain-t
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "test-environment", "tst\test-environment\test-environment.csproj", "{EAF8D9B7-ED5C-41ED-BA16-97EBC94F9524}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "api", "src\api\api.csproj", "{0219EBCC-ADEF-48C2-903C-5C0FCA25EF23}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "api", "src\api\api.csproj", "{0219EBCC-ADEF-48C2-903C-5C0FCA25EF23}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -44,10 +42,6 @@ Global
 		{00E8C2D6-15C7-4B99-B0E5-5144CB6C3F85}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{00E8C2D6-15C7-4B99-B0E5-5144CB6C3F85}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{00E8C2D6-15C7-4B99-B0E5-5144CB6C3F85}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C4929ECD-6DF0-4833-8E52-4B50CDAC29BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C4929ECD-6DF0-4833-8E52-4B50CDAC29BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C4929ECD-6DF0-4833-8E52-4B50CDAC29BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C4929ECD-6DF0-4833-8E52-4B50CDAC29BB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8FD31802-EA4D-4C71-B5C3-0687B24C614E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8FD31802-EA4D-4C71-B5C3-0687B24C614E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8FD31802-EA4D-4C71-B5C3-0687B24C614E}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -79,7 +73,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{E9527127-DA14-41A7-A3C1-D6EE60FA63AC} = {5E14C745-57F9-47AF-BBC0-F12FD9D06E9E}
 		{00E8C2D6-15C7-4B99-B0E5-5144CB6C3F85} = {47F6825B-4E66-4970-8C09-928E5F992822}
-		{C4929ECD-6DF0-4833-8E52-4B50CDAC29BB} = {5E14C745-57F9-47AF-BBC0-F12FD9D06E9E}
 		{8FD31802-EA4D-4C71-B5C3-0687B24C614E} = {5E14C745-57F9-47AF-BBC0-F12FD9D06E9E}
 		{8041C879-761F-498F-8FE3-16597B08BE40} = {5E14C745-57F9-47AF-BBC0-F12FD9D06E9E}
 		{056EF98D-E6BC-4E29-98E9-65ABC106CD65} = {47F6825B-4E66-4970-8C09-928E5F992822}
