@@ -1,17 +1,18 @@
 using Domain;
 using Microsoft.AspNetCore.Mvc;
 using Presentation;
+using System.Threading.Tasks;
 
 namespace api.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class RedditController : ControllerBase
+public class SearchController : ControllerBase
 {
 
     #region Constructors
 
-    public RedditController(IRedditApiService service)
+    public SearchController(IRedditApiService service)
     {
         Service = service;
     }
@@ -26,7 +27,8 @@ public class RedditController : ControllerBase
 
     #region Endpoints
 
-    [HttpPost(Name = "Search")]
+    [HttpPost]
+    [Route("/search")]
     public async Task<IRedditData> Search([FromBody] SearchRequestModel model)
     {
         SearchPresenter presenter = new SearchPresenter(Service);
