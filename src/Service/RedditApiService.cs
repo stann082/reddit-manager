@@ -1,5 +1,6 @@
 using Domain;
 using Newtonsoft.Json;
+using Serilog;
 using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -23,7 +24,6 @@ namespace Service
 
         #region Properties
 
-        private ApplicationEnvironment Environment => ApplicationEnvironment.Singleton;
         private HttpClient HttpClient { get; set; }
 
         #endregion
@@ -49,7 +49,8 @@ namespace Service
             HttpResponseMessage response = await HttpClient.GetAsync(requestUri);
             if (!response.IsSuccessStatusCode)
             {
-                Environment.LogError($"Response code: {response.StatusCode}");
+                string errorMessage = $"Response code: {response.StatusCode}";
+                Log.Error(errorMessage);
                 return default;
             }
 
@@ -62,7 +63,8 @@ namespace Service
             }
             catch (Exception ex)
             {
-                Environment.LogError(ex);
+                Log.Error(ex.Message);
+                Log.Error(ex.StackTrace);
             }
 
             return data;

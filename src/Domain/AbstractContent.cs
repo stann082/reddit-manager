@@ -11,7 +11,7 @@ namespace Domain
         {
             // TODO: implement message/quote pairs
             return null;
-            if (!message.Contains("&gt;"))
+            /*if (!message.Contains("&gt;"))
             {
                 return null;
             }
@@ -28,7 +28,7 @@ namespace Domain
                 quote = null;
             }
 
-            return quote;
+            return quote;*/
         }
 
         #endregion
