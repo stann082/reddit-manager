@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<MergeParams>
-  <Source>rpr/domain-test.dcvr</Source>
-  <Source>rpr/presentation-test.dcvr</Source>
-  <Source>rpr/service-test.dcvr</Source>
-  <Output>rpr/merged-snapshots.dcvr</Output>
-</MergeParams>
