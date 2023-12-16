@@ -3,7 +3,7 @@
 namespace cli.options;
 
 [Verb("auth", HelpText = "Retrieve auth token.")]
-public class AuthTokenOptions
+public class AuthenticationOptions
 {
 
     [Option("app-id", Required = true, HelpText = "Your app id.")]

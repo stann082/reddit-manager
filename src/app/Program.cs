@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using lib;
+using Microsoft.Extensions.DependencyInjection;
+using StackExchange.Redis;
 
 namespace app;
 
@@ -9,12 +11,12 @@ public static class Program
 
     public static async Task<int> Main(string[] args)
     {
-        // var config = ApplicationConfig.Load();
+        var multiplexer = await ConnectionMultiplexer.ConnectAsync("localhost");
+        var config = ApplicationConfig.Load();
         var services = new ServiceCollection()
         .AddSingleton<App>()
-        //     .AddSingleton(config)
-        //     .AddSingleton<ISpotifyService, SpotifyService>()
-        // .AddSingleton<ILoginService, LoginService>()
+        .AddSingleton<IConnectionMultiplexer>(multiplexer)
+        .AddSingleton(config)
         .BuildServiceProvider();
         return await services.GetService<App>().RunApp(args);
     }

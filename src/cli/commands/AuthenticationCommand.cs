@@ -6,7 +6,7 @@ using Reddit.AuthTokenRetriever.EventArgs;
 
 namespace cli.commands;
 
-public static class AuthTokenCommand
+public static class AuthenticationCommand
 {
 
     #region Constants
@@ -17,7 +17,7 @@ public static class AuthTokenCommand
     
     #region Public Methods
 
-    public static Task<int> Execute(AuthTokenOptions opts)
+    public static Task<int> Execute(AuthenticationOptions opts)
     {
         AuthTokenRetrieverLib authTokenRetrieverLib = new AuthTokenRetrieverLib(opts.AppId, opts.Port, appSecret: opts.AppSecret);
         authTokenRetrieverLib.AuthSuccess += C_AuthSuccess;
