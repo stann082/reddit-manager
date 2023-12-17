@@ -17,6 +17,7 @@ public static class Program
         .AddSingleton<App>()
         .AddSingleton<IConnectionMultiplexer>(multiplexer)
         .AddSingleton(config)
+        .AddScoped<IRedditService>()
         .BuildServiceProvider();
         return await services.GetService<App>().RunApp(args);
     }

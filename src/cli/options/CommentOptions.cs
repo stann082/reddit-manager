@@ -1,9 +1,10 @@
 ﻿using CommandLine;
+using lib;
 
 namespace cli.options;
 
 [Verb("comments", HelpText = "Comment commands.")]
-public class CommentOptions
+public class CommentOptions : ICommentOptions
 {
 
     [Option("cache-saved-comments", HelpText = "Caches saved comments.")]
