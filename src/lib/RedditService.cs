@@ -28,7 +28,7 @@ public class RedditService : IRedditService
     private readonly string _username;
 
     #endregion
-    
+
     #region Public Methods
 
     public async Task<Task> CacheSavedCommentsAsync()
@@ -39,9 +39,7 @@ public class RedditService : IRedditService
         int totalTopComments;
         do
         {
-            CommentContainer history = _redditClient.Models.Users.CommentHistory(_username, "saved",
-                new UsersHistoryInput("comments", after: after, sort: "top", context: 10, limit: 100));
-            var topComments = history.Data.Children.Select(c => c.Data).ToList();
+            var topComments = await Task.Run(() => GetComments(after));
             if (!topComments.Any())
             {
                 totalTopComments = 0;
@@ -62,12 +60,12 @@ public class RedditService : IRedditService
             }
 
             after = topComments.Last().Name;
-            totalTopComments = topComments.Count;
+            totalTopComments = topComments.Length;
         } while (totalTopComments > 0);
 
         return await Task.FromResult(Task.CompletedTask);
     }
-    
+
     public async Task<Comment[]> GetFilteredCommentsAsync(ICommentOptions options)
     {
         IDatabase db = _redis.GetDatabase();
@@ -106,7 +104,6 @@ public class RedditService : IRedditService
 
         if (string.IsNullOrEmpty(opts.Filter))
         {
-            Console.WriteLine("No valid filter options provided");
             return filteredComments;
         }
 
@@ -130,7 +127,14 @@ public class RedditService : IRedditService
             filteredComments = filteredComments.Where(c => c.Subreddit == subreddit);
         }
 
-        return filteredComments.Take(opts.Limit);
+        return filteredComments;
+    }
+
+    private Comment[] GetComments(string after)
+    {
+        CommentContainer history = _redditClient.Models.Users.CommentHistory(_username, "saved",
+            new UsersHistoryInput("comments", after: after, sort: "top", context: 10, limit: 100));
+        return history.Data.Children.Select(c => c.Data).ToArray();
     }
 
     #endregion

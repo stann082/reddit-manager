@@ -14,10 +14,10 @@ public static class Program
         var multiplexer = await ConnectionMultiplexer.ConnectAsync("localhost");
         var config = ApplicationConfig.Load();
         var services = new ServiceCollection()
+        .AddSingleton(config)
         .AddSingleton<App>()
         .AddSingleton<IConnectionMultiplexer>(multiplexer)
-        .AddSingleton(config)
-        .AddScoped<IRedditService>()
+        .AddScoped<IRedditService, RedditService>()
         .BuildServiceProvider();
         return await services.GetService<App>().RunApp(args);
     }

@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using cli.options;
 using lib;
+using Reddit.Things;
 
 namespace cli.commands;
 
@@ -18,7 +19,8 @@ public static class CommentCommand
         }
 
         var cachedComments = await redditService.GetFilteredCommentsAsync(opts);
-        foreach (var comment in cachedComments)
+        var limitedComments = cachedComments.Take(opts.Limit).ToArray();
+        foreach (var comment in limitedComments)
         {
             StringBuilder sb = new StringBuilder();
             sb.AppendLine($"Author:      {comment.Author}");
@@ -29,7 +31,7 @@ public static class CommentCommand
             Console.WriteLine(sb.ToString());
         }
 
-        Console.WriteLine($"Total comments: {cachedComments.Length}");
+        Console.WriteLine($"Showing {limitedComments.Length} out of {cachedComments.Length} comments");
         return await Task.FromResult(0);
     }
 

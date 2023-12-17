@@ -2,27 +2,24 @@
 using cli.options;
 using CommandLine;
 using lib;
-using StackExchange.Redis;
 
 namespace app;
 
 public class App
 {
-    
+
     #region Constructors
 
-    public App(ApplicationConfig config, IConnectionMultiplexer redis)
+    public App(IRedditService redditService)
     {
-        _config = config;
-        _redis = redis;
+        _redditService = redditService;
     }
 
     #endregion
 
     #region Variables
 
-    private readonly ApplicationConfig _config;
-    private readonly IConnectionMultiplexer _redis;
+    private readonly IRedditService _redditService;
 
     #endregion
 
@@ -33,7 +30,7 @@ public class App
         return await Parser.Default.ParseArguments<AuthenticationOptions, CommentOptions>(args)
             .MapResult(
                 async (AuthenticationOptions opts) => await AuthenticationCommand.Execute(opts),
-                async (CommentOptions opts) => await CommentCommand.Execute(opts, _config, _redis),
+                async (CommentOptions opts) => await CommentCommand.Execute(opts, _redditService),
                 _ => Task.FromResult(1));
     }
 
