@@ -119,12 +119,12 @@ public class RedditService : IRedditService
 
         if (filters.TryGetValue("author", out string author))
         {
-            filteredComments = filteredComments.Where(c => c.Author == author);
+            filteredComments = filteredComments.Where(c => c.Author.Contains(author, StringComparison.OrdinalIgnoreCase));
         }
 
         if (filters.TryGetValue("sub", out string subreddit))
         {
-            filteredComments = filteredComments.Where(c => c.Subreddit == subreddit);
+            filteredComments = filteredComments.Where(c => c.Subreddit.Contains(subreddit, StringComparison.OrdinalIgnoreCase));
         }
 
         return filteredComments;
