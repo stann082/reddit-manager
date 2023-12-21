@@ -1,7 +1,5 @@
-﻿using System.Text;
-using cli.options;
+﻿using cli.options;
 using lib;
-using Reddit.Things;
 
 namespace cli.commands;
 
@@ -20,19 +18,54 @@ public static class CommentCommand
 
         var cachedComments = await redditService.GetFilteredCommentsAsync(opts);
         var limitedComments = cachedComments.Take(opts.Limit).ToArray();
+
+        Console.WriteLine();
         foreach (var comment in limitedComments)
         {
-            StringBuilder sb = new StringBuilder();
-            sb.AppendLine($"Author:      {comment.Author}");
-            sb.AppendLine($"Subreddit:   {comment.Subreddit}");
-            sb.AppendLine($"Date posted: {comment.CreatedUTC}");
-            sb.AppendLine($"Link:        https://reddit.com{comment.Permalink}");
-            sb.AppendLine(comment.Body);
-            Console.WriteLine(sb.ToString());
+            Console.WriteLine($"Author:      {comment.Author}");
+            Console.WriteLine($"Subreddit:   {comment.Subreddit}");
+            Console.WriteLine($"Date posted: {comment.CreatedUTC}");
+            Console.WriteLine($"Link:        https://reddit.com{comment.Permalink}");
+
+            if (string.IsNullOrEmpty(opts.Query))
+            {
+                Console.WriteLine(comment.Body);
+            }
+            else
+            {
+                HighlightMatches(comment.Body, opts.Query);
+            }
+
+            Console.WriteLine();
         }
 
         Console.WriteLine($"Showing {limitedComments.Length} out of {cachedComments.Length} comments");
         return await Task.FromResult(0);
+    }
+
+    #endregion
+
+    #region Helper Methods
+
+    private static void HighlightMatches(string text, string query)
+    {
+        var queryLength = query.Length;
+        int startIndex = 0;
+        int index = text.IndexOf(query, StringComparison.OrdinalIgnoreCase);
+
+        while (index != -1)
+        {
+            Console.Write(text.Substring(startIndex, index - startIndex));
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.Write(text.Substring(index, queryLength));
+            Console.ResetColor();
+
+            startIndex = index + queryLength;
+            index = text.IndexOf(query, startIndex, StringComparison.OrdinalIgnoreCase);
+        }
+
+        Console.Write(text[startIndex..]);
+        Console.WriteLine();
     }
 
     #endregion
