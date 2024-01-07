@@ -1,5 +1,4 @@
 ﻿using System.Net;
-using Newtonsoft.Json;
 using Reddit;
 using Reddit.Inputs.Users;
 using Reddit.Things;
@@ -33,6 +32,8 @@ public class RedditService : IRedditService
 
     public async Task<Task> CacheSavedCommentsAsync()
     {
+        int newCachedComments = 0;
+        int existingCachedComments = 0;
         IDatabase db = _redis.GetDatabase();
         Console.WriteLine("Caching saved comments into memory");
         var after = "";
@@ -52,17 +53,20 @@ public class RedditService : IRedditService
                 string cachedValue = db.StringGet(key);
                 if (!string.IsNullOrEmpty(cachedValue))
                 {
+                    existingCachedComments++;
                     continue;
                 }
 
-                string value = JsonConvert.SerializeObject(topComment);
+                string value = System.Text.Json.JsonSerializer.Serialize(topComment);
                 db.StringSet(key, value);
+                newCachedComments++;
             }
 
             after = topComments.Last().Name;
             totalTopComments = topComments.Length;
         } while (totalTopComments > 0);
 
+        Console.WriteLine($"Cached {newCachedComments} new comments. Skipped {existingCachedComments} comments that were already cached.");
         return await Task.FromResult(Task.CompletedTask);
     }
 
@@ -76,7 +80,7 @@ public class RedditService : IRedditService
         foreach (var key in keys)
         {
             var cachedValue = await db.StringGetAsync(key);
-            Comment comment = JsonConvert.DeserializeObject<Comment>(cachedValue);
+            Comment comment = System.Text.Json.JsonSerializer.Deserialize<Comment>(cachedValue);
             if (comment == null)
             {
                 Console.WriteLine($"Unable to deserialize a value from {key} key");
