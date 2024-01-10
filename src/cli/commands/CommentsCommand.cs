@@ -3,23 +3,20 @@ using lib;
 
 namespace cli.commands;
 
-public static class CommentCommand
+public static class CommentsCommand
 {
 
     #region Public Methods
 
-    public static async Task<int> Execute(CommentOptions opts, IRedditService redditService)
+    public static async Task<int> Execute(CommentsOptions opts, ISavedService savedService)
     {
-        if (opts.CacheSavedComments)
-        {
-            await redditService.CacheSavedCommentsAsync();
-            return await Task.FromResult(0);
-        }
+        Console.Write("Fetching records, please wait...");
+        var comments = await savedService.GetFilteredCommentsAsync(opts);
+        var limitedComments = comments.Take(opts.Limit).ToArray();
 
-        var cachedComments = await redditService.GetFilteredCommentsAsync(opts);
-        var limitedComments = cachedComments.Take(opts.Limit).ToArray();
-
+        Console.Write("\r" + new string(' ', Console.WindowWidth) + "\r");
         Console.WriteLine();
+        
         foreach (var comment in limitedComments)
         {
             Console.WriteLine($"Author:      {comment.Author}");
@@ -39,7 +36,7 @@ public static class CommentCommand
             Console.WriteLine();
         }
 
-        Console.WriteLine($"Showing {limitedComments.Length} out of {cachedComments.Length} comments");
+        Console.WriteLine($"Showing {limitedComments.Length} out of {comments.Length} comments");
         return await Task.FromResult(0);
     }
 

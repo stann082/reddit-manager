@@ -10,16 +10,16 @@ public class App
 
     #region Constructors
 
-    public App(IRedditService redditService)
+    public App(ISavedService savedService)
     {
-        _redditService = redditService;
+        _savedService = savedService;
     }
 
     #endregion
 
     #region Variables
 
-    private readonly IRedditService _redditService;
+    private readonly ISavedService _savedService;
 
     #endregion
 
@@ -27,10 +27,10 @@ public class App
 
     public async Task<int> RunApp(IEnumerable<string> args)
     {
-        return await Parser.Default.ParseArguments<AuthenticationOptions, CommentOptions>(args)
+        return await Parser.Default.ParseArguments<AuthenticationOptions, CommentsOptions>(args)
             .MapResult(
                 async (AuthenticationOptions opts) => await AuthenticationCommand.Execute(opts),
-                async (CommentOptions opts) => await CommentCommand.Execute(opts, _redditService),
+                async (CommentsOptions opts) => await CommentsCommand.Execute(opts, _savedService),
                 _ => Task.FromResult(1));
     }
 
