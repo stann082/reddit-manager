@@ -4,5 +4,5 @@ namespace lib;
 
 public interface ISearchService
 {
-    Task<Comment[]> Search(ISearchOptions savedOptions);
+    Task<Comment[]> Search(IOptions savedOptions);
 }

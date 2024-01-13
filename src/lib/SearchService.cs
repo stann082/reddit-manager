@@ -26,7 +26,7 @@ public class SearchService : ISearchService
 
     #region Public Methods
 
-    public async Task<Comment[]> Search(ISearchOptions options)
+    public async Task<Comment[]> Search(IOptions options)
     {
         Comment[] comments = options.Comment ? await GetComments(options.User) : await GetPosts();
         var allComments = comments.OrderByDescending(c => c.CreatedUTC).ToArray();

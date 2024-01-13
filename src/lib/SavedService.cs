@@ -26,7 +26,7 @@ public class SavedService : ISavedService
 
     #region Public Methods
 
-    public async Task<Comment[]> GetFilteredItemsAsync(ISavedOptions savedOptions)
+    public async Task<Comment[]> GetFilteredItemsAsync(IOptions savedOptions)
     {
         // TODO:SNB - Abstract posts and comments under a single interface
         Comment[] comments = savedOptions.Comment ? await GetSavedComments() : await GetSavedPosts();

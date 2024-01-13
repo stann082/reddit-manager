@@ -1,5 +1,6 @@
 ﻿using cli.options;
 using lib;
+using Reddit.Things;
 
 namespace cli.commands;
 
@@ -8,10 +9,9 @@ public class SavedCommand : AbstractCommand
 
     #region Constructors
 
-    public SavedCommand(SavedOptions savedOptions, ISavedService service)
-        : base(string.Empty)
+    public SavedCommand(SavedOptions options, ISavedService service)
+        : base(options)
     {
-        _savedOptions = savedOptions;
         _service = service;
     }
 
@@ -19,71 +19,17 @@ public class SavedCommand : AbstractCommand
 
     #region Variables
 
-    private readonly SavedOptions _savedOptions;
     private readonly ISavedService _service;
 
     #endregion
     
-    #region Public Methods
+    #region Overriden Methods
 
-    public async Task<int> Execute()
+    protected override Task<Comment[]> GetComments(IOptions options)
     {
-        Console.Write("Fetching records, please wait...");
-        var comments = await _service.GetFilteredItemsAsync(_savedOptions);
-        var limitedComments = comments.Take(_savedOptions.Limit).ToArray();
-
-        Console.Write("\r" + new string(' ', Console.WindowWidth) + "\r");
-        Console.WriteLine();
-        
-        foreach (var comment in limitedComments)
-        {
-            Console.WriteLine($"Author:      {comment.Author}");
-            Console.WriteLine($"Subreddit:   {comment.Subreddit}");
-            Console.WriteLine($"Date posted: {comment.CreatedUTC}");
-            Console.WriteLine($"Score:       {comment.Score}");
-            Console.WriteLine($"Link:        https://reddit.com{comment.Permalink}");
-
-            if (string.IsNullOrEmpty(_savedOptions.Query))
-            {
-                Console.WriteLine(comment.Body);
-            }
-            else
-            {
-                HighlightMatches(comment.Body, _savedOptions.Query);
-            }
-
-            Console.WriteLine();
-        }
-
-        Console.WriteLine($"Showing {limitedComments.Length} out of {comments.Length} comments");
-        return await Task.FromResult(0);
+        return _service.GetFilteredItemsAsync(options);
     }
 
     #endregion
-
-    #region Helper Methods
-
-    private static void HighlightMatches(string text, string query)
-    {
-        var queryLength = query.Length;
-        int startIndex = 0;
-        int index = text.IndexOf(query, StringComparison.OrdinalIgnoreCase);
-
-        while (index != -1)
-        {
-            Console.Write(text.Substring(startIndex, index - startIndex));
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.Write(text.Substring(index, queryLength));
-            Console.ResetColor();
-
-            startIndex = index + queryLength;
-            index = text.IndexOf(query, startIndex, StringComparison.OrdinalIgnoreCase);
-        }
-
-        Console.Write(text[startIndex..]);
-        Console.WriteLine();
-    }
-
-    #endregion
-
+    
 }
