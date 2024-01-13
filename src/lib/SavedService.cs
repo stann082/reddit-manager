@@ -39,7 +39,7 @@ public class SavedService : ISavedService
 
     #region Helper Methods
 
-    private static IEnumerable<Comment> FilterComments(IEnumerable<Comment> comments, ISavedOptions options)
+    private static IEnumerable<Comment> FilterComments(IEnumerable<Comment> comments, IOptions options)
     {
         IEnumerable<Comment> filteredComments = comments;
         if (!string.IsNullOrEmpty(options.Query))
@@ -52,24 +52,16 @@ public class SavedService : ISavedService
             return filteredComments;
         }
 
-        var filterString = options.Filter;
-        var filters = filterString.Split('&')
-            .Select(part => part.Split('='))
-            .Where(parts => parts.Length == 2)
-            .ToDictionary(parts => parts[0], parts => parts[1]);
-        if (!filters.Any())
-        {
-            return filteredComments;
-        }
-
-        if (filters.TryGetValue("author", out string author))
+        string author = options.GetFilterValue("author");
+        if (!string.IsNullOrEmpty(author))
         {
             filteredComments = filteredComments.Where(c => c.Author.Contains(author, StringComparison.OrdinalIgnoreCase));
         }
 
-        if (filters.TryGetValue("sub", out string subreddit))
+        string sub = options.GetFilterValue("sub");
+        if (!string.IsNullOrEmpty(sub))
         {
-            filteredComments = filteredComments.Where(c => c.Subreddit.Contains(subreddit, StringComparison.OrdinalIgnoreCase));
+            filteredComments = filteredComments.Where(c => c.Subreddit.Contains(sub, StringComparison.OrdinalIgnoreCase));
         }
 
         return filteredComments;
