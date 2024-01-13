@@ -13,6 +13,12 @@ public abstract class AbstractOptions
     
     #region Properties
 
+    [Option('c', "comment", Default = true, HelpText = "Specify if you're searching for comment.")]
+    public bool Comment { get; set; }
+    
+    [Option('p', "post", HelpText = "Specify if you're searching for post.")]
+    
+    public bool Post { get; set; }
     [Option('f', "filter", HelpText = "Filters by sub, author, date (e.g., -f author=foomanchu&sub=news.")]
     public string Filter { get; set; }
     
@@ -49,6 +55,11 @@ public abstract class AbstractOptions
 
     private Dictionary<string,string> CreateFilterMap()
     {
+        if (string.IsNullOrEmpty(Filter))
+        {
+            return default;
+        }
+        
         return Filter.Split('&')
             .Select(part => part.Split('='))
             .Where(parts => parts.Length == 2)
