@@ -14,6 +14,7 @@ public static class Program
         var services = new ServiceCollection()
         .AddSingleton(config)
         .AddSingleton<App>()
+        .AddScoped<ISearchService, SearchService>()
         .AddScoped<ISavedService, SavedService>()
         .BuildServiceProvider();
         return await services.GetService<App>().RunApp(args);

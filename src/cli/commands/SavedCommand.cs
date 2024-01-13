@@ -3,16 +3,34 @@ using lib;
 
 namespace cli.commands;
 
-public static class CommentsCommand
+public class SavedCommand : AbstractCommand
 {
 
+    #region Constructors
+
+    public SavedCommand(SavedOptions savedOptions, ISavedService service)
+        : base(string.Empty)
+    {
+        _savedOptions = savedOptions;
+        _service = service;
+    }
+
+    #endregion
+
+    #region Variables
+
+    private readonly SavedOptions _savedOptions;
+    private readonly ISavedService _service;
+
+    #endregion
+    
     #region Public Methods
 
-    public static async Task<int> Execute(CommentsOptions opts, ISavedService savedService)
+    public async Task<int> Execute()
     {
         Console.Write("Fetching records, please wait...");
-        var comments = await savedService.GetFilteredCommentsAsync(opts);
-        var limitedComments = comments.Take(opts.Limit).ToArray();
+        var comments = await _service.GetFilteredItemsAsync(_savedOptions);
+        var limitedComments = comments.Take(_savedOptions.Limit).ToArray();
 
         Console.Write("\r" + new string(' ', Console.WindowWidth) + "\r");
         Console.WriteLine();
@@ -22,15 +40,16 @@ public static class CommentsCommand
             Console.WriteLine($"Author:      {comment.Author}");
             Console.WriteLine($"Subreddit:   {comment.Subreddit}");
             Console.WriteLine($"Date posted: {comment.CreatedUTC}");
+            Console.WriteLine($"Score:       {comment.Score}");
             Console.WriteLine($"Link:        https://reddit.com{comment.Permalink}");
 
-            if (string.IsNullOrEmpty(opts.Query))
+            if (string.IsNullOrEmpty(_savedOptions.Query))
             {
                 Console.WriteLine(comment.Body);
             }
             else
             {
-                HighlightMatches(comment.Body, opts.Query);
+                HighlightMatches(comment.Body, _savedOptions.Query);
             }
 
             Console.WriteLine();

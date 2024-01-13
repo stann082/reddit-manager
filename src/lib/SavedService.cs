@@ -11,7 +11,7 @@ public class SavedService : ISavedService
 
     public SavedService(ApplicationConfig config)
     {
-        _username = Environment.GetEnvironmentVariable("MY_REDDIT_USERNAME");
+        _me = Environment.GetEnvironmentVariable("MY_REDDIT_USERNAME");
         _redditClient = new RedditClient(config.AppId, config.RefreshToken, accessToken: config.AccessToken);
     }
 
@@ -20,24 +20,18 @@ public class SavedService : ISavedService
     #region Variables
 
     private readonly RedditClient _redditClient;
-    private readonly string _username;
+    private readonly string _me;
 
     #endregion
 
     #region Public Methods
 
-    public async Task<Task> CacheSavedCommentsAsync()
-    {
-        Console.WriteLine("Feature temporarily disabled");
-        return await Task.FromResult(Task.CompletedTask);
-    }
-
-    public async Task<Comment[]> GetFilteredCommentsAsync(IOptions options)
+    public async Task<Comment[]> GetFilteredItemsAsync(ISavedOptions savedOptions)
     {
         // TODO:SNB - Abstract posts and comments under a single interface
-        Comment[] comments = options.Comment ? await GetSavedComments() : await GetSavedPosts();
+        Comment[] comments = savedOptions.Comment ? await GetSavedComments() : await GetSavedPosts();
         var allComments = comments.OrderByDescending(c => c.CreatedUTC).ToArray();
-        IEnumerable<Comment> filteredComments = FilterComments(allComments, options);
+        IEnumerable<Comment> filteredComments = FilterComments(allComments, savedOptions);
         return filteredComments.ToArray();
     }
 
@@ -45,20 +39,20 @@ public class SavedService : ISavedService
 
     #region Helper Methods
 
-    private static IEnumerable<Comment> FilterComments(IEnumerable<Comment> comments, IOptions opts)
+    private static IEnumerable<Comment> FilterComments(IEnumerable<Comment> comments, ISavedOptions options)
     {
         IEnumerable<Comment> filteredComments = comments;
-        if (!string.IsNullOrEmpty(opts.Query))
+        if (!string.IsNullOrEmpty(options.Query))
         {
-            filteredComments = filteredComments.Where(c => c.Body.Contains(opts.Query, StringComparison.OrdinalIgnoreCase));
+            filteredComments = filteredComments.Where(c => c.Body.Contains(options.Query, StringComparison.OrdinalIgnoreCase));
         }
 
-        if (string.IsNullOrEmpty(opts.Filter))
+        if (string.IsNullOrEmpty(options.Filter))
         {
             return filteredComments;
         }
 
-        var filterString = opts.Filter;
+        var filterString = options.Filter;
         var filters = filterString.Split('&')
             .Select(part => part.Split('='))
             .Where(parts => parts.Length == 2)
@@ -91,7 +85,7 @@ public class SavedService : ISavedService
         {
             var topComments = await Task.Run(() =>
             {
-                CommentContainer history = _redditClient.Models.Users.CommentHistory(_username, "saved",
+                CommentContainer history = _redditClient.Models.Users.CommentHistory(_me, "saved",
                     new UsersHistoryInput("comments", after: after, sort: "top", context: 10, limit: 100));
                 return history.Data.Children.Select(c => c.Data).ToArray();
             });

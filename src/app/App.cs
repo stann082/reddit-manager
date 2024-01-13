@@ -10,15 +10,17 @@ public class App
 
     #region Constructors
 
-    public App(ISavedService savedService)
+    public App(ISavedService savedService, ISearchService searchService)
     {
         _savedService = savedService;
+        _searchService = searchService;
     }
 
     #endregion
 
     #region Variables
 
+    private readonly ISearchService _searchService;
     private readonly ISavedService _savedService;
 
     #endregion
@@ -27,10 +29,11 @@ public class App
 
     public async Task<int> RunApp(IEnumerable<string> args)
     {
-        return await Parser.Default.ParseArguments<AuthenticationOptions, CommentsOptions>(args)
+        return await Parser.Default.ParseArguments<AuthenticationOptions, SavedOptions, SearchOptions>(args)
             .MapResult(
                 async (AuthenticationOptions opts) => await AuthenticationCommand.Execute(opts),
-                async (CommentsOptions opts) => await CommentsCommand.Execute(opts, _savedService),
+                async (SearchOptions opts) => await new SearchCommand(opts, _searchService).Execute(),
+                async (SavedOptions opts) => await new SavedCommand(opts, _savedService).Execute(),
                 _ => Task.FromResult(1));
     }
 
