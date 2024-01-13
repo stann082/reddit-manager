@@ -8,7 +8,7 @@ public class SearchCommand : AbstractCommand
 
     #region Constructors
 
-    public SearchCommand(ISearchOptions options, ISearchService service)
+    public SearchCommand(IOptions options, ISearchService service)
         : base(options)
     {
         _service = service;

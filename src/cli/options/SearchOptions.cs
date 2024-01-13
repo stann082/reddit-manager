@@ -4,7 +4,7 @@ using lib;
 namespace cli.options;
 
 [Verb("search", HelpText = "Search reddit.")]
-public class SearchOptions : AbstractOptions, ISearchOptions
+public class SearchOptions : AbstractOptions, IOptions
 {
     [Option('c', "comment", HelpText = "Specify if you're searching for comment.")]
     public bool Comment { get; set; }

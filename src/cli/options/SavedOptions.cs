@@ -4,7 +4,7 @@ using lib;
 namespace cli.options;
 
 [Verb("saved", HelpText = "Command related to saved items.")]
-public class SavedOptions : AbstractOptions, ISavedOptions
+public class SavedOptions : AbstractOptions, IOptions
 {
     [Option('c', "comment", HelpText = "Specify if you're searching for comment.")]
     public bool Comment { get; set; }
