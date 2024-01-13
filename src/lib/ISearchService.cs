@@ -1,8 +1,8 @@
-﻿using Reddit.Controllers;
+﻿using Reddit.Things;
 
 namespace lib;
 
 public interface ISearchService
 {
-    Task<Post[]> Search(ISearchOptions options);
+    Task<Comment[]> Search(ISearchOptions savedOptions);
 }
