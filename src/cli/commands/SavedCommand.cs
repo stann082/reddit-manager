@@ -1,5 +1,4 @@
-﻿using cli.options;
-using lib;
+﻿using lib;
 using Reddit.Things;
 
 namespace cli.commands;
@@ -9,7 +8,7 @@ public class SavedCommand : AbstractCommand
 
     #region Constructors
 
-    public SavedCommand(SavedOptions options, ISavedService service)
+    public SavedCommand(IOptions options, ISavedService service)
         : base(options)
     {
         _service = service;
@@ -22,7 +21,7 @@ public class SavedCommand : AbstractCommand
     private readonly ISavedService _service;
 
     #endregion
-    
+
     #region Overriden Methods
 
     protected override Task<Comment[]> GetComments(IOptions options)
@@ -31,5 +30,5 @@ public class SavedCommand : AbstractCommand
     }
 
     #endregion
-    
+
 }

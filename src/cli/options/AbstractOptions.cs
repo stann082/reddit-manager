@@ -57,7 +57,7 @@ public abstract class AbstractOptions
     {
         if (string.IsNullOrEmpty(Filter))
         {
-            return default;
+            return new Dictionary<string, string>();
         }
         
         return Filter.Split('&')
