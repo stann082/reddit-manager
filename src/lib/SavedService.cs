@@ -81,7 +81,7 @@ public class SavedService : ISavedService
 
         // TODO:SNB - Abstract posts and comments under a single interface
         CommentPreview[] comments = savedOptions.Comment ? await GetSavedComments() : await GetSavedPosts();
-        CommentPreview[] allComments = comments.OrderByDescending(c => c.CreatedUTC).ToArray();
+        CommentPreview[] allComments = comments.OrderByDescending(c => c.Date).ToArray();
         IEnumerable<CommentPreview> filteredComments = FilterComments(allComments, savedOptions);
         return filteredComments.ToArray();
     }
@@ -181,7 +181,7 @@ public class SavedService : ISavedService
         }
 
         CommentPreview[] commentPreviews = comments.Select(c => new CommentPreview(c)).ToArray();
-        CommentPreview[] allComments = commentPreviews.OrderByDescending(c => c.CreatedUTC).ToArray();
+        CommentPreview[] allComments = commentPreviews.OrderByDescending(c => c.Date).ToArray();
         return FilterComments(allComments, options).ToArray();
     }
 

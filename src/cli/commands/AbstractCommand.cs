@@ -48,7 +48,7 @@ public abstract class AbstractCommand
         {
             Console.WriteLine($"Author:      {comment.Author}");
             Console.WriteLine($"Subreddit:   {comment.Subreddit}");
-            Console.WriteLine($"Date posted: {comment.CreatedUTC}");
+            Console.WriteLine($"Date posted: {comment.Date}");
             Console.WriteLine($"Score:       {comment.Score}");
             Console.WriteLine($"Link:        https://old.reddit.com{comment.Permalink}");
 

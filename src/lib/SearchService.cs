@@ -40,7 +40,7 @@ public class SearchService : ISearchService
             return Array.Empty<CommentPreview>();
         }
 
-        var allComments = comments.Select(c => new CommentPreview(c)).OrderByDescending(c => c.CreatedUTC).ToArray();
+        var allComments = comments.Select(c => new CommentPreview(c)).OrderByDescending(c => c.Date).ToArray();
         IEnumerable<CommentPreview> filteredComments = FilterComments(allComments, options);
         return filteredComments.ToArray();
     }

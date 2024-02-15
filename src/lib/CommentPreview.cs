@@ -9,10 +9,9 @@ public class CommentPreview
 
     public CommentPreview(Comment comment)
     {
+        _comment = comment;
         Author = comment.Author;
         Body = comment.Body;
-        CreatedUTC = comment.CreatedUTC;
-        Edited = comment.Edited;
         Id = comment.Id;
         Name = comment.Name;
         Permalink = comment.Permalink;
@@ -29,9 +28,7 @@ public class CommentPreview
 
     public string Body { get; }
 
-    public DateTime CreatedUTC { get; }
-
-    public DateTime Edited { get; }
+    public DateTime Date => GetValidaDate();
 
     public string Id { get; }
 
@@ -43,18 +40,40 @@ public class CommentPreview
     public int Score { get; }
     public string Subreddit { get; }
 
+    private readonly Comment _comment;
+    
     #endregion
 
     #region Overridden Methods
 
     public override string ToString()
     {
-        return $"{Id}; {Subreddit}; {CreatedUTC}; {LimitString(Body)}";
+        return $"{Id}; {Subreddit}; {Date}; {LimitString(Body)}";
     }
 
     #endregion
 
     #region Helper Methods
+
+    private DateTime GetValidaDate()
+    {
+        if (_comment.CreatedUTC != DateTime.MinValue)
+        {
+            return _comment.CreatedUTC;
+        }
+
+        if (_comment.Created != DateTime.MinValue)
+        {
+            return _comment.Created;
+        }
+
+        if (_comment.Edited != DateTime.MinValue)
+        {
+            return _comment.Edited;
+        }
+        
+        return DateTime.MinValue;
+    }
 
     private static string LimitString(string input)
     {
