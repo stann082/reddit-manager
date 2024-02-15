@@ -24,6 +24,11 @@ public class SearchCommand : AbstractCommand
 
     #region Overriden Methods
 
+    protected override Task Cache()
+    {
+        throw new NotImplementedException();
+    }
+
     protected override Task<Comment[]> GetComments(IOptions options)
     {
         return _service.Search(options);

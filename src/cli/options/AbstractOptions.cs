@@ -13,6 +13,12 @@ public abstract class AbstractOptions
     
     #region Properties
 
+    [Option("cache", Default = true, HelpText = "Cache saved comments.")]
+    public bool Cache { get; set; }
+    
+    [Option("get-cached", Default = true, HelpText = "Get cached comments.")]
+    public bool GetCached { get; set; }
+    
     [Option('c', "comment", Default = true, HelpText = "Specify if you're searching for comment.")]
     public bool Comment { get; set; }
     

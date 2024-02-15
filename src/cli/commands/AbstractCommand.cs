@@ -23,21 +23,28 @@ public abstract class AbstractCommand
 
     #region Abstract Methods
 
+    protected abstract Task Cache();
     protected abstract Task<Comment[]> GetComments(IOptions options);
 
     #endregion
-    
+
     #region Public Methods
 
     public async Task<int> Execute()
     {
+        if (_options.Cache)
+        {
+            await Cache();
+            return await Task.FromResult(0);
+        }
+
         Console.Write("Fetching records, please wait...");
         var comments = await GetComments(_options);
         var limitedComments = comments.Take(_options.Limit).ToArray();
 
         Console.Write("\r" + new string(' ', Console.WindowWidth) + "\r");
         Console.WriteLine();
-        
+
         foreach (var comment in limitedComments)
         {
             Console.WriteLine($"Author:      {comment.Author}");

@@ -24,6 +24,11 @@ public class SavedCommand : AbstractCommand
 
     #region Overriden Methods
 
+    protected override async Task Cache()
+    {
+       await _service.CacheSavedCommentsAsync();
+    }
+
     protected override Task<Comment[]> GetComments(IOptions options)
     {
         return _service.GetFilteredItemsAsync(options);
