@@ -1,4 +1,5 @@
 ﻿using Reddit;
+using Reddit.Exceptions;
 using Reddit.Inputs.Users;
 using Reddit.Things;
 
@@ -28,7 +29,17 @@ public class SearchService : ISearchService
 
     public async Task<Comment[]> Search(IOptions options)
     {
-        Comment[] comments = options.Comment ? await GetComments(options.User) : await GetPosts();
+        Comment[] comments;
+        try
+        {
+            comments = options.Comment ? await GetComments(options.User) : await GetPosts();
+        }
+        catch (RedditForbiddenException e)
+        {
+            Console.WriteLine(e);
+            return Array.Empty<Comment>();
+        }
+
         var allComments = comments.OrderByDescending(c => c.CreatedUTC).ToArray();
         IEnumerable<Comment> filteredComments = FilterComments(allComments, options);
         return filteredComments.ToArray();
@@ -80,7 +91,7 @@ public class SearchService : ISearchService
                     new UsersHistoryInput("comments", after: after, context: 10, limit: 100));
                 return history.Data.Children.Select(c => c.Data).ToArray();
             });
-            
+
             if (!commentsBatch.Any())
             {
                 totalComments = 0;
