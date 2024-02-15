@@ -72,7 +72,7 @@ public class SavedService : ISavedService
         Console.WriteLine($"Cached {newCachedComments} new comments. Skipped {existingCachedComments} comments that were already cached.");
     }
 
-    public async Task<Comment[]> GetFilteredItemsAsync(IOptions savedOptions)
+    public async Task<CommentPreview[]> GetFilteredItemsAsync(IOptions savedOptions)
     {
         if (savedOptions.GetCached)
         {
@@ -80,9 +80,9 @@ public class SavedService : ISavedService
         }
 
         // TODO:SNB - Abstract posts and comments under a single interface
-        Comment[] comments = savedOptions.Comment ? await GetSavedComments() : await GetSavedPosts();
-        var allComments = comments.OrderByDescending(c => c.CreatedUTC).ToArray();
-        IEnumerable<Comment> filteredComments = FilterComments(allComments, savedOptions);
+        CommentPreview[] comments = savedOptions.Comment ? await GetSavedComments() : await GetSavedPosts();
+        CommentPreview[] allComments = comments.OrderByDescending(c => c.CreatedUTC).ToArray();
+        IEnumerable<CommentPreview> filteredComments = FilterComments(allComments, savedOptions);
         return filteredComments.ToArray();
     }
 
@@ -90,9 +90,9 @@ public class SavedService : ISavedService
 
     #region Helper Methods
 
-    private static IEnumerable<Comment> FilterComments(IEnumerable<Comment> comments, IOptions options)
+    private static IEnumerable<CommentPreview> FilterComments(IEnumerable<CommentPreview> comments, IOptions options)
     {
-        IEnumerable<Comment> filteredComments = comments;
+        IEnumerable<CommentPreview> filteredComments = comments;
         if (!string.IsNullOrEmpty(options.Query))
         {
             filteredComments = filteredComments.Where(c => c.Body.Contains(options.Query, StringComparison.OrdinalIgnoreCase));
@@ -118,7 +118,7 @@ public class SavedService : ISavedService
         return filteredComments;
     }
 
-    private async Task<Comment[]> GetSavedComments()
+    private async Task<CommentPreview[]> GetSavedComments()
     {
         IDatabase db = _redis.GetDatabase();
 
@@ -145,15 +145,15 @@ public class SavedService : ISavedService
             totalTopComments = topComments.Length;
         } while (totalTopComments > 0);
 
-        return comments.ToArray();
+        return comments.Select(c => new CommentPreview(c)).ToArray();
     }
 
-    private static async Task<Comment[]> GetSavedPosts()
+    private static async Task<CommentPreview[]> GetSavedPosts()
     {
-        return await Task.FromResult(Array.Empty<Comment>());
+        return await Task.FromResult(Array.Empty<CommentPreview>());
     }
 
-    private async Task<Comment[]> GetCachedCommentsAsync(IOptions options)
+    private async Task<CommentPreview[]> GetCachedCommentsAsync(IOptions options)
     {
         IDatabase db = _redis.GetDatabase();
         EndPoint endPoint = _redis.GetEndPoints().First();
@@ -162,18 +162,26 @@ public class SavedService : ISavedService
 
         foreach (var key in keys)
         {
-            var cachedValue = await db.StringGetAsync(key);
-            Comment comment = JsonConvert.DeserializeObject<Comment>(cachedValue);
-            if (comment == null)
+            try
             {
-                Console.WriteLine($"Unable to deserialize a value from {key} key");
-                continue;
-            }
+                RedisValue cachedValue = await db.StringGetAsync(key);
+                Comment comment = JsonConvert.DeserializeObject<Comment>(cachedValue);
+                if (comment == null)
+                {
+                    Console.WriteLine($"Unable to deserialize a value from {key} key");
+                    continue;
+                }
 
-            comments.Add(comment);
+                comments.Add(comment);
+            }
+            catch (Exception)
+            {
+                // squash
+            }
         }
 
-        var allComments = comments.OrderByDescending(c => c.CreatedUTC).ToArray();
+        CommentPreview[] commentPreviews = comments.Select(c => new CommentPreview(c)).ToArray();
+        CommentPreview[] allComments = commentPreviews.OrderByDescending(c => c.CreatedUTC).ToArray();
         return FilterComments(allComments, options).ToArray();
     }
 

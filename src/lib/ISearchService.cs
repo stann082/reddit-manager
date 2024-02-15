@@ -1,8 +1,6 @@
-﻿using Reddit.Things;
-
-namespace lib;
+﻿namespace lib;
 
 public interface ISearchService
 {
-    Task<Comment[]> Search(IOptions savedOptions);
+    Task<CommentPreview[]> Search(IOptions savedOptions);
 }

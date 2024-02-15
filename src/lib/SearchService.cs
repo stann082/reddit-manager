@@ -27,7 +27,7 @@ public class SearchService : ISearchService
 
     #region Public Methods
 
-    public async Task<Comment[]> Search(IOptions options)
+    public async Task<CommentPreview[]> Search(IOptions options)
     {
         Comment[] comments;
         try
@@ -37,11 +37,11 @@ public class SearchService : ISearchService
         catch (RedditForbiddenException e)
         {
             Console.WriteLine(e);
-            return Array.Empty<Comment>();
+            return Array.Empty<CommentPreview>();
         }
 
-        var allComments = comments.OrderByDescending(c => c.CreatedUTC).ToArray();
-        IEnumerable<Comment> filteredComments = FilterComments(allComments, options);
+        var allComments = comments.Select(c => new CommentPreview(c)).OrderByDescending(c => c.CreatedUTC).ToArray();
+        IEnumerable<CommentPreview> filteredComments = FilterComments(allComments, options);
         return filteredComments.ToArray();
     }
 
@@ -49,9 +49,9 @@ public class SearchService : ISearchService
 
     #region Helper Methods
 
-    private static IEnumerable<Comment> FilterComments(IEnumerable<Comment> comments, IOptions options)
+    private static IEnumerable<CommentPreview> FilterComments(IEnumerable<CommentPreview> comments, IOptions options)
     {
-        IEnumerable<Comment> filteredComments = comments;
+        IEnumerable<CommentPreview> filteredComments = comments;
         if (!string.IsNullOrEmpty(options.Query))
         {
             filteredComments = filteredComments.Where(c => c.Body.Contains(options.Query, StringComparison.OrdinalIgnoreCase));

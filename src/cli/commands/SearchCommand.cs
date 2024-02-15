@@ -29,7 +29,7 @@ public class SearchCommand : AbstractCommand
         throw new NotImplementedException();
     }
 
-    protected override Task<Comment[]> GetComments(IOptions options)
+    protected override Task<CommentPreview[]> GetComments(IOptions options)
     {
         return _service.Search(options);
     }
