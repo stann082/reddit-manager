@@ -31,7 +31,7 @@ public class App
 
     public async Task<int> RunApp(IEnumerable<string> args)
     {
-        return await Parser.Default.ParseArguments<AuthenticationOptions, SavedOptions, SearchOptions>(args)
+        return await Parser.Default.ParseArguments<AuthenticationOptions, SavedOptions, SearchOptions, CacheOptions>(args)
             .MapResult(
                 async (AuthenticationOptions opts) => await AuthenticationCommand.Execute(opts),
                 async (SearchOptions opts) => await new SearchCommand(opts, _searchService).Execute(),

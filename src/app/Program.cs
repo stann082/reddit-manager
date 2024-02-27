@@ -16,6 +16,7 @@ public static class Program
         .AddSingleton(config)
         .AddSingleton<App>()
         .AddSingleton<IConnectionMultiplexer>(await ConnectionMultiplexer.ConnectAsync("localhost"))
+        .AddScoped<ICacheService, CacheService>()
         .AddScoped<ISearchService, SearchService>()
         .AddScoped<ISavedService, SavedService>()
         .BuildServiceProvider();
