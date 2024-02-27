@@ -1,10 +1,7 @@
 ﻿using System.Net;
 using Newtonsoft.Json;
-using Reddit;
-using Reddit.Inputs.Users;
 using Reddit.Things;
 using StackExchange.Redis;
-using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace lib;
 
@@ -13,10 +10,8 @@ public class SavedService : ISavedService
 
     #region Constructors
 
-    public SavedService(ApplicationConfig config, IConnectionMultiplexer redis)
+    public SavedService(IConnectionMultiplexer redis)
     {
-        _me = Environment.GetEnvironmentVariable("MY_REDDIT_USERNAME");
-        _redditClient = new RedditClient(config.AppId, config.RefreshToken, accessToken: config.AccessToken);
         _redis = redis;
     }
 
@@ -24,66 +19,42 @@ public class SavedService : ISavedService
 
     #region Variables
 
-    private readonly RedditClient _redditClient;
     private readonly IConnectionMultiplexer _redis;
-    private readonly string _me;
 
     #endregion
 
     #region Public Methods
 
-    public async Task CacheSavedCommentsAsync()
+    public async Task<CommentPreview[]> GetFilteredItemsAsync(IOptions savedOptions)
     {
-        int newCachedComments = 0;
-        int existingCachedComments = 0;
         IDatabase db = _redis.GetDatabase();
-        Console.WriteLine("Caching saved comments into memory");
+        EndPoint endPoint = _redis.GetEndPoints().First();
+        var keys = _redis.GetServer(endPoint).Keys(pattern: "*").ToArray();
+        List<Comment> comments = new List<Comment>();
 
-        var after = "";
-        int totalTopComments;
-        do
+        foreach (var key in keys)
         {
-            var topComments = await Task.Run(() => GetComments(after));
-            if (!topComments.Any())
+            try
             {
-                totalTopComments = 0;
-                continue;
-            }
-
-            foreach (var topComment in topComments)
-            {
-                string key = topComment.Id;
-                string cachedValue = db.StringGet(key);
-                if (!string.IsNullOrEmpty(cachedValue))
+                RedisValue cachedValue = await db.StringGetAsync(key);
+                Comment comment = JsonConvert.DeserializeObject<Comment>(cachedValue);
+                if (comment == null)
                 {
-                    existingCachedComments++;
+                    Console.WriteLine($"Unable to deserialize a value from {key} key");
                     continue;
                 }
 
-                string value = JsonSerializer.Serialize(topComment);
-                db.StringSet(key, value);
-                newCachedComments++;
+                comments.Add(comment);
             }
-
-            after = topComments.Last().Name;
-            totalTopComments = topComments.Length;
-        } while (totalTopComments > 0);
-
-        Console.WriteLine($"Cached {newCachedComments} new comments. Skipped {existingCachedComments} comments that were already cached.");
-    }
-
-    public async Task<CommentPreview[]> GetFilteredItemsAsync(IOptions savedOptions)
-    {
-        if (savedOptions.GetCached)
-        {
-            return await GetCachedCommentsAsync(savedOptions);
+            catch (Exception)
+            {
+                // squash
+            }
         }
 
-        // TODO:SNB - Abstract posts and comments under a single interface
-        CommentPreview[] comments = savedOptions.Comment ? await GetSavedComments() : await GetSavedPosts();
-        CommentPreview[] allComments = comments.OrderByDescending(c => c.Date).ToArray();
-        IEnumerable<CommentPreview> filteredComments = FilterComments(allComments, savedOptions);
-        return filteredComments.ToArray();
+        CommentPreview[] commentPreviews = comments.Select(c => new CommentPreview(c)).ToArray();
+        CommentPreview[] allComments = commentPreviews.OrderByDescending(c => c.Date).ToArray();
+        return FilterComments(allComments, savedOptions).ToArray();
     }
 
     #endregion
@@ -116,80 +87,6 @@ public class SavedService : ISavedService
         }
 
         return filteredComments;
-    }
-
-    private async Task<CommentPreview[]> GetSavedComments()
-    {
-        IDatabase db = _redis.GetDatabase();
-
-        List<Comment> comments = new List<Comment>();
-
-        var after = "";
-        int totalTopComments;
-        do
-        {
-            var topComments = await Task.Run(() =>
-            {
-                CommentContainer history = _redditClient.Models.Users.CommentHistory(_me, "saved",
-                    new UsersHistoryInput("comments", after: after, sort: "top", context: 10, limit: 100));
-                return history.Data.Children.Select(c => c.Data).ToArray();
-            });
-            if (!topComments.Any())
-            {
-                totalTopComments = 0;
-                continue;
-            }
-
-            comments.AddRange(topComments);
-            after = topComments.Last().Name;
-            totalTopComments = topComments.Length;
-        } while (totalTopComments > 0);
-
-        return comments.Select(c => new CommentPreview(c)).ToArray();
-    }
-
-    private static async Task<CommentPreview[]> GetSavedPosts()
-    {
-        return await Task.FromResult(Array.Empty<CommentPreview>());
-    }
-
-    private async Task<CommentPreview[]> GetCachedCommentsAsync(IOptions options)
-    {
-        IDatabase db = _redis.GetDatabase();
-        EndPoint endPoint = _redis.GetEndPoints().First();
-        var keys = _redis.GetServer(endPoint).Keys(pattern: "*").ToArray();
-        List<Comment> comments = new List<Comment>();
-
-        foreach (var key in keys)
-        {
-            try
-            {
-                RedisValue cachedValue = await db.StringGetAsync(key);
-                Comment comment = JsonConvert.DeserializeObject<Comment>(cachedValue);
-                if (comment == null)
-                {
-                    Console.WriteLine($"Unable to deserialize a value from {key} key");
-                    continue;
-                }
-
-                comments.Add(comment);
-            }
-            catch (Exception)
-            {
-                // squash
-            }
-        }
-
-        CommentPreview[] commentPreviews = comments.Select(c => new CommentPreview(c)).ToArray();
-        CommentPreview[] allComments = commentPreviews.OrderByDescending(c => c.Date).ToArray();
-        return FilterComments(allComments, options).ToArray();
-    }
-
-    private Comment[] GetComments(string after)
-    {
-        CommentContainer history = _redditClient.Models.Users.CommentHistory(_me, "saved",
-            new UsersHistoryInput("comments", after: after, sort: "top", context: 10, limit: 100));
-        return history.Data.Children.Select(c => c.Data).ToArray();
     }
 
     #endregion

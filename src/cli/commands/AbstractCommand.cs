@@ -22,7 +22,6 @@ public abstract class AbstractCommand
 
     #region Abstract Methods
 
-    protected abstract Task Cache();
     protected abstract Task<CommentPreview[]> GetComments(IOptions options);
 
     #endregion
@@ -31,12 +30,6 @@ public abstract class AbstractCommand
 
     public async Task<int> Execute()
     {
-        // if (_options.Cache)
-        // {
-        //     await Cache();
-        //     return await Task.FromResult(0);
-        // }
-
         Console.Write("Fetching records, please wait...");
         var comments = await GetComments(_options);
         var limitedComments = comments.Take(_options.Limit).ToArray();

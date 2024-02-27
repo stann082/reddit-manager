@@ -1,5 +1,4 @@
 ﻿using lib;
-using Reddit.Things;
 
 namespace cli.commands;
 
@@ -24,16 +23,11 @@ public class SearchCommand : AbstractCommand
 
     #region Overriden Methods
 
-    protected override Task Cache()
-    {
-        throw new NotImplementedException();
-    }
-
     protected override Task<CommentPreview[]> GetComments(IOptions options)
     {
         return _service.Search(options);
     }
 
     #endregion
-    
+
 }
