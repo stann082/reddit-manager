@@ -1,5 +1,4 @@
 ﻿using lib;
-using Reddit.Things;
 
 namespace cli.commands;
 
@@ -23,10 +22,10 @@ public abstract class AbstractCommand
 
     #region Abstract Methods
 
-    protected abstract Task<Comment[]> GetComments(IOptions options);
+    protected abstract Task<CommentPreview[]> GetComments(IOptions options);
 
     #endregion
-    
+
     #region Public Methods
 
     public async Task<int> Execute()
@@ -37,12 +36,12 @@ public abstract class AbstractCommand
 
         Console.Write("\r" + new string(' ', Console.WindowWidth) + "\r");
         Console.WriteLine();
-        
+
         foreach (var comment in limitedComments)
         {
             Console.WriteLine($"Author:      {comment.Author}");
             Console.WriteLine($"Subreddit:   {comment.Subreddit}");
-            Console.WriteLine($"Date posted: {comment.CreatedUTC}");
+            Console.WriteLine($"Date posted: {comment.Date}");
             Console.WriteLine($"Score:       {comment.Score}");
             Console.WriteLine($"Link:        https://old.reddit.com{comment.Permalink}");
 

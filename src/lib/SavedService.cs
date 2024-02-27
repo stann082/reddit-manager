@@ -1,6 +1,7 @@
-﻿using Reddit;
-using Reddit.Inputs.Users;
+﻿using System.Net;
+using Newtonsoft.Json;
 using Reddit.Things;
+using StackExchange.Redis;
 
 namespace lib;
 
@@ -9,39 +10,60 @@ public class SavedService : ISavedService
 
     #region Constructors
 
-    public SavedService(ApplicationConfig config)
+    public SavedService(IConnectionMultiplexer redis)
     {
-        _me = Environment.GetEnvironmentVariable("MY_REDDIT_USERNAME");
-        _redditClient = new RedditClient(config.AppId, config.RefreshToken, accessToken: config.AccessToken);
+        _redis = redis;
     }
 
     #endregion
 
     #region Variables
 
-    private readonly RedditClient _redditClient;
-    private readonly string _me;
+    private readonly IConnectionMultiplexer _redis;
 
     #endregion
 
     #region Public Methods
 
-    public async Task<Comment[]> GetFilteredItemsAsync(IOptions savedOptions)
+    public async Task<CommentPreview[]> GetFilteredItemsAsync(IOptions savedOptions)
     {
-        // TODO:SNB - Abstract posts and comments under a single interface
-        Comment[] comments = savedOptions.Comment ? await GetSavedComments() : await GetSavedPosts();
-        var allComments = comments.OrderByDescending(c => c.CreatedUTC).ToArray();
-        IEnumerable<Comment> filteredComments = FilterComments(allComments, savedOptions);
-        return filteredComments.ToArray();
+        IDatabase db = _redis.GetDatabase();
+        EndPoint endPoint = _redis.GetEndPoints().First();
+        var keys = _redis.GetServer(endPoint).Keys(pattern: "*").ToArray();
+        List<Comment> comments = new List<Comment>();
+
+        foreach (var key in keys)
+        {
+            try
+            {
+                RedisValue cachedValue = await db.StringGetAsync(key);
+                Comment comment = JsonConvert.DeserializeObject<Comment>(cachedValue);
+                if (comment == null)
+                {
+                    Console.WriteLine($"Unable to deserialize a value from {key} key");
+                    continue;
+                }
+
+                comments.Add(comment);
+            }
+            catch (Exception)
+            {
+                // squash
+            }
+        }
+
+        CommentPreview[] commentPreviews = comments.Select(c => new CommentPreview(c)).ToArray();
+        CommentPreview[] allComments = commentPreviews.OrderByDescending(c => c.Date).ToArray();
+        return FilterComments(allComments, savedOptions).ToArray();
     }
 
     #endregion
 
     #region Helper Methods
 
-    private static IEnumerable<Comment> FilterComments(IEnumerable<Comment> comments, IOptions options)
+    private static IEnumerable<CommentPreview> FilterComments(IEnumerable<CommentPreview> comments, IOptions options)
     {
-        IEnumerable<Comment> filteredComments = comments;
+        IEnumerable<CommentPreview> filteredComments = comments;
         if (!string.IsNullOrEmpty(options.Query))
         {
             filteredComments = filteredComments.Where(c => c.Body.Contains(options.Query, StringComparison.OrdinalIgnoreCase));
@@ -65,39 +87,6 @@ public class SavedService : ISavedService
         }
 
         return filteredComments;
-    }
-
-    private async Task<Comment[]> GetSavedComments()
-    {
-        List<Comment> comments = new List<Comment>();
-
-        var after = "";
-        int totalTopComments;
-        do
-        {
-            var topComments = await Task.Run(() =>
-            {
-                CommentContainer history = _redditClient.Models.Users.CommentHistory(_me, "saved",
-                    new UsersHistoryInput("comments", after: after, sort: "top", context: 10, limit: 100));
-                return history.Data.Children.Select(c => c.Data).ToArray();
-            });
-            if (!topComments.Any())
-            {
-                totalTopComments = 0;
-                continue;
-            }
-
-            comments.AddRange(topComments);
-            after = topComments.Last().Name;
-            totalTopComments = topComments.Length;
-        } while (totalTopComments > 0);
-
-        return comments.ToArray();
-    }
-
-    private static async Task<Comment[]> GetSavedPosts()
-    {
-        return await Task.FromResult(Array.Empty<Comment>());
     }
 
     #endregion

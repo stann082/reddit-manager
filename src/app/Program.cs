@@ -1,5 +1,6 @@
 ﻿using lib;
 using Microsoft.Extensions.DependencyInjection;
+using StackExchange.Redis;
 
 namespace app;
 
@@ -14,6 +15,8 @@ public static class Program
         var services = new ServiceCollection()
         .AddSingleton(config)
         .AddSingleton<App>()
+        .AddSingleton<IConnectionMultiplexer>(await ConnectionMultiplexer.ConnectAsync("localhost"))
+        .AddScoped<ICacheService, CacheService>()
         .AddScoped<ISearchService, SearchService>()
         .AddScoped<ISavedService, SavedService>()
         .BuildServiceProvider();

@@ -4,5 +4,5 @@ namespace lib;
 
 public interface ISavedService
 {
-    Task<Comment[]> GetFilteredItemsAsync(IOptions savedOptions);
+    Task<CommentPreview[]> GetFilteredItemsAsync(IOptions savedOptions);
 }
