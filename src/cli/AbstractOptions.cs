@@ -1,6 +1,6 @@
 ﻿using CommandLine;
 
-namespace cli.options;
+namespace cli;
 
 public abstract class AbstractOptions
 {

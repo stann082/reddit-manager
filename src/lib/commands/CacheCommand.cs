@@ -1,14 +1,11 @@
-﻿using cli.options;
-using lib;
-
-namespace cli.commands;
+﻿namespace lib;
 
 public class CacheCommand
 {
 
     #region Constructors
 
-    public CacheCommand(CacheOptions options, ICacheService service)
+    public CacheCommand(ICacheService service)
     {
         _service = service;
     }
@@ -28,7 +25,7 @@ public class CacheCommand
         await _service.CacheSavedCommentsAsync();
         return await Task.FromResult(0);
     }
-    
+
     #endregion
 
 }

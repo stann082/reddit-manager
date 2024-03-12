@@ -1,9 +1,10 @@
 ﻿using CommandLine;
+using lib;
 
-namespace cli.options;
+namespace cli;
 
 [Verb("auth", HelpText = "Retrieve auth token.")]
-public class AuthenticationOptions
+public class AuthenticationOptions : IAuthOptions
 {
 
     [Option("app-id", Required = true, HelpText = "Your app id.")]

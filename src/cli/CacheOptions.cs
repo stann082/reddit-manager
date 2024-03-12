@@ -1,6 +1,6 @@
 ﻿using CommandLine;
 
-namespace cli.options;
+namespace cli;
 
 [Verb("cache", HelpText = "Cache saved comments.")]
 public class CacheOptions

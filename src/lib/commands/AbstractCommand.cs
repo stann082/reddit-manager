@@ -1,6 +1,4 @@
-﻿using lib;
-
-namespace cli.commands;
+﻿namespace lib;
 
 public abstract class AbstractCommand
 {

@@ -1,10 +1,9 @@
 ﻿using System.Diagnostics;
 using System.Runtime.InteropServices;
-using cli.options;
 using Reddit.AuthTokenRetriever;
 using Reddit.AuthTokenRetriever.EventArgs;
 
-namespace cli.commands;
+namespace lib;
 
 public static class AuthenticationCommand
 {
@@ -17,7 +16,7 @@ public static class AuthenticationCommand
     
     #region Public Methods
 
-    public static Task<int> Execute(AuthenticationOptions opts)
+    public static Task<int> Execute(IAuthOptions opts)
     {
         AuthTokenRetrieverLib authTokenRetrieverLib = new AuthTokenRetrieverLib(opts.AppId, opts.Port, appSecret: opts.AppSecret);
         authTokenRetrieverLib.AuthSuccess += C_AuthSuccess;

@@ -1,13 +1,11 @@
-﻿using lib;
+﻿namespace lib;
 
-namespace cli.commands;
-
-public class SavedCommand : AbstractCommand
+public class SearchCommand : AbstractCommand
 {
 
     #region Constructors
 
-    public SavedCommand(IOptions options, ISavedService service)
+    public SearchCommand(IOptions options, ISearchService service)
         : base(options)
     {
         _service = service;
@@ -17,7 +15,7 @@ public class SavedCommand : AbstractCommand
 
     #region Variables
 
-    private readonly ISavedService _service;
+    private readonly ISearchService _service;
 
     #endregion
 
@@ -25,7 +23,7 @@ public class SavedCommand : AbstractCommand
 
     protected override Task<CommentPreview[]> GetComments(IOptions options)
     {
-        return _service.GetFilteredItemsAsync(options);
+        return _service.Search(options);
     }
 
     #endregion

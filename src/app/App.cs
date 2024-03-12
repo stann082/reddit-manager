@@ -1,5 +1,4 @@
-﻿using cli.commands;
-using cli.options;
+﻿using cli;
 using CommandLine;
 using lib;
 
@@ -36,7 +35,7 @@ public class App
                 async (AuthenticationOptions opts) => await AuthenticationCommand.Execute(opts),
                 async (SearchOptions opts) => await new SearchCommand(opts, _searchService).Execute(),
                 async (SavedOptions opts) => await new SavedCommand(opts, _savedService).Execute(),
-                async (CacheOptions opts) => await new CacheCommand(opts, _cacheService).Execute(),
+                async (CacheOptions _) => await new CacheCommand(_cacheService).Execute(),
                 _ => Task.FromResult(1));
     }
 
