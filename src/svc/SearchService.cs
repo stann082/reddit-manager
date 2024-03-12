@@ -1,9 +1,12 @@
-﻿using Reddit;
+﻿using lib;
+using lib.options;
+using lib.services;
+using Reddit;
 using Reddit.Exceptions;
 using Reddit.Inputs.Users;
 using Reddit.Things;
 
-namespace lib;
+namespace svc;
 
 public class SearchService : ISearchService
 {

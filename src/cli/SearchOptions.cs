@@ -1,5 +1,5 @@
 ﻿using CommandLine;
-using lib;
+using lib.options;
 
 namespace cli;
 

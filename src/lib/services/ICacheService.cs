@@ -1,6 +1,4 @@
-﻿using Reddit.Things;
-
-namespace lib;
+﻿namespace lib.services;
 
 public interface ICacheService
 {

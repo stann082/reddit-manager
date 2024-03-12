@@ -1,4 +1,4 @@
-﻿namespace lib;
+﻿namespace lib.options;
 
 public interface IOptions
 {

@@ -1,10 +1,10 @@
 ﻿using CommandLine;
-using lib;
+using lib.options;
 
 namespace cli;
 
 [Verb("saved", HelpText = "Command related to saved items.")]
 public class SavedOptions : AbstractOptions, IOptions
 {
-    
+
 }

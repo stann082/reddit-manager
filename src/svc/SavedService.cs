@@ -1,9 +1,12 @@
 ﻿using System.Net;
+using lib;
+using lib.options;
+using lib.services;
 using Newtonsoft.Json;
 using Reddit.Things;
 using StackExchange.Redis;
 
-namespace lib;
+namespace svc;
 
 public class SavedService : ISavedService
 {

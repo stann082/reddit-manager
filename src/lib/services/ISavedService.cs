@@ -1,6 +1,6 @@
-﻿using Reddit.Things;
+﻿using lib.options;
 
-namespace lib;
+namespace lib.services;
 
 public interface ISavedService
 {

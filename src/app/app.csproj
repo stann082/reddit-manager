@@ -26,6 +26,7 @@
   <ItemGroup>
     <ProjectReference Include="..\cli\cli.csproj" />
     <ProjectReference Include="..\lib\lib.csproj" />
+    <ProjectReference Include="..\svc\svc.csproj" />
   </ItemGroup>
 
 </Project>

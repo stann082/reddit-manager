@@ -1,4 +1,7 @@
-﻿namespace lib;
+﻿using lib.options;
+using lib.services;
+
+namespace lib;
 
 public class SavedCommand : AbstractCommand
 {

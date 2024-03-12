@@ -1,4 +1,6 @@
-﻿namespace lib;
+﻿using lib.options;
+
+namespace lib.services;
 
 public interface ISearchService
 {
