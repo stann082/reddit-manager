@@ -26,6 +26,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\lib\lib.csproj" />
+    <ProjectReference Include="..\..\src\svc\svc.csproj" />
   </ItemGroup>
 
 </Project>

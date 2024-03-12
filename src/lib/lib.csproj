@@ -16,9 +16,8 @@
 
   <ItemGroup>
     <PackageReference Include="Reddit" Version="1.5.2" />
-    <PackageReference Include="StackExchange.Redis" Version="2.7.27" />
     <PackageReference Include="Reddit.AuthTokenRetrieverLib" Version="1.5.2" />
-    <PackageReference Include="StackExchange.Redis" Version="2.6.111" />
+    <PackageReference Include="StackExchange.Redis" Version="2.7.33" />
   </ItemGroup>
 
 </Project>

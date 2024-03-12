@@ -8,23 +8,13 @@ using Reddit.Things;
 
 namespace svc;
 
-public class SearchService : ISearchService
+public class SearchService(ApplicationConfig config) : ISearchService
 {
-
-    #region Constructors
-
-    public SearchService(ApplicationConfig config)
-    {
-        _me = Environment.GetEnvironmentVariable("MY_REDDIT_USERNAME");
-        _redditClient = new RedditClient(config.AppId, config.RefreshToken, accessToken: config.AccessToken);
-    }
-
-    #endregion
 
     #region Variables
 
-    private readonly RedditClient _redditClient;
-    private readonly string _me;
+    private readonly RedditClient _redditClient = new(config.AppId, config.RefreshToken, accessToken: config.AccessToken);
+    private readonly string? _me = Environment.GetEnvironmentVariable("MY_REDDIT_USERNAME");
 
     #endregion
 

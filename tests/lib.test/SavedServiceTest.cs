@@ -1,8 +1,10 @@
 using System.Net;
+using lib.options;
 using Moq;
 using Newtonsoft.Json;
 using Reddit.Things;
 using StackExchange.Redis;
+using svc;
 
 namespace lib.test.csproj;
 
@@ -25,10 +27,16 @@ public class SavedServiceTest
         var keys = new RedisKey[] { "key1", "key2" };
         var comments = new List<Comment>
         {
-            new Comment { /* Initialize properties */ },
-            new Comment { /* Initialize properties */ }
+            new Comment
+            {
+                /* Initialize properties */
+            },
+            new Comment
+            {
+                /* Initialize properties */
+            }
         };
-        
+
         mockMultiplexer.Setup(m => m.GetDatabase(It.IsAny<int>(), It.IsAny<object>())).Returns(mockDatabase.Object);
         mockMultiplexer.Setup(m => m.GetEndPoints(It.IsAny<bool>())).Returns(new EndPoint[] { endPoint });
         mockMultiplexer.Setup(m => m.GetServer(It.IsAny<EndPoint>(), It.IsAny<object>())).Returns(mockServer.Object);

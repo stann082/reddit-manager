@@ -8,25 +8,13 @@ using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace svc;
 
-public class CacheService : ICacheService
+public class CacheService(ApplicationConfig config, IConnectionMultiplexer redis) : ICacheService
 {
-
-    #region Constructors
-
-    public CacheService(ApplicationConfig config, IConnectionMultiplexer redis)
-    {
-        _me = Environment.GetEnvironmentVariable("MY_REDDIT_USERNAME");
-        _redditClient = new RedditClient(config.AppId, config.RefreshToken, accessToken: config.AccessToken);
-        _redis = redis;
-    }
-
-    #endregion
 
     #region Variables
 
-    private readonly RedditClient _redditClient;
-    private readonly IConnectionMultiplexer _redis;
-    private readonly string _me;
+    private readonly RedditClient _redditClient = new(config.AppId, config.RefreshToken, accessToken: config.AccessToken);
+    private readonly string? _me = Environment.GetEnvironmentVariable("MY_REDDIT_USERNAME");
 
     #endregion
 
@@ -36,7 +24,7 @@ public class CacheService : ICacheService
     {
         int newCachedComments = 0;
         int existingCachedComments = 0;
-        IDatabase db = _redis.GetDatabase();
+        IDatabase db = redis.GetDatabase();
         Console.WriteLine("Caching saved comments into memory");
 
         var after = "";
@@ -53,7 +41,7 @@ public class CacheService : ICacheService
             foreach (var topComment in topComments)
             {
                 string key = topComment.Id;
-                string cachedValue = db.StringGet(key);
+                string? cachedValue = await db.StringGetAsync(key);
                 if (!string.IsNullOrEmpty(cachedValue))
                 {
                     existingCachedComments++;

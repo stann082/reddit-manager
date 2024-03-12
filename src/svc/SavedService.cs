@@ -8,31 +8,16 @@ using StackExchange.Redis;
 
 namespace svc;
 
-public class SavedService : ISavedService
+public class SavedService(IConnectionMultiplexer redis) : ISavedService
 {
-
-    #region Constructors
-
-    public SavedService(IConnectionMultiplexer redis)
-    {
-        _redis = redis;
-    }
-
-    #endregion
-
-    #region Variables
-
-    private readonly IConnectionMultiplexer _redis;
-
-    #endregion
 
     #region Public Methods
 
     public async Task<CommentPreview[]> GetFilteredItemsAsync(IOptions savedOptions)
     {
-        IDatabase db = _redis.GetDatabase();
-        EndPoint endPoint = _redis.GetEndPoints().First();
-        var keys = _redis.GetServer(endPoint).Keys(pattern: "*").ToArray();
+        IDatabase db = redis.GetDatabase();
+        EndPoint endPoint = redis.GetEndPoints().First();
+        var keys = redis.GetServer(endPoint).Keys(pattern: "*").ToArray();
         List<Comment> comments = new List<Comment>();
 
         foreach (var key in keys)
