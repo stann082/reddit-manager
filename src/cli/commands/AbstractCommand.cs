@@ -2,23 +2,8 @@
 
 namespace cli.commands;
 
-public abstract class AbstractCommand
+public abstract class AbstractCommand(IOptions options)
 {
-
-    #region Constructors
-
-    protected AbstractCommand(IOptions options)
-    {
-        _options = options;
-    }
-
-    #endregion
-
-    #region Variables
-
-    private readonly IOptions _options;
-
-    #endregion
 
     #region Abstract Methods
 
@@ -31,8 +16,8 @@ public abstract class AbstractCommand
     public async Task<int> Execute()
     {
         Console.Write("Fetching records, please wait...");
-        var comments = await GetComments(_options);
-        var limitedComments = comments.Take(_options.Limit).ToArray();
+        var comments = await GetComments(options);
+        var limitedComments = comments.Take(options.Limit).ToArray();
 
         Console.Write("\r" + new string(' ', Console.WindowWidth) + "\r");
         Console.WriteLine();
@@ -45,13 +30,13 @@ public abstract class AbstractCommand
             Console.WriteLine($"Score:       {comment.Score}");
             Console.WriteLine($"Link:        https://old.reddit.com{comment.Permalink}");
 
-            if (string.IsNullOrEmpty(_options.Query))
+            if (string.IsNullOrEmpty(options.Query))
             {
                 Console.WriteLine(comment.Body);
             }
             else
             {
-                HighlightMatches(comment.Body, _options.Query);
+                HighlightMatches(comment.Body, options.Query);
             }
 
             Console.WriteLine();
