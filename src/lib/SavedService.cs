@@ -83,7 +83,7 @@ public class SavedService : ISavedService
         string sub = options.GetFilterValue("sub");
         if (!string.IsNullOrEmpty(sub))
         {
-            filteredComments = filteredComments.Where(c => c.Subreddit.Contains(sub, StringComparison.OrdinalIgnoreCase));
+            filteredComments = filteredComments.Where(c => c.Subreddit.Equals(sub, StringComparison.OrdinalIgnoreCase));
         }
 
         return filteredComments;

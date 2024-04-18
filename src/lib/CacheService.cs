@@ -42,7 +42,7 @@ public class CacheService : ICacheService
         do
         {
             var topComments = await Task.Run(() => GetComments(after));
-            if (!topComments.Any())
+            if (topComments.Length == 0)
             {
                 totalTopComments = 0;
                 continue;
