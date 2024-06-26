@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using Reddit.Things;
 using StackExchange.Redis;
@@ -66,7 +67,15 @@ public class SavedService : ISavedService
         IEnumerable<CommentPreview> filteredComments = comments;
         if (!string.IsNullOrEmpty(options.Query))
         {
-            filteredComments = filteredComments.Where(c => c.Body.Contains(options.Query, StringComparison.OrdinalIgnoreCase));
+            if (options.IsExactWord)
+            {
+                string pattern = @"\b" + Regex.Escape(options.Query) + @"\b";
+                filteredComments = filteredComments.Where(c => Regex.IsMatch(c.Body, pattern, RegexOptions.IgnoreCase));
+            }
+            else
+            {
+                filteredComments = filteredComments.Where(c => c.Body.Contains(options.Query, StringComparison.OrdinalIgnoreCase));
+            }
         }
 
         if (string.IsNullOrEmpty(options.Filter))

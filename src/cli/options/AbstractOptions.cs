@@ -7,7 +7,7 @@ public abstract class AbstractOptions
 
     #region Constants
 
-    private const int DefaultLimit = 10;
+    private const int DefaultLimit = 25;
 
     #endregion
     
@@ -16,9 +16,12 @@ public abstract class AbstractOptions
     [Option('c', "comment", Default = true, HelpText = "Specify if you're searching for comment.")]
     public bool Comment { get; set; }
     
-    [Option('p', "post", HelpText = "Specify if you're searching for post.")]
+    [Option('e', "exact", HelpText = "Specify if you're searching for exact word in a query.")]
+    public bool IsExactWord { get; set; }
     
+    [Option('p', "post", HelpText = "Specify if you're searching for post.")]
     public bool Post { get; set; }
+    
     [Option('f', "filter", HelpText = "Filters by sub, author, date (e.g., -f author=foomanchu&sub=news.")]
     public string Filter { get; set; }
     
