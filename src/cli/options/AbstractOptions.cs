@@ -28,6 +28,9 @@ public abstract class AbstractOptions
     [Option('q', "query", HelpText = "Search for a specific word.")]
     public string Query { get; set; }
     
+    [Option("show-id", HelpText = "Display comment id.")]
+    public bool ShowId { get; set; }
+    
     [Option('u', "user", HelpText = "Specify a user (if blank your personal account will be used).")]
     public string User { get; set; }
 

@@ -24,6 +24,11 @@ public abstract class AbstractCommand(IOptions options)
 
         foreach (var comment in limitedComments)
         {
+            if (options.ShowId)
+            {
+                Console.WriteLine($"Id:      {comment.Id}");
+            }
+
             Console.WriteLine($"Author:      {comment.Author}");
             Console.WriteLine($"Subreddit:   {comment.Subreddit}");
             Console.WriteLine($"Date posted: {comment.Date}");
