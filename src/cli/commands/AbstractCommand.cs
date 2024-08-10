@@ -26,7 +26,7 @@ public abstract class AbstractCommand(IOptions options)
         {
             if (options.ShowId)
             {
-                Console.WriteLine($"Id:      {comment.Id}");
+                Console.WriteLine($"Id:          {comment.Id}");
             }
 
             Console.WriteLine($"Author:      {comment.Author}");
