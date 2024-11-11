@@ -16,6 +16,9 @@ public abstract class AbstractOptions
     [Option('c', "comment", Default = true, HelpText = "Specify if you're searching for comment.")]
     public bool Comment { get; set; }
     
+    [Option('a', "archive", HelpText = "Search in Pushshift file dumps on disk.")]
+    public bool IsArchive { get; set; }
+    
     [Option('e', "exact", HelpText = "Specify if you're searching for exact word in a query.")]
     public bool IsExactWord { get; set; }
     

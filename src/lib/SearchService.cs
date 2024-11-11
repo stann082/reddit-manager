@@ -1,85 +1,90 @@
-﻿using Reddit;
+﻿using Newtonsoft.Json;
+using Reddit;
 using Reddit.Exceptions;
 using Reddit.Inputs.Users;
 using Reddit.Things;
 
 namespace lib;
 
-public class SearchService : ISearchService
+public class SearchService(ApplicationConfig config) : ISearchService
 {
+    #region Public Methods
 
-    #region Constructors
-
-    public SearchService(ApplicationConfig config)
+    public async Task<CommentPreview[]> Search(IOptions options)
     {
-        _me = Environment.GetEnvironmentVariable("MY_REDDIT_USERNAME");
-        _redditClient = new RedditClient(config.AppId, config.RefreshToken, accessToken: config.AccessToken);
+        CommentPreview[] commentPreviews;
+
+        if (options.IsArchive)
+            commentPreviews = (await GetCommentsFromPushshiftArchive(options))
+                .Select(m => new CommentPreview(m))
+                .OrderByDescending(m => m.Date).ToArray();
+        else
+            try
+            {
+                commentPreviews = (await GetCommentsFromReddit(options.User))
+                    .Select(c => new CommentPreview(c))
+                    .OrderByDescending(c => c.Date).ToArray();
+            }
+            catch (RedditForbiddenException e)
+            {
+                Console.WriteLine(e);
+                return [];
+            }
+
+        IEnumerable<CommentPreview> filteredComments = commentPreviews;
+        if (!string.IsNullOrEmpty(options.Query))
+            filteredComments = filteredComments.Where(c => c.Body.Contains(options.Query, StringComparison.OrdinalIgnoreCase));
+
+        if (string.IsNullOrEmpty(options.Filter)) return filteredComments.ToArray();
+
+        var author = options.GetFilterValue("author");
+        if (!string.IsNullOrEmpty(author))
+            filteredComments = filteredComments.Where(c => c.Author.Contains(author, StringComparison.OrdinalIgnoreCase));
+
+        var sub = options.GetFilterValue("sub");
+        if (!string.IsNullOrEmpty(sub))
+            filteredComments = filteredComments.Where(c => c.Subreddit.Contains(sub, StringComparison.OrdinalIgnoreCase));
+
+        return filteredComments.ToArray();
     }
 
     #endregion
 
     #region Variables
 
-    private readonly RedditClient _redditClient;
-    private readonly string _me;
-
-    #endregion
-
-    #region Public Methods
-
-    public async Task<CommentPreview[]> Search(IOptions options)
-    {
-        Comment[] comments;
-        try
-        {
-            comments = options.Comment ? await GetComments(options.User) : await GetPosts();
-        }
-        catch (RedditForbiddenException e)
-        {
-            Console.WriteLine(e);
-            return Array.Empty<CommentPreview>();
-        }
-
-        var allComments = comments.Select(c => new CommentPreview(c)).OrderByDescending(c => c.Date).ToArray();
-        IEnumerable<CommentPreview> filteredComments = FilterComments(allComments, options);
-        return filteredComments.ToArray();
-    }
+    private readonly RedditClient _redditClient = new(config.AppId, config.RefreshToken, accessToken: config.AccessToken);
+    private readonly string _me = Environment.GetEnvironmentVariable("MY_REDDIT_USERNAME");
 
     #endregion
 
     #region Helper Methods
 
-    private static IEnumerable<CommentPreview> FilterComments(IEnumerable<CommentPreview> comments, IOptions options)
+    private static async Task<PushshiftModel[]> GetCommentsFromPushshiftArchive(IOptions options)
     {
-        IEnumerable<CommentPreview> filteredComments = comments;
-        if (!string.IsNullOrEmpty(options.Query))
-        {
-            filteredComments = filteredComments.Where(c => c.Body.Contains(options.Query, StringComparison.OrdinalIgnoreCase));
-        }
+        var files = new List<string>();
 
-        if (string.IsNullOrEmpty(options.Filter))
+        string subreddit = options.GetFilterValue("sub");
+        string subredditFolderPattern = !string.IsNullOrEmpty(subreddit) ? subreddit : "*";
+        var dirs = Directory.GetDirectories(@"E:\PushshiftDumps\user_comments\author", subredditFolderPattern, SearchOption.AllDirectories);
+        foreach (var dir in dirs)
         {
-            return filteredComments;
+            var allFiles = Directory.GetFiles(dir, "*.json", SearchOption.AllDirectories);
+            if (allFiles.Length == 0) continue;
+            files.AddRange(allFiles);
         }
 
         string author = options.GetFilterValue("author");
         if (!string.IsNullOrEmpty(author))
         {
-            filteredComments = filteredComments.Where(c => c.Author.Contains(author, StringComparison.OrdinalIgnoreCase));
+            files = files.Where(f => f.Contains(author, StringComparison.OrdinalIgnoreCase)).ToList();
         }
-
-        string sub = options.GetFilterValue("sub");
-        if (!string.IsNullOrEmpty(sub))
-        {
-            filteredComments = filteredComments.Where(c => c.Subreddit.Contains(sub, StringComparison.OrdinalIgnoreCase));
-        }
-
-        return filteredComments;
+        
+        return await Task.FromResult(files.SelectMany(StreamCommentsFromFile).ToArray());
     }
 
-    private async Task<Comment[]> GetComments(string username)
+    private async Task<Comment[]> GetCommentsFromReddit(string username)
     {
-        List<Comment> comments = new List<Comment>();
+        var comments = new List<Comment>();
 
         var after = "";
         int totalComments;
@@ -87,12 +92,13 @@ public class SearchService : ISearchService
         {
             var commentsBatch = await Task.Run(() =>
             {
-                CommentContainer history = _redditClient.Models.Users.CommentHistory(!string.IsNullOrEmpty(username) ? username : _me, "comments",
+                var history = _redditClient.Models.Users.CommentHistory(
+                    !string.IsNullOrEmpty(username) ? username : _me, "comments",
                     new UsersHistoryInput("comments", after: after, context: 10, limit: 100));
                 return history.Data.Children.Select(c => c.Data).ToArray();
             });
 
-            if (!commentsBatch.Any())
+            if (commentsBatch.Length == 0)
             {
                 totalComments = 0;
                 continue;
@@ -106,11 +112,11 @@ public class SearchService : ISearchService
         return comments.ToArray();
     }
 
-    private static async Task<Comment[]> GetPosts()
+    private static IEnumerable<PushshiftModel> StreamCommentsFromFile(string filePath)
     {
-        return await Task.FromResult(Array.Empty<Comment>());
+        using var reader = new StreamReader(filePath);
+        while (reader.ReadLine() is { } line) yield return JsonConvert.DeserializeObject<PushshiftModel>(line);
     }
 
     #endregion
-
 }

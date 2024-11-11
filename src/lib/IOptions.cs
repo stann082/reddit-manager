@@ -4,7 +4,7 @@ public interface IOptions
 {
     
     // attributes
-    bool Comment { get; }
+    bool IsArchive { get; }
     bool IsExactWord { get; }
     string Filter { get; }
     int Limit { get; }

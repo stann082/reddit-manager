@@ -52,11 +52,11 @@ public abstract class AbstractCommand(IOptions options)
 
             if (string.IsNullOrEmpty(options.Query))
             {
-                Console.WriteLine(comment.Body);
+                HighlightQuotation(comment.Body);
             }
             else
             {
-                HighlightMatches(comment.Body, options.Query);
+                HighlightText(comment.Body, options.Query);
             }
 
             Console.WriteLine();
@@ -69,28 +69,64 @@ public abstract class AbstractCommand(IOptions options)
     #endregion
 
     #region Helper Methods
-
-    private static void HighlightMatches(string text, string query)
+    
+    private static void HighlightText(string text, string query)
     {
-        var queryLength = query.Length;
-        int startIndex = 0;
-        int index = text.IndexOf(query, StringComparison.OrdinalIgnoreCase);
-
-        while (index != -1)
+        var parts = text.Split(["\n\n"], StringSplitOptions.None);
+        foreach (var originalPart in parts)
         {
-            Console.Write(text.Substring(startIndex, index - startIndex));
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.Write(text.Substring(index, queryLength));
-            Console.ResetColor();
+            string part = originalPart.StartsWith("&gt;") ? originalPart.Replace("&gt;", ">") : originalPart;
+            bool isQuote = originalPart.StartsWith("&gt;");
+            if (isQuote)
+            {
+                Console.ForegroundColor = ConsoleColor.Green;
+            }
 
-            startIndex = index + queryLength;
-            index = text.IndexOf(query, startIndex, StringComparison.OrdinalIgnoreCase);
+            // Process each part for the search query
+            int startIndex = 0;
+            int index = part.IndexOf(query, StringComparison.OrdinalIgnoreCase);
+            while (index != -1)
+            {
+                Console.Write(part.Substring(startIndex, index - startIndex));
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.Write(part.Substring(index, query.Length));
+                if (isQuote) 
+                {
+                    Console.ForegroundColor = ConsoleColor.Green;
+                } else 
+                {
+                    Console.ResetColor();
+                }
+
+                startIndex = index + query.Length;
+                index = part.IndexOf(query, startIndex, StringComparison.OrdinalIgnoreCase);
+            }
+
+            // Finish the current part
+            Console.Write(part[startIndex..]);
+            if (isQuote) Console.ResetColor();
+            Console.Write("\n\n");
         }
-
-        Console.Write(text[startIndex..]);
-        Console.WriteLine();
     }
 
+    private static void HighlightQuotation(string text)
+    {
+        var parts = text.Split(["\n\n"], StringSplitOptions.None);
+        foreach (var part in parts)
+        {
+            if (part.StartsWith("&gt;"))
+            {
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.Write(part.Replace("&gt;", ">") + "\n\n");
+                Console.ResetColor();
+            }
+            else
+            {
+                Console.Write(part + "\n\n");
+            }
+        }
+    }
+    
     #endregion
 
 }

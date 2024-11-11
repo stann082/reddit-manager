@@ -4,20 +4,39 @@ namespace lib;
 
 public class CommentPreview
 {
+    #region Overridden Methods
+
+    public override string ToString()
+    {
+        return $"{Id}; {Subreddit}; {Date}; {LimitString(Body)}";
+    }
+
+    #endregion
 
     #region Constructors
 
     public CommentPreview(Comment comment)
     {
-        _comment = comment;
         Author = comment.Author;
         Body = comment.Body;
         Id = comment.Id;
+        Date = GetValidaDate(comment);
         Name = comment.Name;
         Permalink = comment.Permalink;
         Saved = comment.Saved;
         Score = comment.Score;
         Subreddit = comment.Subreddit;
+    }
+
+    public CommentPreview(PushshiftModel model)
+    {
+        Author = model.Author;
+        Body = model.Body;
+        Id = model.Id;
+        Date = ConvertFromUnixTimestamp(model.CreatedUtc);
+        Permalink = model.Permalink;
+        Score = model.Score;
+        Subreddit = model.Subreddit;
     }
 
     #endregion
@@ -28,7 +47,7 @@ public class CommentPreview
 
     public string Body { get; }
 
-    public DateTime Date => GetValidaDate();
+    public DateTime? Date { get; }
 
     public string Id { get; }
 
@@ -40,38 +59,26 @@ public class CommentPreview
     public int Score { get; }
     public string Subreddit { get; }
 
-    private readonly Comment _comment;
-    
-    #endregion
-
-    #region Overridden Methods
-
-    public override string ToString()
-    {
-        return $"{Id}; {Subreddit}; {Date}; {LimitString(Body)}";
-    }
-
     #endregion
 
     #region Helper Methods
 
-    private DateTime GetValidaDate()
+    private static DateTime ConvertFromUnixTimestamp(long unixTimeStamp)
     {
-        if (_comment.CreatedUTC != DateTime.MinValue)
-        {
-            return _comment.CreatedUTC;
-        }
+        var dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+        dateTime = dateTime.AddSeconds(unixTimeStamp).ToLocalTime();
+        return dateTime;
+    }
 
-        if (_comment.Created != DateTime.MinValue)
-        {
-            return _comment.Created;
-        }
+    private DateTime GetValidaDate(Comment comment)
+    {
+        if (comment.CreatedUTC != DateTime.MinValue) return comment.CreatedUTC;
 
-        if (_comment.Edited != DateTime.MinValue)
-        {
-            return _comment.Edited;
-        }
-        
+#pragma warning disable CS0618 // Type or member is obsolete
+        if (comment?.Created != DateTime.MinValue) return comment.Created;
+#pragma warning restore CS0618 // Type or member is obsolete
+
+        if (comment.Edited != DateTime.MinValue) return comment.Edited;
         return DateTime.MinValue;
     }
 
@@ -81,5 +88,4 @@ public class CommentPreview
     }
 
     #endregion
-    
 }
