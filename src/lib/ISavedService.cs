@@ -1,9 +1,7 @@
-﻿using Reddit.Things;
-
-namespace lib;
+﻿namespace lib;
 
 public interface ISavedService
 {
-    Task<Comment[]> GetAllItemsAsync();
+    Task<CommentModel[]> GetAllItemsAsync();
     Task<CommentPreview[]> GetFilteredItemsAsync(IOptions savedOptions);
 }

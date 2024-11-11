@@ -1,5 +1,4 @@
 ﻿using lib;
-using Reddit.Things;
 
 namespace cli.commands;
 
@@ -8,10 +7,10 @@ public class SearchCommand(IOptions options, ISearchService service) : AbstractC
 
     #region Overriden Methods
 
-    protected override Task<Comment[]> GetAllComments()
+    protected override Task<CommentModel[]> GetAllComments()
     {
         // does not apply to search
-        return Task.FromResult(Array.Empty<Comment>());
+        return Task.FromResult(Array.Empty<CommentModel>());
     }
 
     protected override Task<CommentPreview[]> GetFilteredComments(IOptions options)

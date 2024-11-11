@@ -1,49 +1,22 @@
-﻿using System.Net;
-using System.Text.RegularExpressions;
-using Newtonsoft.Json;
-using Reddit.Things;
-using StackExchange.Redis;
+﻿using System.Text.RegularExpressions;
+using MongoDB.Driver;
 
 namespace lib;
 
-public class SavedService(IConnectionMultiplexer redis) : ISavedService
+public class SavedService(IMongoDatabase database) : ISavedService
 {
 
     #region Public Methods
 
-    public async Task<Comment[]> GetAllItemsAsync()
+    public async Task<CommentModel[]> GetAllItemsAsync()
     {
-        IDatabase db = redis.GetDatabase();
-        EndPoint endPoint = redis.GetEndPoints().First();
-        var keys = redis.GetServer(endPoint).Keys(pattern: "*").ToArray();
-        List<Comment> comments = new List<Comment>();
-
-        foreach (var key in keys)
-        {
-            try
-            {
-                RedisValue cachedValue = await db.StringGetAsync(key);
-                Comment comment = JsonConvert.DeserializeObject<Comment>(cachedValue);
-                if (comment == null)
-                {
-                    Console.WriteLine($"Unable to deserialize a value from {key} key");
-                    continue;
-                }
-
-                comments.Add(comment);
-            }
-            catch (Exception)
-            {
-                // squash
-            }
-        }
-
-        return comments.ToArray();
+        IEnumerable<CommentModel> comments = database.GetCollection<CommentModel>("comments").AsQueryable().ToArray();
+        return await Task.FromResult(comments.ToArray());
     }
     
     public async Task<CommentPreview[]> GetFilteredItemsAsync(IOptions savedOptions)
     {
-        Comment[] comments = await GetAllItemsAsync();
+        CommentModel[] comments = await GetAllItemsAsync();
         CommentPreview[] commentPreviews = comments.Select(c => new CommentPreview(c)).ToArray();
         CommentPreview[] allComments = commentPreviews.OrderByDescending(c => c.Date).ToArray();
         return FilterComments(allComments, savedOptions).ToArray();
