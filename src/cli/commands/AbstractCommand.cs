@@ -1,6 +1,5 @@
 ﻿using System.Text.Json;
 using lib;
-using Reddit.Things;
 
 namespace cli.commands;
 
@@ -13,13 +12,9 @@ public abstract class AbstractCommand(IOptions options)
     {
         if (options.ShouldExport)
         {
-            Comment[] allComments = await GetAllComments();
+            CommentModel[] allComments = await GetAllComments();
             string jsonString = JsonSerializer.Serialize(allComments);
-            string filePath = @"C:\Users\sbennett\reddit-backup.json";
-            await File.WriteAllTextAsync(filePath, jsonString);
-
-            jsonString = await File.ReadAllTextAsync(filePath);
-            Comment[] deserializedComments = JsonSerializer.Deserialize<Comment[]>(jsonString);
+            await File.WriteAllTextAsync(@"C:\Users\sbennett\reddit-backup.json", jsonString);
             return 0;
         }
 
@@ -55,7 +50,7 @@ public abstract class AbstractCommand(IOptions options)
 
     #region Abstract Methods
 
-    protected abstract Task<Comment[]> GetAllComments();
+    protected abstract Task<CommentModel[]> GetAllComments();
     protected abstract Task<CommentPreview[]> GetFilteredComments(IOptions options);
 
     #endregion

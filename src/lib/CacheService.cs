@@ -1,12 +1,11 @@
-﻿using Reddit;
+﻿using MongoDB.Driver;
+using Reddit;
 using Reddit.Inputs.Users;
 using Reddit.Things;
-using StackExchange.Redis;
-using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace lib;
 
-public class CacheService(ApplicationConfig config, IConnectionMultiplexer redis) : ICacheService
+public class CacheService(ApplicationConfig config, IMongoDatabase database) : ICacheService
 {
 
     #region Variables
@@ -22,32 +21,32 @@ public class CacheService(ApplicationConfig config, IConnectionMultiplexer redis
     {
         int newCachedComments = 0;
         int existingCachedComments = 0;
-        IDatabase db = redis.GetDatabase();
         Console.WriteLine("Caching saved comments into memory");
 
+        var collection = database.GetCollection<CommentModel>("comments");
+        
         var after = "";
         int totalTopComments;
         do
         {
-            var topComments = await Task.Run(() => GetComments(after));
+            CommentModel[] topComments = await Task.Run(() => GetComments(after));
             if (topComments.Length == 0)
             {
                 totalTopComments = 0;
                 continue;
             }
 
-            foreach (var topComment in topComments)
+            foreach (CommentModel topComment in topComments)
             {
-                string key = topComment.Id;
-                string cachedValue = db.StringGet(key);
-                if (!string.IsNullOrEmpty(cachedValue))
+                var filter = Builders<CommentModel>.Filter.Eq("CommentId", topComment.CommentId);
+                var document = collection.Find(filter).FirstOrDefault();
+                if (document != null)
                 {
                     existingCachedComments++;
                     continue;
                 }
 
-                string value = JsonSerializer.Serialize(topComment);
-                db.StringSet(key, value);
+                await collection.InsertOneAsync(topComment);
                 newCachedComments++;
             }
 
@@ -62,11 +61,11 @@ public class CacheService(ApplicationConfig config, IConnectionMultiplexer redis
 
     #region Helper Methods
 
-    private Comment[] GetComments(string after)
+    private CommentModel[] GetComments(string after)
     {
         CommentContainer history = _redditClient.Models.Users.CommentHistory(_me, "saved",
             new UsersHistoryInput("comments", after: after, sort: "top", context: 10, limit: 100));
-        return history.Data.Children.Select(c => c.Data).ToArray();
+        return history.Data.Children.Select(c => c.Data).Select(c => new CommentModel(c)).ToArray();
     }
 
     #endregion

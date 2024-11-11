@@ -16,7 +16,7 @@
 
   <ItemGroup>
     <PackageReference Include="Reddit" Version="1.5.2" />
-    <PackageReference Include="StackExchange.Redis" Version="2.7.27" />
+    <PackageReference Include="MongoDB.Driver" Version="2.28.0" />
   </ItemGroup>
 
 </Project>

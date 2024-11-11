@@ -90,7 +90,7 @@ public class SearchService(ApplicationConfig config) : ISearchService
         return await Task.FromResult(files.SelectMany(StreamCommentsFromFile).ToArray());
     }
 
-    private async Task<Comment[]> GetCommentsFromReddit(string username)
+    private async Task<CommentModel[]> GetCommentsFromReddit(string username)
     {
         List<Comment> comments = [];
 
@@ -117,7 +117,7 @@ public class SearchService(ApplicationConfig config) : ISearchService
             totalComments = commentsBatch.Length;
         } while (totalComments > 0);
 
-        return comments.ToArray();
+        return comments.Select(c => new CommentModel(c)).ToArray();
     }
 
     private static IEnumerable<PushshiftModel> StreamCommentsFromFile(string filePath)

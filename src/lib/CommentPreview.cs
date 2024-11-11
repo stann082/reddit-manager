@@ -1,6 +1,4 @@
-﻿using Reddit.Things;
-
-namespace lib;
+﻿namespace lib;
 
 public class CommentPreview
 {
@@ -15,11 +13,11 @@ public class CommentPreview
 
     #region Constructors
 
-    public CommentPreview(Comment comment)
+    public CommentPreview(CommentModel comment)
     {
         Author = comment.Author;
         Body = comment.Body;
-        Id = comment.Id;
+        Id = comment.CommentId;
         Date = GetValidaDate(comment);
         Name = comment.Name;
         Permalink = comment.Permalink;
@@ -70,9 +68,9 @@ public class CommentPreview
         return dateTime;
     }
 
-    private DateTime GetValidaDate(Comment comment)
+    private DateTime GetValidaDate(CommentModel comment)
     {
-        if (comment.CreatedUTC != DateTime.MinValue) return comment.CreatedUTC;
+        if (comment.CreatedUtc != DateTime.MinValue) return comment.CreatedUtc;
 
 #pragma warning disable CS0618 // Type or member is obsolete
         if (comment?.Created != DateTime.MinValue) return comment.Created;

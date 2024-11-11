@@ -1,6 +1,6 @@
 ﻿using lib;
 using Microsoft.Extensions.DependencyInjection;
-using StackExchange.Redis;
+using MongoDB.Driver;
 
 namespace app;
 
@@ -15,7 +15,8 @@ public static class Program
         var services = new ServiceCollection()
         .AddSingleton(config)
         .AddSingleton<App>()
-        .AddSingleton<IConnectionMultiplexer>(await ConnectionMultiplexer.ConnectAsync("localhost"))
+        .AddSingleton<IMongoDatabase>(_ => new MongoClient("mongodb://localhost:27017")
+            .GetDatabase("reddit"))
         .AddScoped<ICacheService, CacheService>()
         .AddScoped<ISearchService, SearchService>()
         .AddScoped<ISavedService, SavedService>()
