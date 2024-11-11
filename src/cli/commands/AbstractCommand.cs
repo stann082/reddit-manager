@@ -42,7 +42,7 @@ public abstract class AbstractCommand(IOptions options)
             Console.WriteLine($"Date posted: {comment.Date}");
             Console.WriteLine($"Score:       {comment.Score}");
             Console.WriteLine($"Link:        https://old.reddit.com{comment.Permalink}");
-            HighlightText(comment.Body, options.Query);
+            PrintBody(comment.Body, options.Query);
 
             Console.WriteLine();
         }
@@ -62,7 +62,7 @@ public abstract class AbstractCommand(IOptions options)
 
     #region Helper Methods
 
-    private static void HighlightText(string text, string query = null)
+    private static void PrintBody(string text, string query = null)
     {
         var parts = text.Split(["\n\n"], StringSplitOptions.None);
         foreach (var originalPart in parts)
