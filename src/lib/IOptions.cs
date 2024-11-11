@@ -10,6 +10,7 @@ public interface IOptions
     int Limit { get; }
     string Query { get; }
     bool ShowId { get; }
+    bool ShouldExport { get; }
     string User { get; }
 
     // behavior

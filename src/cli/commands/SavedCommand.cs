@@ -1,4 +1,5 @@
 ﻿using lib;
+using Reddit.Things;
 
 namespace cli.commands;
 
@@ -7,7 +8,12 @@ public class SavedCommand(IOptions options, ISavedService service) : AbstractCom
 
     #region Overriden Methods
 
-    protected override Task<CommentPreview[]> GetComments(IOptions options)
+    protected override Task<Comment[]> GetAllComments()
+    {
+        return service.GetAllItemsAsync();
+    }
+
+    protected override Task<CommentPreview[]> GetFilteredComments(IOptions options)
     {
         return service.GetFilteredItemsAsync(options);
     }

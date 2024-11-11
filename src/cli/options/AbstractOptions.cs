@@ -31,6 +31,9 @@ public abstract class AbstractOptions
     [Option("show-id", HelpText = "Display comment id.")]
     public bool ShowId { get; set; }
     
+    [Option("export", HelpText = "Export all saved posts to JSON.")]
+    public bool ShouldExport { get; set; }
+    
     [Option('u', "user", HelpText = "Specify a user (if blank your personal account will be used).")]
     public string User { get; set; }
 

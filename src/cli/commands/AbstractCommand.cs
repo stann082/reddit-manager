@@ -1,4 +1,6 @@
-﻿using lib;
+﻿using System.Text.Json;
+using lib;
+using Reddit.Things;
 
 namespace cli.commands;
 
@@ -7,7 +9,8 @@ public abstract class AbstractCommand(IOptions options)
 
     #region Abstract Methods
 
-    protected abstract Task<CommentPreview[]> GetComments(IOptions options);
+    protected abstract Task<Comment[]> GetAllComments();
+    protected abstract Task<CommentPreview[]> GetFilteredComments(IOptions options);
 
     #endregion
 
@@ -15,8 +18,20 @@ public abstract class AbstractCommand(IOptions options)
 
     public async Task<int> Execute()
     {
+        if (options.ShouldExport)
+        {
+            Comment[] allComments = await GetAllComments();
+            string jsonString = JsonSerializer.Serialize(allComments);
+            string filePath = @"C:\Users\sbennett\reddit-backup.json";
+            await File.WriteAllTextAsync(filePath, jsonString);
+            
+            jsonString = await File.ReadAllTextAsync(filePath);
+            Comment[] deserializedComments = JsonSerializer.Deserialize<Comment[]>(jsonString);
+            return 0;
+        }
+        
         Console.Write("Fetching records, please wait...");
-        var comments = await GetComments(options);
+        var comments = await GetFilteredComments(options);
         var limitedComments = comments.Take(options.Limit).ToArray();
 
         Console.Write("\r" + new string(' ', Console.WindowWidth) + "\r");

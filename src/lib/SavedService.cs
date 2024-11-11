@@ -6,31 +6,16 @@ using StackExchange.Redis;
 
 namespace lib;
 
-public class SavedService : ISavedService
+public class SavedService(IConnectionMultiplexer redis) : ISavedService
 {
-
-    #region Constructors
-
-    public SavedService(IConnectionMultiplexer redis)
-    {
-        _redis = redis;
-    }
-
-    #endregion
-
-    #region Variables
-
-    private readonly IConnectionMultiplexer _redis;
-
-    #endregion
 
     #region Public Methods
 
-    public async Task<CommentPreview[]> GetFilteredItemsAsync(IOptions savedOptions)
+    public async Task<Comment[]> GetAllItemsAsync()
     {
-        IDatabase db = _redis.GetDatabase();
-        EndPoint endPoint = _redis.GetEndPoints().First();
-        var keys = _redis.GetServer(endPoint).Keys(pattern: "*").ToArray();
+        IDatabase db = redis.GetDatabase();
+        EndPoint endPoint = redis.GetEndPoints().First();
+        var keys = redis.GetServer(endPoint).Keys(pattern: "*").ToArray();
         List<Comment> comments = new List<Comment>();
 
         foreach (var key in keys)
@@ -53,6 +38,12 @@ public class SavedService : ISavedService
             }
         }
 
+        return comments.ToArray();
+    }
+    
+    public async Task<CommentPreview[]> GetFilteredItemsAsync(IOptions savedOptions)
+    {
+        Comment[] comments = await GetAllItemsAsync();
         CommentPreview[] commentPreviews = comments.Select(c => new CommentPreview(c)).ToArray();
         CommentPreview[] allComments = commentPreviews.OrderByDescending(c => c.Date).ToArray();
         return FilterComments(allComments, savedOptions).ToArray();
