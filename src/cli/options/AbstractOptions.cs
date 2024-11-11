@@ -1,42 +1,43 @@
 ﻿using CommandLine;
+// ReSharper disable UnusedAutoPropertyAccessor.Global
 
 namespace cli.options;
 
 public abstract class AbstractOptions
 {
-
+    
     #region Constants
 
     private const int DefaultLimit = 25;
 
     #endregion
-    
+
     #region Properties
 
     [Option('c', "comment", Default = true, HelpText = "Specify if you're searching for comment.")]
     public bool Comment { get; set; }
-    
+
     [Option('a', "archive", HelpText = "Search in Pushshift file dumps on disk.")]
     public bool IsArchive { get; set; }
-    
+
     [Option('e', "exact", HelpText = "Specify if you're searching for exact word in a query.")]
     public bool IsExactWord { get; set; }
-    
+
     [Option('p', "post", HelpText = "Specify if you're searching for post.")]
     public bool Post { get; set; }
-    
+
     [Option('f', "filter", HelpText = "Filters by sub, author, date (e.g., -f author=foomanchu&sub=news.")]
     public string Filter { get; set; }
-    
+
     [Option('q', "query", HelpText = "Search for a specific word.")]
     public string Query { get; set; }
-    
+
     [Option("show-id", HelpText = "Display comment id.")]
     public bool ShowId { get; set; }
-    
+
     [Option("export", HelpText = "Export all saved posts to JSON.")]
     public bool ShouldExport { get; set; }
-    
+
     [Option('u', "user", HelpText = "Specify a user (if blank your personal account will be used).")]
     public string User { get; set; }
 
@@ -48,16 +49,16 @@ public abstract class AbstractOptions
     public int Limit => GetLimitFromFilter();
 
     #endregion
-    
+
     #region Public Methods
 
     public string GetFilterValue(string key)
     {
-        if (!FilterMap.Any())
+        if (FilterMap.Count == 0)
         {
             return string.Empty;
         }
-        
+
         return FilterMap.TryGetValue(key, out string value) ? value : string.Empty;
     }
 
@@ -65,13 +66,13 @@ public abstract class AbstractOptions
 
     #region Helper Methods
 
-    private Dictionary<string,string> CreateFilterMap()
+    private Dictionary<string, string> CreateFilterMap()
     {
         if (string.IsNullOrEmpty(Filter))
         {
             return new Dictionary<string, string>();
         }
-        
+
         return Filter.Split('&')
             .Select(part => part.Split('='))
             .Where(parts => parts.Length == 2)
@@ -85,5 +86,5 @@ public abstract class AbstractOptions
     }
 
     #endregion
-
+    
 }

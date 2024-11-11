@@ -15,10 +15,14 @@ public class SearchService(ApplicationConfig config) : ISearchService
         CommentPreview[] commentPreviews;
 
         if (options.IsArchive)
+        {
             commentPreviews = (await GetCommentsFromPushshiftArchive(options))
                 .Select(m => new CommentPreview(m))
                 .OrderByDescending(m => m.Date).ToArray();
+        }
         else
+        {
+            
             try
             {
                 commentPreviews = (await GetCommentsFromReddit(options.User))
@@ -30,6 +34,10 @@ public class SearchService(ApplicationConfig config) : ISearchService
                 Console.WriteLine(e);
                 return [];
             }
+        }
+
+        string id = options.GetFilterValue("id");
+        if (!string.IsNullOrEmpty(id)) return commentPreviews.Where(c => c.Id == id).ToArray();
 
         IEnumerable<CommentPreview> filteredComments = commentPreviews;
         if (!string.IsNullOrEmpty(options.Query))
@@ -61,14 +69,14 @@ public class SearchService(ApplicationConfig config) : ISearchService
 
     private static async Task<PushshiftModel[]> GetCommentsFromPushshiftArchive(IOptions options)
     {
-        var files = new List<string>();
+        List<string> files = [];
 
         string subreddit = options.GetFilterValue("sub");
         string subredditFolderPattern = !string.IsNullOrEmpty(subreddit) ? subreddit : "*";
         var dirs = Directory.GetDirectories(@"E:\PushshiftDumps\user_comments\author", subredditFolderPattern, SearchOption.AllDirectories);
-        foreach (var dir in dirs)
+        foreach (string dir in dirs)
         {
-            var allFiles = Directory.GetFiles(dir, "*.json", SearchOption.AllDirectories);
+            string[] allFiles = Directory.GetFiles(dir, "*.json", SearchOption.AllDirectories);
             if (allFiles.Length == 0) continue;
             files.AddRange(allFiles);
         }
@@ -78,13 +86,13 @@ public class SearchService(ApplicationConfig config) : ISearchService
         {
             files = files.Where(f => f.Contains(author, StringComparison.OrdinalIgnoreCase)).ToList();
         }
-        
+
         return await Task.FromResult(files.SelectMany(StreamCommentsFromFile).ToArray());
     }
 
     private async Task<Comment[]> GetCommentsFromReddit(string username)
     {
-        var comments = new List<Comment>();
+        List<Comment> comments = [];
 
         var after = "";
         int totalComments;
@@ -115,7 +123,10 @@ public class SearchService(ApplicationConfig config) : ISearchService
     private static IEnumerable<PushshiftModel> StreamCommentsFromFile(string filePath)
     {
         using var reader = new StreamReader(filePath);
-        while (reader.ReadLine() is { } line) yield return JsonConvert.DeserializeObject<PushshiftModel>(line);
+        while (reader.ReadLine() is { } line)
+        {
+            yield return JsonConvert.DeserializeObject<PushshiftModel>(line);
+        }
     }
 
     #endregion
