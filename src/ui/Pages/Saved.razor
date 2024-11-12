@@ -27,9 +27,9 @@
             <div class="d-flex align-items-center">
                 <button class="btn btn-primary" type="submit">Search</button>
                 <span class="ml-3 text-muted">
-                    @if (totalRecords.HasValue)
+                    @if (_totalRecords.HasValue)
                     {
-                        <span>Showing @filterOptions.Limit of @totalRecords records</span>
+                        <span>Showing @_filterOptions.Limit of @_totalRecords records</span>
                     }
                 </span>
             </div>
