@@ -3,5 +3,5 @@
 public interface ISavedService
 {
     Task<CommentModel[]> GetAllItemsAsync();
-    Task<CommentPreview[]> GetFilteredItemsAsync(IOptions savedOptions);
+    Task<CommentPreview[]> GetFilteredItemsAsync(IOptions options);
 }

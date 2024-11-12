@@ -12,7 +12,7 @@ public abstract class AbstractOptions
 
     #endregion
 
-    #region Properties
+    #region Parameters
 
     [Option('c', "comment", Default = true, HelpText = "Specify if you're searching for comment.")]
     public bool Comment { get; set; }
@@ -38,29 +38,17 @@ public abstract class AbstractOptions
     [Option("export", HelpText = "Export all saved posts to JSON.")]
     public bool ShouldExport { get; set; }
 
-    [Option('u', "user", HelpText = "Specify a user (if blank your personal account will be used).")]
-    public string User { get; set; }
-
     #endregion
 
     #region Properties
 
-    private Dictionary<string, string> FilterMap => CreateFilterMap();
+    public string Author => GetFilterValue("author");
+    public string Id => GetFilterValue("id");
+    public bool IsFilterEnabled => !string.IsNullOrEmpty(Filter);
     public int Limit => GetLimitFromFilter();
-
-    #endregion
-
-    #region Public Methods
-
-    public string GetFilterValue(string key)
-    {
-        if (FilterMap.Count == 0)
-        {
-            return string.Empty;
-        }
-
-        return FilterMap.TryGetValue(key, out string value) ? value : string.Empty;
-    }
+    public string Subreddit => GetFilterValue("sub");
+    
+    private Dictionary<string, string> FilterMap => CreateFilterMap();
 
     #endregion
 
@@ -77,6 +65,16 @@ public abstract class AbstractOptions
             .Select(part => part.Split('='))
             .Where(parts => parts.Length == 2)
             .ToDictionary(parts => parts[0], parts => parts[1]);
+    }
+
+    private string GetFilterValue(string key)
+    {
+        if (FilterMap.Count == 0)
+        {
+            return string.Empty;
+        }
+
+        return FilterMap.TryGetValue(key, out string value) ? value : string.Empty;
     }
 
     private int GetLimitFromFilter()

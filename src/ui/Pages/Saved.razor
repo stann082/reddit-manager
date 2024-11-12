@@ -1,0 +1,77 @@
+﻿@page "/saved"
+@using lib
+@using ui.Components
+@using ui.Data
+@inject SavedService SavedService
+
+<PageTitle>Saved</PageTitle>
+
+<div class="container mt-4">
+    <h1>Saved</h1>
+    <p class="text-muted">Search through comments saved in a local database.</p>
+
+    <div class="search-container mb-4">
+        <EditForm Model="@_filterOptions" OnValidSubmit="HandleSubmit">
+            <div class="form-group mb-2">
+                <InputText class="form-control" placeholder="Author" @bind-Value="_filterOptions.Author"/>
+            </div>
+            <div class="form-group mb-2">
+                <InputText class="form-control" placeholder="Subreddit" @bind-Value="_filterOptions.Subreddit"/>
+            </div>
+            <div class="form-group mb-2">
+                <InputText class="form-control" placeholder="Query" @bind-Value="_filterOptions.Query"/>
+            </div>
+            <div class="form-group mb-3">
+                <InputNumber class="form-control" placeholder="Total Results" @bind-Value="_filterOptions.Limit"/>
+            </div>
+            <button class="btn btn-primary" type="submit">Search</button>
+        </EditForm>
+    </div>
+
+    @if (_isLoading)
+    {
+        <p>
+            <em>Loading...</em>
+        </p>
+    }
+
+    @if (_errorMessage != null)
+    {
+        <p class="text-danger">@_errorMessage</p>
+    }
+
+    @foreach (var comment in _comments)
+    {
+        <div class="mb-3">
+            <CommentCard Comment="@comment"/>
+        </div>
+    }
+</div>
+
+@code {
+    private CommentPreview[]? _comments = [];
+    private readonly Options _filterOptions = new();
+    private bool _isLoading;
+    private string? _errorMessage;
+
+    private async Task HandleSubmit()
+    {
+        _isLoading = true;
+        _errorMessage = null;
+        _comments = [];
+
+        try
+        {
+            _comments = await SavedService.GetFilteredItemsAsync(_filterOptions);
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"Error: {ex.Message}";
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+}

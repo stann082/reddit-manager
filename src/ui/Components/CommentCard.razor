@@ -1,0 +1,15 @@
+﻿@using lib
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">
+            <a href="@($"https://www.reddit.com/u/{Comment?.Author}")">@Comment?.Author</a>
+        </h5>
+        <p class="card-text">@Comment?.Body</p>
+        <a class="card-link" href="@($"https://www.reddit.com{Comment?.Permalink}")">Comment</a>
+        <a class="card-link" href="@($"https://www.reddit.com/r/{Comment?.Subreddit}")">r/@Comment?.Subreddit</a>
+    </div>
+</div>
+
+@code {
+    [Parameter] public CommentPreview? Comment { get; set; }
+}

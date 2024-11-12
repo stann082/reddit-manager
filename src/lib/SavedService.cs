@@ -14,12 +14,12 @@ public class SavedService(IMongoDatabase database) : ISavedService
         return await Task.FromResult(comments.ToArray());
     }
     
-    public async Task<CommentPreview[]> GetFilteredItemsAsync(IOptions savedOptions)
+    public async Task<CommentPreview[]> GetFilteredItemsAsync(IOptions options)
     {
         CommentModel[] comments = await GetAllItemsAsync();
         CommentPreview[] commentPreviews = comments.Select(c => new CommentPreview(c)).ToArray();
         CommentPreview[] allComments = commentPreviews.OrderByDescending(c => c.Date).ToArray();
-        return FilterComments(allComments, savedOptions).ToArray();
+        return FilterComments(allComments, options).Take(options.Limit).ToArray();
     }
 
     #endregion
@@ -42,18 +42,18 @@ public class SavedService(IMongoDatabase database) : ISavedService
             }
         }
 
-        if (string.IsNullOrEmpty(options.Filter))
+        if (!options.IsFilterEnabled)
         {
             return filteredComments;
         }
 
-        string author = options.GetFilterValue("author");
+        string author = options.Author;
         if (!string.IsNullOrEmpty(author))
         {
             filteredComments = filteredComments.Where(c => c.Author.Contains(author, StringComparison.OrdinalIgnoreCase));
         }
 
-        string sub = options.GetFilterValue("sub");
+        string sub = options.Subreddit;
         if (!string.IsNullOrEmpty(sub))
         {
             filteredComments = filteredComments.Where(c => c.Subreddit.Equals(sub, StringComparison.OrdinalIgnoreCase));

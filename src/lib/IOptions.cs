@@ -3,17 +3,19 @@
 public interface IOptions
 {
     
-    // attributes
+    string Author { get; }
+    
     bool IsArchive { get; }
+    string Id { get; }
     bool IsExactWord { get; }
-    string Filter { get; }
+    bool IsFilterEnabled { get; }
+    
     int Limit { get; }
+    
     string Query { get; }
+    
     bool ShowId { get; }
     bool ShouldExport { get; }
-    string User { get; }
-
-    // behavior
-    string GetFilterValue(string key);
+    string Subreddit { get; }
     
 }

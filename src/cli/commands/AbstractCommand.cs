@@ -20,12 +20,11 @@ public abstract class AbstractCommand(IOptions options)
 
         Console.Write("Fetching records, please wait...");
         var comments = await GetFilteredComments(options);
-        var limitedComments = comments.Take(options.Limit).ToArray();
 
         Console.Write("\r" + new string(' ', Console.WindowWidth) + "\r");
         Console.WriteLine();
 
-        foreach (var comment in limitedComments)
+        foreach (var comment in comments)
         {
             if (options.ShowId)
             {
@@ -42,7 +41,8 @@ public abstract class AbstractCommand(IOptions options)
             Console.WriteLine();
         }
 
-        Console.WriteLine($"Showing {limitedComments.Length} out of {comments.Length} comments");
+        // TODO:SNB - find a better way to get the total comments count
+        Console.WriteLine($"Showing {comments.Length} out of {comments.Length} comments");
         return await Task.FromResult(0);
     }
 
