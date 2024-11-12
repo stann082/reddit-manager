@@ -1,7 +1,28 @@
 ﻿namespace lib;
 
-public class CommentPreview
+public class CommentPreview(CommentModel comment)
 {
+
+    #region Properties
+
+    public string Author { get; } = comment.Author;
+
+    public string Body { get; } = comment.Body;
+
+    public DateTime? Date { get; } = GetValidaDate(comment);
+
+    public string Id { get; } = comment.CommentId;
+
+    public string Name { get; } = comment.Name;
+
+    public string Permalink { get; } = comment.Permalink;
+
+    public bool Saved { get; } = comment.Saved;
+    public int Score { get; } = comment.Score;
+    public string Subreddit { get; } = comment.Subreddit;
+
+    #endregion
+
     #region Overridden Methods
 
     public override string ToString()
@@ -10,56 +31,14 @@ public class CommentPreview
     }
 
     #endregion
-
-    #region Constructors
-
-    public CommentPreview(CommentModel comment)
-    {
-        Author = comment.Author;
-        Body = comment.Body;
-        Id = comment.CommentId;
-        Date = GetValidaDate(comment);
-        Name = comment.Name;
-        Permalink = comment.Permalink;
-        Saved = comment.Saved;
-        Score = comment.Score;
-        Subreddit = comment.Subreddit;
-    }
-
-    #endregion
-
-    #region Properties
-
-    public string Author { get; }
-
-    public string Body { get; }
-
-    public DateTime? Date { get; }
-
-    public string Id { get; }
-
-    public string Name { get; }
-
-    public string Permalink { get; }
-
-    public bool Saved { get; }
-    public int Score { get; }
-    public string Subreddit { get; }
-
-    #endregion
-
+    
     #region Helper Methods
 
-    private DateTime GetValidaDate(CommentModel comment)
+    private static DateTime GetValidaDate(CommentModel comment)
     {
         if (comment.CreatedUtc != DateTime.MinValue) return comment.CreatedUtc;
-
-#pragma warning disable CS0618 // Type or member is obsolete
-        if (comment?.Created != DateTime.MinValue) return comment.Created;
-#pragma warning restore CS0618 // Type or member is obsolete
-
-        if (comment.Edited != DateTime.MinValue) return comment.Edited;
-        return DateTime.MinValue;
+        if (comment.Created != DateTime.MinValue) return comment.Created;
+        return comment.Edited != DateTime.MinValue ? comment.Edited : DateTime.MinValue;
     }
 
     private static string LimitString(string input)

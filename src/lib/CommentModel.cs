@@ -1,5 +1,8 @@
 ﻿using MongoDB.Bson;
 using Reddit.Things;
+// ReSharper disable UnusedAutoPropertyAccessor.Global
+// ReSharper disable once UnusedMember.Global
+#pragma warning disable CS0618 // Type or member is obsolete
 
 namespace lib;
 
@@ -8,7 +11,6 @@ public class CommentModel
 
     #region Constructors
 
-    // ReSharper disable once UnusedMember.Global
     public CommentModel()
     {
     }
