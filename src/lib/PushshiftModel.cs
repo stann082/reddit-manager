@@ -10,7 +10,7 @@ public class PushshiftModel
     public string Author { get; set; }
 
     [JsonProperty("author_created_utc")]
-    public long AuthorCreatedUtc { get; set; }
+    public long? AuthorCreatedUtc { get; set; }
 
     [JsonProperty("author_flair_background_color")]
     public string AuthorFlairBackgroundColor { get; set; }
