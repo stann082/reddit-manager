@@ -24,7 +24,15 @@
             <div class="form-group mb-3">
                 <InputNumber class="form-control" placeholder="Total Results" @bind-Value="_filterOptions.Limit"/>
             </div>
-            <button class="btn btn-primary" type="submit">Search</button>
+            <div class="d-flex align-items-center">
+                <button class="btn btn-primary" type="submit">Search</button>
+                <span class="ml-3 text-muted">
+                    @if (totalRecords.HasValue)
+                    {
+                        <span>Showing @filterOptions.Limit of @totalRecords records</span>
+                    }
+                </span>
+            </div>
         </EditForm>
     </div>
 
@@ -40,7 +48,7 @@
         <p class="text-danger">@_errorMessage</p>
     }
 
-    @foreach (var comment in _comments)
+    @foreach (var comment in _comments!)
     {
         <div class="mb-3">
             <CommentCard Comment="@comment"/>
@@ -53,6 +61,7 @@
     private readonly Options _filterOptions = new();
     private bool _isLoading;
     private string? _errorMessage;
+    private long? _totalRecords;
 
     private async Task HandleSubmit()
     {
@@ -62,7 +71,12 @@
 
         try
         {
-            _comments = await SavedService.GetFilteredItemsAsync(_filterOptions);
+            var fetchCommentsTask = SavedService.GetFilteredItemsAsync(_filterOptions);
+            var fetchTotalRecordsTask = SavedService.GetTotalCommentsCount();
+            await Task.WhenAll(fetchCommentsTask, fetchTotalRecordsTask);
+
+            _comments = await fetchCommentsTask;
+            _totalRecords = await fetchTotalRecordsTask;
         }
         catch (Exception ex)
         {

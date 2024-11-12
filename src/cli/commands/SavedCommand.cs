@@ -1,4 +1,4 @@
-﻿using lib;
+using lib;
 
 namespace cli.commands;
 
@@ -15,6 +15,11 @@ public class SavedCommand(IOptions options, ISavedService service) : AbstractCom
     protected override Task<CommentPreview[]> GetFilteredComments(IOptions options)
     {
         return service.GetFilteredItemsAsync(options);
+    }
+
+    protected override Task<long> GetTotalCommentsCount()
+    {
+        return service.GetTotalCommentsCount();
     }
 
     #endregion

@@ -42,7 +42,7 @@ public abstract class AbstractCommand(IOptions options)
         }
 
         // TODO:SNB - find a better way to get the total comments count
-        Console.WriteLine($"Showing {comments.Length} out of {comments.Length} comments");
+        Console.WriteLine($"Showing {comments.Length} out of {await GetTotalCommentsCount()} comments");
         return await Task.FromResult(0);
     }
 
@@ -52,6 +52,7 @@ public abstract class AbstractCommand(IOptions options)
 
     protected abstract Task<CommentModel[]> GetAllComments();
     protected abstract Task<CommentPreview[]> GetFilteredComments(IOptions options);
+    protected abstract Task<long> GetTotalCommentsCount();
 
     #endregion
 

@@ -1,4 +1,4 @@
-﻿using lib;
+using lib;
 
 namespace cli.commands;
 
@@ -16,6 +16,12 @@ public class SearchCommand(IOptions options, ISearchService service) : AbstractC
     protected override Task<CommentPreview[]> GetFilteredComments(IOptions options)
     {
         return service.Search(options);
+    }
+
+    protected override Task<long> GetTotalCommentsCount()
+    {
+        // does not apply to search
+        return Task.FromResult<long>(0);
     }
 
     #endregion

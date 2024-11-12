@@ -22,6 +22,12 @@ public class SavedService(IMongoDatabase database) : ISavedService
         return FilterComments(allComments, options).Take(options.Limit).ToArray();
     }
 
+    public async Task<long> GetTotalCommentsCount()
+    {
+        var collection = database.GetCollection<CommentModel>("comments");
+        return await collection.CountDocumentsAsync(FilterDefinition<CommentModel>.Empty);
+    }
+
     #endregion
 
     #region Helper Methods
