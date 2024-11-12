@@ -71,6 +71,48 @@ public class CommentModel
         LinkId = comment.LinkId;
     }
 
+    public CommentModel(PushshiftModel comment)
+    {
+        DateTime createdUtc = ConvertFromUnixTimestamp(comment.CreatedUtc);
+        
+        Subreddit = comment.Subreddit;
+        Gilded = comment.Gilded;
+        SubredditNamePrefixed = comment.SubredditNamePrefixed;
+        Downs = comment.Score;
+        AuthorFlairBackgroundColor = comment.AuthorFlairBackgroundColor;
+        SubredditType = comment.SubredditType;
+        Ups = comment.Score;
+        AuthorFlairTemplateId = comment.AuthorFlairTemplateId;
+        AuthorFullname = comment.AuthorFullname;
+        CanModPost = comment.CanModPost;
+        Score = comment.Score;
+        Edited = createdUtc;
+        AuthorFlairCssClass = comment.AuthorFlairCssClass;
+        Created = createdUtc;
+        AuthorFlairType = comment.AuthorFlairType;
+        NoFollow = comment.NoFollow;
+        CanGild = comment.CanGild;
+        Removed = !string.IsNullOrEmpty(comment.RemovalReason);
+        AuthorFlairText = comment.AuthorFlairText;
+        Distinguished = comment.Distinguished;
+        SubredditId = comment.SubredditId;
+        RemovalReason = comment.RemovalReason;
+        CommentId = comment.Id;
+        Author = comment.Author;
+        SendReplies = comment.SendReplies;
+        AuthorFlairTextColor = comment.AuthorFlairTextColor;
+        Permalink = comment.Permalink;
+        Stickied = comment.Stickied;
+        CreatedUtc = createdUtc;
+        ParentId = comment.ParentId;
+        Body = comment.Body;
+        Collapsed = comment.Collapsed;
+        IsSubmitter = comment.IsSubmitter;
+        CollapsedReason = comment.CollapsedReason;
+        Controversiality = comment.Controversiality;
+        LinkId = comment.LinkId;
+    }
+
     #endregion
     
     #region Properties
@@ -132,4 +174,16 @@ public class CommentModel
     public string LinkId { get; set; }
 
     #endregion
+
+    #region Helper Methods
+
+    private static DateTime ConvertFromUnixTimestamp(long unixTimeStamp)
+    {
+        var dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+        dateTime = dateTime.AddSeconds(unixTimeStamp).ToLocalTime();
+        return dateTime;
+    }
+    
+    #endregion
+
 }

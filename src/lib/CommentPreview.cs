@@ -26,17 +26,6 @@ public class CommentPreview
         Subreddit = comment.Subreddit;
     }
 
-    public CommentPreview(PushshiftModel model)
-    {
-        Author = model.Author;
-        Body = model.Body;
-        Id = model.Id;
-        Date = ConvertFromUnixTimestamp(model.CreatedUtc);
-        Permalink = model.Permalink;
-        Score = model.Score;
-        Subreddit = model.Subreddit;
-    }
-
     #endregion
 
     #region Properties
@@ -60,13 +49,6 @@ public class CommentPreview
     #endregion
 
     #region Helper Methods
-
-    private static DateTime ConvertFromUnixTimestamp(long unixTimeStamp)
-    {
-        var dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-        dateTime = dateTime.AddSeconds(unixTimeStamp).ToLocalTime();
-        return dateTime;
-    }
 
     private DateTime GetValidaDate(CommentModel comment)
     {

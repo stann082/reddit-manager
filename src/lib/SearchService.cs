@@ -67,7 +67,7 @@ public class SearchService(ApplicationConfig config) : ISearchService
 
     #region Helper Methods
 
-    private static async Task<PushshiftModel[]> GetCommentsFromPushshiftArchive(IOptions options)
+    private static async Task<CommentModel[]> GetCommentsFromPushshiftArchive(IOptions options)
     {
         List<string> files = [];
 
@@ -87,7 +87,12 @@ public class SearchService(ApplicationConfig config) : ISearchService
             files = files.Where(f => f.Contains(author, StringComparison.OrdinalIgnoreCase)).ToList();
         }
 
-        return await Task.FromResult(files.SelectMany(StreamCommentsFromFile).ToArray());
+        List<CommentModel> comments = [];
+        comments.AddRange(from file in files
+            from comment in StreamCommentsFromFile(file)
+            select new CommentModel(comment));
+
+        return await Task.FromResult(comments.ToArray());
     }
 
     private async Task<CommentModel[]> GetCommentsFromReddit(string username)
