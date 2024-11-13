@@ -4,7 +4,7 @@ using Moq;
 using Newtonsoft.Json;
 using Reddit.Things;
 
-namespace lib.test.csproj;
+namespace lib.test;
 
 public class SavedServiceTest
 {
