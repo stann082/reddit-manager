@@ -4,16 +4,7 @@
         <h5 class="card-title">
             <a href="@($"https://www.reddit.com/u/{Comment?.Author}")">@Comment?.Author</a>
         </h5>
-        <p class="card-text">
-            @if (!string.IsNullOrEmpty(Comment?.BodyHtml))
-            {
-                <span @((MarkupString)Comment?.BodyHtml)></span>
-            }
-            else
-            {
-                @Comment?.Body
-            }
-        </p>
+        <p class="card-text">@Comment?.Body</p>
         <a class="card-link" href="@($"https://www.reddit.com{Comment?.Permalink}")">Comment</a>
         <a class="card-link" href="@($"https://www.reddit.com/r/{Comment?.Subreddit}")">r/@Comment?.Subreddit</a>
     </div>
