@@ -8,16 +8,14 @@ public class CommentPreview(CommentModel comment)
     public string Author { get; } = comment.Author;
 
     public string Body { get; } = comment.Body;
+    public string BodyHtml { get; } = comment.BodyHtml;
 
     public DateTime? Date { get; } = GetValidaDate(comment);
 
     public string Id { get; } = comment.CommentId;
 
-    public string Name { get; } = comment.Name;
-
     public string Permalink { get; } = comment.Permalink;
 
-    public bool Saved { get; } = comment.Saved;
     public int Score { get; } = comment.Score;
     public string Subreddit { get; } = comment.Subreddit;
 
@@ -47,4 +45,5 @@ public class CommentPreview(CommentModel comment)
     }
 
     #endregion
+    
 }

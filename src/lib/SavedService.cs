@@ -10,7 +10,7 @@ public class SavedService(IMongoDatabase database) : ISavedService
 
     public async Task<CommentModel[]> GetAllItemsAsync()
     {
-        IEnumerable<CommentModel> comments = database.GetCollection<CommentModel>("comments").AsQueryable().ToArray();
+        var comments = database.GetCollection<CommentModel>("comments").AsQueryable().ToArray();
         return await Task.FromResult(comments.ToArray());
     }
     
