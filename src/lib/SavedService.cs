@@ -13,18 +13,14 @@ public class SavedService(IMongoDatabase database) : AbstractService, ISavedServ
         return await Task.FromResult(comments.ToArray());
     }
     
-    public async Task<CommentPreview[]> GetFilteredItemsAsync(IOptions options)
+    public async Task<(CommentPreview[], int)> GetFilteredItemsAsync(IOptions options)
     {
         CommentModel[] comments = await GetAllItemsAsync();
         CommentPreview[] commentPreviews = comments.Select(c => new CommentPreview(c)).ToArray();
         CommentPreview[] allComments = commentPreviews.OrderByDescending(c => c.Date).ToArray();
-        return FilterComments(allComments, options).Take(options.Limit).ToArray();
-    }
-
-    public async Task<long> GetTotalCommentsCount()
-    {
-        var collection = database.GetCollection<CommentModel>("comments");
-        return await collection.CountDocumentsAsync(FilterDefinition<CommentModel>.Empty);
+        CommentPreview[] filteredComments = FilterComments(allComments, options).ToArray();
+        CommentPreview[] pagedComments = filteredComments.Take(options.Limit).ToArray();
+        return (pagedComments, filteredComments.Length);
     }
 
     #endregion

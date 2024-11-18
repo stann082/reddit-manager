@@ -19,12 +19,12 @@ public abstract class AbstractCommand(IOptions options)
         }
 
         Console.Write("Fetching records, please wait...");
-        var comments = await GetFilteredComments(options);
+        (CommentPreview[], int) comments = await GetFilteredComments(options);
 
         Console.Write("\r" + new string(' ', Console.WindowWidth) + "\r");
         Console.WriteLine();
 
-        foreach (var comment in comments)
+        foreach (var comment in comments.Item1)
         {
             if (options.ShowId)
             {
@@ -41,8 +41,7 @@ public abstract class AbstractCommand(IOptions options)
             Console.WriteLine();
         }
 
-        // TODO:SNB - find a better way to get the total comments count
-        Console.WriteLine($"Showing {comments.Length} out of {await GetTotalCommentsCount()} comments");
+        Console.WriteLine($"Showing {comments.Item1.Length} out of {comments.Item2} filtered comments");
         return await Task.FromResult(0);
     }
 
@@ -51,8 +50,7 @@ public abstract class AbstractCommand(IOptions options)
     #region Abstract Methods
 
     protected abstract Task<CommentModel[]> GetAllComments();
-    protected abstract Task<CommentPreview[]> GetFilteredComments(IOptions options);
-    protected abstract Task<long> GetTotalCommentsCount();
+    protected abstract Task<(CommentPreview[], int)> GetFilteredComments(IOptions options);
 
     #endregion
 

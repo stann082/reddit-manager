@@ -12,14 +12,9 @@ public class SavedCommand(IOptions options, ISavedService service) : AbstractCom
         return service.GetAllItemsAsync();
     }
 
-    protected override Task<CommentPreview[]> GetFilteredComments(IOptions options)
+    protected override Task<(CommentPreview[], int)> GetFilteredComments(IOptions options)
     {
         return service.GetFilteredItemsAsync(options);
-    }
-
-    protected override Task<long> GetTotalCommentsCount()
-    {
-        return service.GetTotalCommentsCount();
     }
 
     #endregion

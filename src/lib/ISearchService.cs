@@ -2,5 +2,5 @@
 
 public interface ISearchService
 {
-    Task<CommentPreview[]> Search(IOptions savedOptions);
+    Task<(CommentPreview[], int)> Search(IOptions savedOptions);
 }

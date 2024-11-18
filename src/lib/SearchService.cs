@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json;
 using Reddit;
 using Reddit.Exceptions;
 using Reddit.Inputs.Users;
@@ -11,7 +11,7 @@ public class SearchService(ApplicationConfig config) : AbstractService, ISearchS
     
     #region Public Methods
 
-    public async Task<CommentPreview[]> Search(IOptions options)
+    public async Task<(CommentPreview[], int)> Search(IOptions options)
     {
         CommentPreview[] comments;
 
@@ -33,11 +33,13 @@ public class SearchService(ApplicationConfig config) : AbstractService, ISearchS
             catch (RedditForbiddenException e)
             {
                 Console.WriteLine(e);
-                return [];
+                return ([], 0);
             }
         }
 
-        return FilterComments(comments, options).Take(options.Limit).ToArray();
+        CommentPreview[] filteredComments = FilterComments(comments, options).ToArray();
+        CommentPreview[] pagedComments = filteredComments.Take(options.Limit).ToArray();
+        return (pagedComments, filteredComments.Length);
     }
 
     #endregion
@@ -114,7 +116,7 @@ public class SearchService(ApplicationConfig config) : AbstractService, ISearchS
         using var reader = new StreamReader(filePath);
         while (reader.ReadLine() is { } line)
         {
-            yield return JsonConvert.DeserializeObject<PushshiftModel>(line);
+            yield return JsonSerializer.Deserialize<PushshiftModel>(line);
         }
     }
 

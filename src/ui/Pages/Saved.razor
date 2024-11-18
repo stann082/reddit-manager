@@ -71,12 +71,9 @@
 
         try
         {
-            var fetchCommentsTask = SavedService.GetFilteredItemsAsync(_filterOptions);
-            var fetchTotalRecordsTask = SavedService.GetTotalCommentsCount();
-            await Task.WhenAll(fetchCommentsTask, fetchTotalRecordsTask);
-
-            _comments = await fetchCommentsTask;
-            _totalRecords = await fetchTotalRecordsTask;
+            var filteredComments = await SavedService.GetFilteredItemsAsync(_filterOptions);
+            _comments = filteredComments.Item1;
+            _totalRecords = filteredComments.Item2;
         }
         catch (Exception ex)
         {

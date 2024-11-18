@@ -13,15 +13,9 @@ public class SearchCommand(IOptions options, ISearchService service) : AbstractC
         return Task.FromResult(Array.Empty<CommentModel>());
     }
 
-    protected override Task<CommentPreview[]> GetFilteredComments(IOptions options)
+    protected override Task<(CommentPreview[], int)> GetFilteredComments(IOptions options)
     {
         return service.Search(options);
-    }
-
-    protected override Task<long> GetTotalCommentsCount()
-    {
-        // does not apply to search
-        return Task.FromResult<long>(0);
     }
 
     #endregion
