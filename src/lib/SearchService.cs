@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+﻿using Newtonsoft.Json;
 using Reddit;
 using Reddit.Exceptions;
 using Reddit.Inputs.Users;
@@ -116,7 +116,7 @@ public class SearchService(ApplicationConfig config) : AbstractService, ISearchS
         using var reader = new StreamReader(filePath);
         while (reader.ReadLine() is { } line)
         {
-            yield return JsonSerializer.Deserialize<PushshiftModel>(line);
+            yield return JsonConvert.DeserializeObject<PushshiftModel>(line);
         }
     }
 
