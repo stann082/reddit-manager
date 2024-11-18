@@ -65,7 +65,8 @@ public class CacheService(ApplicationConfig config, IMongoDatabase database) : I
     {
         CommentContainer history = _redditClient.Models.Users.CommentHistory(_me, "saved",
             new UsersHistoryInput("comments", after: after, sort: "top", context: 10, limit: 100));
-        return history.Data.Children.Select(c => c.Data).Select(c => new CommentModel(c)).ToArray();
+        var comments = history.Data.Children.Select(c => c.Data);
+        return comments.Select(c => new CommentModel(c)).ToArray();
     }
 
     #endregion

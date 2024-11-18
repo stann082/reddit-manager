@@ -1,4 +1,4 @@
-﻿using lib;
+using lib;
 
 namespace cli.commands;
 
@@ -12,7 +12,7 @@ public class SavedCommand(IOptions options, ISavedService service) : AbstractCom
         return service.GetAllItemsAsync();
     }
 
-    protected override Task<CommentPreview[]> GetFilteredComments(IOptions options)
+    protected override Task<(CommentPreview[], int)> GetFilteredComments(IOptions options)
     {
         return service.GetFilteredItemsAsync(options);
     }

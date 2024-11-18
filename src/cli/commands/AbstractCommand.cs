@@ -19,13 +19,12 @@ public abstract class AbstractCommand(IOptions options)
         }
 
         Console.Write("Fetching records, please wait...");
-        var comments = await GetFilteredComments(options);
-        var limitedComments = comments.Take(options.Limit).ToArray();
+        (CommentPreview[], int) comments = await GetFilteredComments(options);
 
         Console.Write("\r" + new string(' ', Console.WindowWidth) + "\r");
         Console.WriteLine();
 
-        foreach (var comment in limitedComments)
+        foreach (var comment in comments.Item1)
         {
             if (options.ShowId)
             {
@@ -42,7 +41,7 @@ public abstract class AbstractCommand(IOptions options)
             Console.WriteLine();
         }
 
-        Console.WriteLine($"Showing {limitedComments.Length} out of {comments.Length} comments");
+        Console.WriteLine($"Showing {comments.Item1.Length} out of {comments.Item2} filtered comments");
         return await Task.FromResult(0);
     }
 
@@ -51,7 +50,7 @@ public abstract class AbstractCommand(IOptions options)
     #region Abstract Methods
 
     protected abstract Task<CommentModel[]> GetAllComments();
-    protected abstract Task<CommentPreview[]> GetFilteredComments(IOptions options);
+    protected abstract Task<(CommentPreview[], int)> GetFilteredComments(IOptions options);
 
     #endregion
 

@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json;
 using Reddit;
 using Reddit.Exceptions;
 using Reddit.Inputs.Users;
@@ -6,17 +6,18 @@ using Reddit.Things;
 
 namespace lib;
 
-public class SearchService(ApplicationConfig config) : ISearchService
+public class SearchService(ApplicationConfig config) : AbstractService, ISearchService
 {
+    
     #region Public Methods
 
-    public async Task<CommentPreview[]> Search(IOptions options)
+    public async Task<(CommentPreview[], int)> Search(IOptions options)
     {
-        CommentPreview[] commentPreviews;
+        CommentPreview[] comments;
 
         if (options.IsArchive)
         {
-            commentPreviews = (await GetCommentsFromPushshiftArchive(options))
+            comments = (await GetCommentsFromPushshiftArchive(options))
                 .Select(m => new CommentPreview(m))
                 .OrderByDescending(m => m.Date).ToArray();
         }
@@ -25,35 +26,20 @@ public class SearchService(ApplicationConfig config) : ISearchService
             
             try
             {
-                commentPreviews = (await GetCommentsFromReddit(options.User))
+                comments = (await GetCommentsFromReddit(options.Author))
                     .Select(c => new CommentPreview(c))
                     .OrderByDescending(c => c.Date).ToArray();
             }
             catch (RedditForbiddenException e)
             {
                 Console.WriteLine(e);
-                return [];
+                return ([], 0);
             }
         }
 
-        string id = options.GetFilterValue("id");
-        if (!string.IsNullOrEmpty(id)) return commentPreviews.Where(c => c.Id == id).ToArray();
-
-        IEnumerable<CommentPreview> filteredComments = commentPreviews;
-        if (!string.IsNullOrEmpty(options.Query))
-            filteredComments = filteredComments.Where(c => c.Body.Contains(options.Query, StringComparison.OrdinalIgnoreCase));
-
-        if (string.IsNullOrEmpty(options.Filter)) return filteredComments.ToArray();
-
-        var author = options.GetFilterValue("author");
-        if (!string.IsNullOrEmpty(author))
-            filteredComments = filteredComments.Where(c => c.Author.Contains(author, StringComparison.OrdinalIgnoreCase));
-
-        var sub = options.GetFilterValue("sub");
-        if (!string.IsNullOrEmpty(sub))
-            filteredComments = filteredComments.Where(c => c.Subreddit.Contains(sub, StringComparison.OrdinalIgnoreCase));
-
-        return filteredComments.ToArray();
+        CommentPreview[] filteredComments = FilterComments(comments, options).ToArray();
+        CommentPreview[] pagedComments = filteredComments.Take(options.Limit).ToArray();
+        return (pagedComments, filteredComments.Length);
     }
 
     #endregion
@@ -71,7 +57,7 @@ public class SearchService(ApplicationConfig config) : ISearchService
     {
         List<string> files = [];
 
-        string subreddit = options.GetFilterValue("sub");
+        string subreddit = options.Subreddit;
         string subredditFolderPattern = !string.IsNullOrEmpty(subreddit) ? subreddit : "*";
         var dirs = Directory.GetDirectories(@"E:\PushshiftDumps\user_comments\author", subredditFolderPattern, SearchOption.AllDirectories);
         foreach (string dir in dirs)
@@ -81,7 +67,7 @@ public class SearchService(ApplicationConfig config) : ISearchService
             files.AddRange(allFiles);
         }
 
-        string author = options.GetFilterValue("author");
+        string author = options.Author;
         if (!string.IsNullOrEmpty(author))
         {
             files = files.Where(f => f.Contains(author, StringComparison.OrdinalIgnoreCase)).ToList();
@@ -130,9 +116,10 @@ public class SearchService(ApplicationConfig config) : ISearchService
         using var reader = new StreamReader(filePath);
         while (reader.ReadLine() is { } line)
         {
-            yield return JsonConvert.DeserializeObject<PushshiftModel>(line);
+            yield return JsonSerializer.Deserialize<PushshiftModel>(line);
         }
     }
 
     #endregion
+    
 }

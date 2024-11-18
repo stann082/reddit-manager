@@ -1,7 +1,7 @@
-﻿namespace lib;
+namespace lib;
 
 public interface ISavedService
 {
     Task<CommentModel[]> GetAllItemsAsync();
-    Task<CommentPreview[]> GetFilteredItemsAsync(IOptions savedOptions);
+    Task<(CommentPreview[], int)> GetFilteredItemsAsync(IOptions options);
 }
