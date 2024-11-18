@@ -1,9 +1,8 @@
-﻿using System.Text.RegularExpressions;
-using MongoDB.Driver;
+﻿using MongoDB.Driver;
 
 namespace lib;
 
-public class SavedService(IMongoDatabase database) : ISavedService
+public class SavedService(IMongoDatabase database) : AbstractService, ISavedService
 {
 
     #region Public Methods
@@ -26,46 +25,6 @@ public class SavedService(IMongoDatabase database) : ISavedService
     {
         var collection = database.GetCollection<CommentModel>("comments");
         return await collection.CountDocumentsAsync(FilterDefinition<CommentModel>.Empty);
-    }
-
-    #endregion
-
-    #region Helper Methods
-
-    private static IEnumerable<CommentPreview> FilterComments(IEnumerable<CommentPreview> comments, IOptions options)
-    {
-        IEnumerable<CommentPreview> filteredComments = comments;
-        if (!string.IsNullOrEmpty(options.Query))
-        {
-            if (options.IsExactWord)
-            {
-                string pattern = @"\b" + Regex.Escape(options.Query) + @"\b";
-                filteredComments = filteredComments.Where(c => Regex.IsMatch(c.Body, pattern, RegexOptions.IgnoreCase));
-            }
-            else
-            {
-                filteredComments = filteredComments.Where(c => c.Body.Contains(options.Query, StringComparison.OrdinalIgnoreCase));
-            }
-        }
-
-        if (!options.IsFilterEnabled)
-        {
-            return filteredComments;
-        }
-
-        string author = options.Author;
-        if (!string.IsNullOrEmpty(author))
-        {
-            filteredComments = filteredComments.Where(c => c.Author.Contains(author, StringComparison.OrdinalIgnoreCase));
-        }
-
-        string sub = options.Subreddit;
-        if (!string.IsNullOrEmpty(sub))
-        {
-            filteredComments = filteredComments.Where(c => c.Subreddit.Equals(sub, StringComparison.OrdinalIgnoreCase));
-        }
-
-        return filteredComments;
     }
 
     #endregion

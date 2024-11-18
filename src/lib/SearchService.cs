@@ -6,17 +6,18 @@ using Reddit.Things;
 
 namespace lib;
 
-public class SearchService(ApplicationConfig config) : ISearchService
+public class SearchService(ApplicationConfig config) : AbstractService, ISearchService
 {
+    
     #region Public Methods
 
     public async Task<CommentPreview[]> Search(IOptions options)
     {
-        CommentPreview[] commentPreviews;
+        CommentPreview[] comments;
 
         if (options.IsArchive)
         {
-            commentPreviews = (await GetCommentsFromPushshiftArchive(options))
+            comments = (await GetCommentsFromPushshiftArchive(options))
                 .Select(m => new CommentPreview(m))
                 .OrderByDescending(m => m.Date).ToArray();
         }
@@ -25,7 +26,7 @@ public class SearchService(ApplicationConfig config) : ISearchService
             
             try
             {
-                commentPreviews = (await GetCommentsFromReddit(options.Author))
+                comments = (await GetCommentsFromReddit(options.Author))
                     .Select(c => new CommentPreview(c))
                     .OrderByDescending(c => c.Date).ToArray();
             }
@@ -36,24 +37,7 @@ public class SearchService(ApplicationConfig config) : ISearchService
             }
         }
 
-        string id = options.Id;
-        if (!string.IsNullOrEmpty(id)) return commentPreviews.Where(c => c.Id == id).ToArray();
-
-        IEnumerable<CommentPreview> filteredComments = commentPreviews;
-        if (!string.IsNullOrEmpty(options.Query))
-            filteredComments = filteredComments.Where(c => c.Body.Contains(options.Query, StringComparison.OrdinalIgnoreCase));
-
-        if (!options.IsFilterEnabled) return filteredComments.ToArray();
-
-        string author = options.Author;
-        if (!string.IsNullOrEmpty(author))
-            filteredComments = filteredComments.Where(c => c.Author.Contains(author, StringComparison.OrdinalIgnoreCase));
-
-        string sub = options.Subreddit;
-        if (!string.IsNullOrEmpty(sub))
-            filteredComments = filteredComments.Where(c => c.Subreddit.Contains(sub, StringComparison.OrdinalIgnoreCase));
-
-        return filteredComments.ToArray();
+        return FilterComments(comments, options).Take(options.Limit).ToArray();
     }
 
     #endregion
@@ -135,4 +119,5 @@ public class SearchService(ApplicationConfig config) : ISearchService
     }
 
     #endregion
+    
 }
