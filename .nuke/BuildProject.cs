@@ -26,6 +26,16 @@ class BuildProject : NukeBuild
     #region Targets
 
     Target DeepClean => _ => _
+        .DependsOn(CleanBuild, CleanPub);
+
+    Target CleanPub => _ => _
+        .Executes(() =>
+        {
+            RemovePubCliDir();
+            RemovePubWebDir();
+        });
+
+    Target CleanBuild => _ => _
         .Executes(() =>
         {
             var binAndObjDirectories = RootDirectory.GlobDirectories("**/bin", "**/obj")
@@ -35,14 +45,6 @@ class BuildProject : NukeBuild
                 Log.Information("Cleaning directory {Directory}", directory);
                 directory.DeleteDirectory();
             }
-
-            var pubCliDirectory = RootDirectory / "pubcli";
-            Log.Information("Cleaning directory {PublishDirectory}", pubCliDirectory);
-            pubCliDirectory.DeleteDirectory();
-
-            var pubWebDirectory = RootDirectory / "pubweb";
-            Log.Information("Cleaning directory {PublishDirectory}", pubWebDirectory);
-            pubWebDirectory.DeleteDirectory();
         });
 
     Target DeployCli => _ => _
@@ -63,10 +65,11 @@ class BuildProject : NukeBuild
         });
 
     Target PublishCli => _ => _
-        .DependsOn(DeepClean)
+        .DependsOn(CleanBuild)
         .Before(DeployCli)
         .Executes(() =>
         {
+            RemovePubCliDir();
             DotNetTasks.DotNetPublish(s => s
                 .SetProject(RootDirectory / "src" / "cli" / "cli.csproj")
                 .SetConfiguration(Configuration.Release)
@@ -75,12 +78,13 @@ class BuildProject : NukeBuild
         });
 
     Target PublishWeb => _ => _
-        .DependsOn(DeepClean)
+        .DependsOn(CleanBuild)
         .Before(DeployCli)
         .Executes(() =>
         {
+            RemovePubWebDir();
             DotNetTasks.DotNetPublish(s => s
-                .SetProject(RootDirectory / "src" / "ui" / "ui.csproj")
+                .SetProject(RootDirectory / "src" / "web" / "web.csproj")
                 .SetConfiguration(Configuration.Release)
                 .SetVerbosity(DotNetVerbosityLevel)
                 .SetOutput("pubweb"));
@@ -95,4 +99,23 @@ class BuildProject : NukeBuild
         });
 
     #endregion
+
+    #region Helper Methods
+
+    static void RemovePubWebDir()
+    {
+        var pubWebDirectory = RootDirectory / "pubweb";
+        Log.Information("Cleaning directory {PublishDirectory}", pubWebDirectory);
+        pubWebDirectory.DeleteDirectory();
+    }
+
+    static void RemovePubCliDir()
+    {
+        var pubCliDirectory = RootDirectory / "pubcli";
+        Log.Information("Cleaning directory {PublishDirectory}", pubCliDirectory);
+        pubCliDirectory.DeleteDirectory();
+    }
+
+    #endregion
+    
 }

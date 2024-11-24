@@ -24,6 +24,8 @@
     "ExecutableTarget": {
       "type": "string",
       "enum": [
+        "CleanBuild",
+        "CleanPub",
         "DeepClean",
         "DeployCli",
         "PublishCli",
