@@ -1,7 +1,7 @@
 using CommandLine;
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 
-namespace cli.options;
+namespace lib.options;
 
 public abstract class AbstractOptions
 {

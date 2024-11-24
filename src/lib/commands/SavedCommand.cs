@@ -1,11 +1,9 @@
-using lib;
 using Serilog;
 
-namespace cli.commands;
+namespace lib.commands;
 
 public class SavedCommand(IOptions options, ISavedService service) : AbstractCommand(options)
 {
-
     #region Overriden Methods
 
     protected override Task<CommentModel[]> GetAllComments()
@@ -20,5 +18,4 @@ public class SavedCommand(IOptions options, ISavedService service) : AbstractCom
     }
 
     #endregion
-
 }

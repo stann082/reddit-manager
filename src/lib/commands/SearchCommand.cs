@@ -1,11 +1,9 @@
-using lib;
 using Serilog;
 
-namespace cli.commands;
+namespace lib.commands;
 
 public class SearchCommand(IOptions options, ISearchService service) : AbstractCommand(options)
 {
-
     #region Overriden Methods
 
     protected override Task<CommentModel[]> GetAllComments()
@@ -21,5 +19,4 @@ public class SearchCommand(IOptions options, ISearchService service) : AbstractC
     }
 
     #endregion
-
 }

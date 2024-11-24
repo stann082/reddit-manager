@@ -1,11 +1,7 @@
-﻿using lib;
-using Serilog;
-
-namespace cli.commands;
+﻿namespace lib.commands;
 
 public class CacheCommand(ICacheService service)
 {
-
     #region Public Methods
 
     public async Task<int> Execute()
@@ -15,5 +11,4 @@ public class CacheCommand(ICacheService service)
     }
 
     #endregion
-
 }

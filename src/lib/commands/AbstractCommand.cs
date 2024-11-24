@@ -1,35 +1,30 @@
 ﻿using System.Text.Json;
-using lib;
 
-namespace cli.commands;
+namespace lib.commands;
 
 public abstract class AbstractCommand(IOptions options)
 {
-    
     #region Public Methods
 
     public async Task<int> Execute()
     {
         if (options.ShouldExport)
         {
-            CommentModel[] allComments = await GetAllComments();
-            string jsonString = JsonSerializer.Serialize(allComments);
+            var allComments = await GetAllComments();
+            var jsonString = JsonSerializer.Serialize(allComments);
             await File.WriteAllTextAsync(@"C:\Users\sbennett\reddit-backup.json", jsonString);
             return 0;
         }
 
         Console.Write("Fetching records, please wait...");
-        (CommentPreview[], int) comments = await GetFilteredComments(options);
+        var comments = await GetFilteredComments(options);
 
         Console.Write("\r" + new string(' ', Console.WindowWidth) + "\r");
         Console.WriteLine();
 
         foreach (var comment in comments.Item1)
         {
-            if (options.ShowId)
-            {
-                Console.WriteLine($"Id:          {comment.Id}");
-            }
+            if (options.ShowId) Console.WriteLine($"Id:          {comment.Id}");
 
             Console.WriteLine($"Author:      {comment.Author}");
             Console.WriteLine($"Subreddit:   {comment.Subreddit}");
@@ -47,13 +42,6 @@ public abstract class AbstractCommand(IOptions options)
 
     #endregion
 
-    #region Abstract Methods
-
-    protected abstract Task<CommentModel[]> GetAllComments();
-    protected abstract Task<(CommentPreview[], int)> GetFilteredComments(IOptions options);
-
-    #endregion
-
     #region Helper Methods
 
     private static void PrintBody(string text, string query = null)
@@ -61,30 +49,23 @@ public abstract class AbstractCommand(IOptions options)
         var parts = text.Split(["\n\n"], StringSplitOptions.None);
         foreach (var originalPart in parts)
         {
-            string part = originalPart.StartsWith("&gt;") ? originalPart.Replace("&gt;", ">") : originalPart;
-            bool isQuote = originalPart.StartsWith("&gt;");
-            if (isQuote)
-            {
-                Console.ForegroundColor = ConsoleColor.Green;
-            }
+            var part = originalPart.StartsWith("&gt;") ? originalPart.Replace("&gt;", ">") : originalPart;
+            var isQuote = originalPart.StartsWith("&gt;");
+            if (isQuote) Console.ForegroundColor = ConsoleColor.Green;
 
             if (!string.IsNullOrEmpty(query))
             {
-                int startIndex = 0;
-                int index = part.IndexOf(query, StringComparison.OrdinalIgnoreCase);
+                var startIndex = 0;
+                var index = part.IndexOf(query, StringComparison.OrdinalIgnoreCase);
                 while (index != -1)
                 {
                     Console.Write(part.Substring(startIndex, index - startIndex));
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.Write(part.Substring(index, query.Length));
                     if (isQuote)
-                    {
                         Console.ForegroundColor = ConsoleColor.Green;
-                    }
                     else
-                    {
                         Console.ResetColor();
-                    }
 
                     startIndex = index + query.Length;
                     index = part.IndexOf(query, startIndex, StringComparison.OrdinalIgnoreCase);
@@ -103,5 +84,11 @@ public abstract class AbstractCommand(IOptions options)
     }
 
     #endregion
-    
+
+    #region Abstract Methods
+
+    protected abstract Task<CommentModel[]> GetAllComments();
+    protected abstract Task<(CommentPreview[], int)> GetFilteredComments(IOptions options);
+
+    #endregion
 }
