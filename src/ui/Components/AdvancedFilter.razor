@@ -1,4 +1,5 @@
 ﻿@using ui.Data
+
 <EditForm Model="@AdvancedWebOptions">
     @if (Visible)
     {
@@ -13,16 +14,20 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <div class="form-group">
-                            <label for="startDate">Start Date</label>
-                            <InputDate id="startDate" class="form-control" @bind-Value="AdvancedWebOptions.StartDate"/>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="startDate">Start Date</label>
+                                <InputDate id="startDate" class="form-control" @bind-Value="AdvancedWebOptions.StartDate"/>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="stopDate">Stop Date</label>
+                                <InputDate id="stopDate" class="form-control" @bind-Value="AdvancedWebOptions.StopDate"/>
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label for="stopDate">Stop Date</label>
-                            <InputDate id="stopDate" class="form-control" @bind-Value="AdvancedWebOptions.StopDate"/>
+                        <div class="form-check">
+                            <InputCheckbox class="form-check-input" @bind-Value="AdvancedWebOptions.IsDescending"/>
+                            <label class="form-check-label" for="descending">Descending</label>
                         </div>
-                        <InputCheckbox @bind-Value="AdvancedWebOptions.IsDescending"/>
-                        Descending
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" @onclick="OnCancel">Cancel</button>

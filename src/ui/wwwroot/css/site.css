@@ -92,3 +92,53 @@ a, .btn-link {
 @keyframes spinner {
     to { transform: rotate(360deg); }
 }
+
+.modal-content {
+    transition: transform 0.3s ease-out;
+    transform: translateY(-30px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    border-radius: 8px;
+}
+
+.modal-header {
+    background-color: #007bff;
+    color: white;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
+
+.modal-footer button {
+    width: 100px;
+}
+
+.close {
+    color: white;
+    opacity: 1;
+    font-size: 1.5rem;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-control, .form-check-input {
+    margin-top: 10px;
+}
+
+.btn-primary {
+    background-color: #0056b3;
+    border-color: #004085;
+}
+
+.btn-primary:hover {
+    background-color: #003473;
+    border-color: #00295b;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+}
