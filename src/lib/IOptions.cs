@@ -7,6 +7,7 @@ public interface IOptions
     
     bool IsArchive { get; }
     string Id { get; }
+    bool IsDescending { get; }
     bool IsExactWord { get; }
     bool IsFilterEnabled { get; }
     
@@ -16,6 +17,8 @@ public interface IOptions
     
     bool ShowId { get; }
     bool ShouldExport { get; }
+    public DateTime StartDate { get; }
+    public DateTime StopDate { get; }
     string Subreddit { get; }
     
 }

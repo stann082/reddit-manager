@@ -16,6 +16,17 @@ public abstract class AbstractService
         }
 
         IEnumerable<CommentPreview> filteredComments = comments;
+
+        if (options.StartDate > DateTime.MinValue)
+        {
+            filteredComments = filteredComments.Where(c => c.Date >= options.StartDate);
+        }
+        
+        if (options.StopDate < DateTime.MaxValue)
+        {
+            filteredComments = filteredComments.Where(c => c.Date <= options.StopDate);
+        }
+        
         if (!string.IsNullOrEmpty(options.Query))
         {
             if (options.IsExactWord)
@@ -46,6 +57,11 @@ public abstract class AbstractService
             filteredComments = filteredComments.Where(c => c.Subreddit.Equals(sub, StringComparison.OrdinalIgnoreCase));
         }
 
+        if (options.IsDescending)
+        {
+            filteredComments = filteredComments.OrderByDescending(c => c.Date);
+        }
+        
         return filteredComments;
     }
 

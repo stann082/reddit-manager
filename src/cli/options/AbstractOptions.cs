@@ -1,4 +1,4 @@
-﻿using CommandLine;
+using CommandLine;
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 
 namespace cli.options;
@@ -17,37 +17,40 @@ public abstract class AbstractOptions
     [Option('c', "comment", Default = true, HelpText = "Specify if you're searching for comment.")]
     public bool Comment { get; set; }
 
+    [Option('f', "filter", HelpText = "Filters by sub, author, date (e.g., -f author=foomanchu&sub=news.")]
+    public string Filter { get; set; }
+
     [Option('a', "archive", HelpText = "Search in Pushshift file dumps on disk.")]
     public bool IsArchive { get; set; }
 
     [Option('e', "exact", HelpText = "Specify if you're searching for exact word in a query.")]
     public bool IsExactWord { get; set; }
 
-    [Option('p', "post", HelpText = "Specify if you're searching for post.")]
-    public bool Post { get; set; }
-
-    [Option('f', "filter", HelpText = "Filters by sub, author, date (e.g., -f author=foomanchu&sub=news.")]
-    public string Filter { get; set; }
-
     [Option('q', "query", HelpText = "Search for a specific word.")]
     public string Query { get; set; }
 
-    [Option("show-id", HelpText = "Display comment id.")]
-    public bool ShowId { get; set; }
-
     [Option("export", HelpText = "Export all saved posts to JSON.")]
     public bool ShouldExport { get; set; }
+
+    [Option("show-id", HelpText = "Display comment id.")]
+    public bool ShowId { get; set; }
 
     #endregion
 
     #region Properties
 
     public string Author => GetFilterValue("author");
+
     public string Id => GetFilterValue("id");
+    public bool IsDescending => GetFilterValue("order") == "desc";
     public bool IsFilterEnabled => !string.IsNullOrEmpty(Filter);
+
     public int Limit => GetLimitFromFilter();
+
+    public DateTime StartDate => ParseDate("start", DateTime.MinValue);
+    public DateTime StopDate => ParseDate("stop", DateTime.MaxValue);
     public string Subreddit => GetFilterValue("sub");
-    
+
     private Dictionary<string, string> FilterMap => CreateFilterMap();
 
     #endregion
@@ -81,6 +84,12 @@ public abstract class AbstractOptions
     {
         string limitValue = GetFilterValue("limit");
         return int.TryParse(limitValue, out var value) ? value : DefaultLimit;
+    }
+
+    private DateTime ParseDate(string key, DateTime defaultValue)
+    {
+        string dateValue = GetFilterValue(key);
+        return DateTime.TryParse(dateValue, out var value) ? value : defaultValue;
     }
 
     #endregion

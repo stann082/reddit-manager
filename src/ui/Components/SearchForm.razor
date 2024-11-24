@@ -1,0 +1,39 @@
+﻿@using ui.Data
+
+<EditForm Model="@FilterOptions" OnValidSubmit="HandleSubmit">
+    <div class="form-group mb-2">
+        <InputText class="form-control" placeholder="Author" @bind-Value="FilterOptions.Author"/>
+    </div>
+    <div class="form-group mb-2">
+        <InputText class="form-control" placeholder="Subreddit" @bind-Value="FilterOptions.Subreddit"/>
+    </div>
+    <div class="form-group mb-2">
+        <InputText class="form-control" placeholder="Query" @bind-Value="FilterOptions.Query"/>
+    </div>
+    <div class="form-group mb-3">
+        <InputNumber class="form-control" placeholder="Total Results" @bind-Value="FilterOptions.Limit"/>
+    </div>
+    <div class="d-flex align-items-center">
+        <button class="btn btn-primary" type="submit">Search</button>
+    </div>
+</EditForm>
+
+@code {
+
+    #region Properties
+
+    [Parameter] public WebOptions FilterOptions { get; set; }
+    [Parameter] public EventCallback<WebOptions> OnSearchInitiated { get; set; }
+
+    #endregion
+
+    #region Helper Methods
+
+    private async Task HandleSubmit()
+    {
+        await OnSearchInitiated.InvokeAsync(FilterOptions);
+    }
+
+    #endregion
+
+}

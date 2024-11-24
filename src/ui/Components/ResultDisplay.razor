@@ -1,0 +1,31 @@
+﻿@using lib
+
+@if (IsLoading)
+{
+    <p><em>Loading...</em></p>
+}
+else if (ErrorMessage != null)
+{
+    <p class="text-danger">@ErrorMessage</p>
+}
+else
+{
+    foreach (var comment in Comments!)
+    {
+        <div class="mb-3">
+            <CommentCard Comment="@comment"/>
+        </div>
+    }
+}
+
+@code {
+
+    #region Properties
+
+    [Parameter] public CommentPreview[]? Comments { get; set; }
+    [Parameter] public bool IsLoading { get; set; }
+    [Parameter] public string? ErrorMessage { get; set; }
+
+    #endregion
+    
+}
