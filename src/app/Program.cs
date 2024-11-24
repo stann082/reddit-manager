@@ -11,15 +11,9 @@ public static class Program
 
     public static async Task<int> Main(string[] args)
     {
-        Log.Logger = new LoggerConfiguration()
-            .MinimumLevel.Debug()
-            .WriteTo.Console()
-            .WriteTo.File("logs/reddit.log", rollingInterval: RollingInterval.Day)
-            .CreateLogger();
-
+        Log.Logger = LoggingManager.Initialize();
         try
         {
-            Log.Information("Starting application");
             var config = ApplicationConfig.Load();
             var services = new ServiceCollection()
                 .AddSingleton(config)

@@ -1,5 +1,6 @@
 ﻿@page "/saved"
 @using lib
+@using Serilog
 @using ui.Components
 @using ui.Data
 @inject SavedService SavedService
@@ -46,12 +47,14 @@
 
         try
         {
+            Log.Information("Fetching saved comments with {@Options}", _filterWebOptions);
             await Task.Delay(250);
             var filteredComments = await SavedService.GetFilteredItemsAsync(_filterWebOptions);
             _comments = filteredComments.Item1;
         }
         catch (Exception ex)
         {
+            LoggingManager.LogException(ex);
             _errorMessage = $"Error: {ex.Message}";
         }
         finally

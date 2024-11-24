@@ -1,6 +1,8 @@
 using lib;
 using MongoDB.Driver;
+using Serilog;
 
+Log.Logger = LoggingManager.Initialize();
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.

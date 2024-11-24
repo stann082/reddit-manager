@@ -33,7 +33,7 @@ public class SearchService(ApplicationConfig config) : AbstractService, ISearchS
             }
             catch (RedditForbiddenException ex)
             {
-                Log.Error(ex, "Something went wrong in Search execution");
+                LoggingManager.LogException(ex);
                 return ([], 0);
             }
         }
