@@ -3,6 +3,7 @@ using Reddit;
 using Reddit.Exceptions;
 using Reddit.Inputs.Users;
 using Reddit.Things;
+using Serilog;
 
 namespace lib;
 
@@ -30,9 +31,9 @@ public class SearchService(ApplicationConfig config) : AbstractService, ISearchS
                     .Select(c => new CommentPreview(c))
                     .OrderByDescending(c => c.Date).ToArray();
             }
-            catch (RedditForbiddenException e)
+            catch (RedditForbiddenException ex)
             {
-                Console.WriteLine(e);
+                LoggingManager.LogException(ex);
                 return ([], 0);
             }
         }

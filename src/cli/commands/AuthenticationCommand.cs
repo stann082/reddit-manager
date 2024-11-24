@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 using cli.options;
 using Reddit.AuthTokenRetriever;
 using Reddit.AuthTokenRetriever.EventArgs;
+using Serilog;
 
 namespace cli.commands;
 
@@ -11,7 +12,7 @@ public static class AuthenticationCommand
 
     #region Constants
 
-    private const string BROWSER_PATH = @"C:\Program Files\Google\Chrome\Application\chrome.exe";
+    private const string BrowserPath = @"C:\Program Files\Google\Chrome\Application\chrome.exe";
 
     #endregion
     
@@ -19,6 +20,9 @@ public static class AuthenticationCommand
 
     public static Task<int> Execute(AuthenticationOptions opts)
     {
+        Log.Information("Starting token retrieval utility....");
+        
+        Console.WriteLine("Opening browser to Reddit authentication page....");
         AuthTokenRetrieverLib authTokenRetrieverLib = new AuthTokenRetrieverLib(opts.AppId, opts.Port, appSecret: opts.AppSecret);
         authTokenRetrieverLib.AuthSuccess += C_AuthSuccess;
         authTokenRetrieverLib.AwaitCallback(true);
@@ -55,7 +59,7 @@ public static class AuthenticationCommand
             }
             catch (System.ComponentModel.Win32Exception)
             {
-                ProcessStartInfo processStartInfo = new ProcessStartInfo(BROWSER_PATH)
+                ProcessStartInfo processStartInfo = new ProcessStartInfo(BrowserPath)
                 {
                     Arguments = authUrl
                 };
