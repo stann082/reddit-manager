@@ -1,8 +1,10 @@
-﻿@using lib
+@using lib
 
 @if (IsLoading)
 {
-    <p><em>Loading...</em></p>
+    <div class="spinner-overlay">
+        <div class="spinner-border"></div>
+    </div>
 }
 else if (ErrorMessage != null)
 {
@@ -21,7 +23,7 @@ else
 @code {
 
     #region Properties
-
+    
     [Parameter] public CommentPreview[]? Comments { get; set; }
     [Parameter] public bool IsLoading { get; set; }
     [Parameter] public string? ErrorMessage { get; set; }
