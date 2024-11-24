@@ -2,16 +2,12 @@ using lib;
 using MongoDB.Driver;
 using Serilog;
 
-var environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production";
-var pathToConfig = Path.Combine(Directory.GetCurrentDirectory(), "config");
-
 var configuration = new ConfigurationBuilder()
-    .SetBasePath(pathToConfig)
-    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-    .AddJsonFile($"appsettings.{environmentName}.json", optional: true)
+    .AddJsonFile("appsettings.json")
+    .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", optional: true)
     .Build();
 
-Log.Logger = LoggingManager.Initialize();
+Log.Logger = LoggingManager.Initialize(configuration);
 var builder = WebApplication.CreateBuilder(args);
 
 // Apply the configuration to the builder
