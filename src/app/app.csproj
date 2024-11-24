@@ -20,6 +20,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="config\**">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\cli\cli.csproj" />
     <ProjectReference Include="..\lib\lib.csproj" />
   </ItemGroup>

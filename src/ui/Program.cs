@@ -2,8 +2,20 @@ using lib;
 using MongoDB.Driver;
 using Serilog;
 
+var environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production";
+var pathToConfig = Path.Combine(Directory.GetCurrentDirectory(), "config");
+
+var configuration = new ConfigurationBuilder()
+    .SetBasePath(pathToConfig)
+    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+    .AddJsonFile($"appsettings.{environmentName}.json", optional: true)
+    .Build();
+
 Log.Logger = LoggingManager.Initialize();
 var builder = WebApplication.CreateBuilder(args);
+
+// Apply the configuration to the builder
+builder.Configuration.AddConfiguration(configuration);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
@@ -17,7 +29,6 @@ var app = builder.Build();
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
