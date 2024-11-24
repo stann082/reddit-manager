@@ -2,6 +2,7 @@
 using Reddit;
 using Reddit.Inputs.Users;
 using Reddit.Things;
+using Serilog;
 
 namespace lib;
 
@@ -21,7 +22,7 @@ public class CacheService(ApplicationConfig config, IMongoDatabase database) : I
     {
         int newCachedComments = 0;
         int existingCachedComments = 0;
-        Console.WriteLine("Caching saved comments into memory");
+        Log.Information("Caching saved comments into memory");
 
         var collection = database.GetCollection<CommentModel>("comments");
         
@@ -54,7 +55,10 @@ public class CacheService(ApplicationConfig config, IMongoDatabase database) : I
             totalTopComments = topComments.Length;
         } while (totalTopComments > 0);
 
-        Console.WriteLine($"Cached {newCachedComments} new comments. Skipped {existingCachedComments} comments that were already cached.");
+        Log.Information(
+            "Cached {NewCachedComments} new comments. Skipped {ExistingCachedComments} comments that were already cached",
+            newCachedComments,
+            existingCachedComments);
     }
 
     #endregion
