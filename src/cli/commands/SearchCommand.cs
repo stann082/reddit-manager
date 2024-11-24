@@ -16,7 +16,7 @@ public class SearchCommand(IOptions options, ISearchService service) : AbstractC
 
     protected override Task<(CommentPreview[], int)> GetFilteredComments(IOptions options)
     {
-        Log.Information("Fetching comments from Reddit API with {@Options}", options);
+        Log.Debug("Fetching comments from Reddit API with {@Options}", options);
         return service.Search(options);
     }
 

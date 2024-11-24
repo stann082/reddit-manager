@@ -10,7 +10,6 @@ public class CacheCommand(ICacheService service)
 
     public async Task<int> Execute()
     {
-        Log.Information("Caching saved comments with Reddit API");
         await service.CacheSavedCommentsAsync();
         return await Task.FromResult(0);
     }

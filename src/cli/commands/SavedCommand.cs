@@ -15,7 +15,7 @@ public class SavedCommand(IOptions options, ISavedService service) : AbstractCom
 
     protected override Task<(CommentPreview[], int)> GetFilteredComments(IOptions options)
     {
-        Log.Information("Fetching locally saved comments with {@Options}", options);
+        Log.Debug("Fetching locally saved comments with {@Options}", options);
         return service.GetFilteredItemsAsync(options);
     }
 

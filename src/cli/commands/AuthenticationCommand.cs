@@ -20,7 +20,7 @@ public static class AuthenticationCommand
 
     public static Task<int> Execute(AuthenticationOptions opts)
     {
-        Log.Information("Starting token retrieval utility....");
+        Log.Debug("Starting token retrieval utility with {@Options}....", opts);
         
         Console.WriteLine("Opening browser to Reddit authentication page....");
         AuthTokenRetrieverLib authTokenRetrieverLib = new AuthTokenRetrieverLib(opts.AppId, opts.Port, appSecret: opts.AppSecret);
