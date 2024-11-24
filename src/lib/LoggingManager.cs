@@ -12,22 +12,21 @@ public static class LoggingManager
     public static Logger Initialize(IConfigurationRoot configuration = null)
     {
         string baseLogPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-        string logFilePath = Path.Combine(baseLogPath, "logs", "reddit", DateTime.Today.ToString("d"), "usage.log");
+        string logFilePath = Path.Combine(baseLogPath, "logs", "reddit", DateTime.Today.ToString("yyyy-MM-dd"), "usage.log");
+        
         var loggerConfiguration = new LoggerConfiguration()
-            .MinimumLevel.Information()
             .MinimumLevel.Information()
             .WriteTo.Console()
             .WriteTo.File(logFilePath, shared: true, rollingInterval: RollingInterval.Day);
-        
-        if (configuration == null)
+
+        if (configuration != null)
         {
-            return loggerConfiguration.CreateLogger();
+            loggerConfiguration
+                .ReadFrom.Configuration(configuration)
+                .Enrich.FromLogContext();
         }
-        
-        return loggerConfiguration
-            .ReadFrom.Configuration(configuration)
-            .Enrich.FromLogContext()
-            .CreateLogger();
+
+        return loggerConfiguration.CreateLogger();
     }
     
     public static void LogException(Exception ex)
