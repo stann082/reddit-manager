@@ -4,7 +4,7 @@ using lib.commands;
 using lib.options;
 using MongoDB.Driver;
 
-namespace app;
+namespace cli;
 
 public class App(
     ICacheService cacheService,

@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;
 using Serilog;
 
-namespace app;
+namespace cli;
 
 public static class Program
 {

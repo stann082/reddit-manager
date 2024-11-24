@@ -1,6 +1,6 @@
 using lib;
 
-namespace ui.Data;
+namespace web.Data;
 
 public class WebOptions : IOptions
 {

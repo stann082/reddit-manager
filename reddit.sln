@@ -5,7 +5,7 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{57B8665F-833C-4062-B909-E89E396DD0E4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "app", "src\app\app.csproj", "{234DF9E1-4C1A-4E7A-A918-D8306D3904DC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cli", "src\cli\cli.csproj", "{234DF9E1-4C1A-4E7A-A918-D8306D3904DC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "lib", "src\lib\lib.csproj", "{D17F0993-1AAC-444F-8380-98E106F107ED}"
 EndProject
@@ -13,7 +13,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{72AB7280
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "lib.test", "tests\lib.test\lib.test.csproj", "{E816A5C7-A140-4288-861E-01BC13B5E208}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ui", "src\ui\ui.csproj", "{C2DC1F7E-EBF5-486D-9663-C0EF0878DB6B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "web", "src\web\web.csproj", "{C2DC1F7E-EBF5-486D-9663-C0EF0878DB6B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

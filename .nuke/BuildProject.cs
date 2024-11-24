@@ -57,7 +57,7 @@ class BuildProject : NukeBuild
             var targetFile = Path.Combine(targetDirectory, fileName);
             if (File.Exists(targetFile)) File.Delete(targetFile);
 
-            var sourceFile = RootDirectory / "pubcli" / "app.exe";
+            var sourceFile = RootDirectory / "pubcli" / "cli.exe";
             File.Copy(sourceFile, targetFile);
             Log.Information("Deployed {TargetFile} to {TargetDirectory}", fileName, targetDirectory);
         });
@@ -68,7 +68,7 @@ class BuildProject : NukeBuild
         .Executes(() =>
         {
             DotNetTasks.DotNetPublish(s => s
-                .SetProject(RootDirectory / "src" / "app" / "app.csproj")
+                .SetProject(RootDirectory / "src" / "cli" / "cli.csproj")
                 .SetConfiguration(Configuration.Release)
                 .SetVerbosity(DotNetVerbosityLevel)
                 .SetOutput("pubcli"));
