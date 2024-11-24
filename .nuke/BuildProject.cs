@@ -10,14 +10,16 @@ using Serilog;
 // ReSharper disable AllUnderscoreLocalParameterName
 class BuildProject : NukeBuild
 {
+
     public static int Main() => Execute<BuildProject>();
 
     #region Parameters
 
     [Parameter("Verbosity level of the build output - Default is 'Minimal'")]
     readonly DotNetVerbosity DotNetVerbosityLevel = DotNetVerbosity.quiet;
-
-    [Parameter("Skips the build step if specified.")] readonly bool NoBuild;
+    
+    [Parameter("Skips the build step if specified.")]
+    readonly bool NoBuild;
 
     [Parameter("Paths to the test project(s) to run. You can provide multiple paths as separate arguments.")]
     readonly AbsolutePath[] TestProjectPaths;
@@ -36,7 +38,7 @@ class BuildProject : NukeBuild
                 Log.Information("Cleaning directory {Directory}", directory);
                 directory.DeleteDirectory();
             }
-
+            
             var buildDirectory = RootDirectory / "build";
             Log.Information("Cleaning directory {BuildDirectory}", buildDirectory);
             buildDirectory.DeleteDirectory();
@@ -46,41 +48,66 @@ class BuildProject : NukeBuild
             publishDirectory.DeleteDirectory();
         });
 
-    Target DeployCli => _ => _
-        .DependsOn(Test, PublishCli)
+    Target Deploy => _ => _
+        .DependsOn(Test, Publish)
         .Executes(() =>
         {
             var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             var targetDirectory = Path.Combine(appDataPath, "utils");
-            if (!Directory.Exists(targetDirectory)) Directory.CreateDirectory(targetDirectory);
+            if (!Directory.Exists(targetDirectory))
+            {
+                Directory.CreateDirectory(targetDirectory);
+            }
 
             const string fileName = "reddit.exe";
             var targetFile = Path.Combine(targetDirectory, fileName);
-            if (File.Exists(targetFile)) File.Delete(targetFile);
-
+            if (File.Exists(targetFile))
+            {
+                File.Delete(targetFile);
+            }
+            
             var sourceFile = RootDirectory / "pub" / "PersonalFinance.CLI.exe";
             File.Copy(sourceFile, targetFile);
             Log.Information("Deployed {TargetFile} to {TargetDirectory}", fileName, targetDirectory);
         });
 
-    Target PublishCli => _ => _
+    Target Publish => _ => _
         .DependsOn(DeepClean)
-        .Before(DeployCli)
+        .Before(Deploy)
         .Executes(() =>
         {
             DotNetTasks.DotNetPublish(s => s
-                .SetProject(RootDirectory / "reddit.sln")
+                .SetProject(RootDirectory / "PersonalFinance.sln")
                 .SetConfiguration(Configuration.Release)
-                .SetVerbosity(DotNetVerbosityLevel));
+                .SetVerbosity(DotNetVerbosityLevel)
+                .SetOutput(RootDirectory / "pub"));
         });
 
     Target Test => _ => _
         .Executes(() =>
         {
-            DotNetTasks.DotNetTest(s => s
-                .SetProjectFile(RootDirectory / "reddit.sln")
-                .SetVerbosity(DotNetVerbosityLevel));
+            GetTestProjects().AsParallel().ForAll(project =>
+            {
+                DotNetTasks.DotNetTest(s => s
+                    .SetProjectFile(project)
+                    .SetVerbosity(DotNetVerbosityLevel));
+            });
         });
 
     #endregion
+
+    #region Helper Methods
+
+    AbsolutePath[] GetTestProjects() =>
+        (TestProjectPaths ?? []).Length > 0
+            ? TestProjectPaths
+            :
+            [
+                RootDirectory / "tests" / "PersonalFinance.Application.Tests" / "PersonalFinance.Application.Tests.csproj",
+                RootDirectory / "tests" / "PersonalFinance.Domain.Tests" / "PersonalFinance.Domain.Tests.csproj",
+                RootDirectory / "tests" / "PersonalFinance.Infrastructure.Tests" / "PersonalFinance.Infrastructure.Tests.csproj"
+            ];
+
+    #endregion
+
 }
