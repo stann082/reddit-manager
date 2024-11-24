@@ -25,8 +25,9 @@
       "type": "string",
       "enum": [
         "DeepClean",
-        "Deploy",
-        "Publish",
+        "DeployCli",
+        "PublishCli",
+        "PublishWeb",
         "Test"
       ]
     },
@@ -115,13 +116,6 @@
         "NoBuild": {
           "type": "boolean",
           "description": "Skips the build step if specified"
-        },
-        "TestProjectPaths": {
-          "type": "array",
-          "description": "Paths to the test project(s) to run. You can provide multiple paths as separate arguments",
-          "items": {
-            "type": "string"
-          }
         }
       }
     },

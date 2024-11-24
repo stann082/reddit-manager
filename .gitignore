@@ -20,7 +20,7 @@
 *.sln.docstates
 etc/conf/*
 inc/
-pub/
+pub*/
 
 # User-specific directories
 etc/inc/
