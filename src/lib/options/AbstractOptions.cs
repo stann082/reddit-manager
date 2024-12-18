@@ -47,8 +47,8 @@ public abstract class AbstractOptions
 
     public int Limit => GetLimitFromFilter();
 
-    public int ScoreGreaterThan => int.TryParse(GetFilterValue("scoreg"), out var value) ? value : int.MinValue;
-    public int ScoreLessThan => int.TryParse(GetFilterValue("scorel"), out var value) ? value : int.MaxValue;
+    public bool SortByDate => GetFilterValue("sort_by") == "date";
+    public bool SortByScore => GetFilterValue("sort_by") == "score";
     public DateTime StartDate => ParseDate("start", DateTime.MinValue);
     public DateTime StopDate => ParseDate("stop", DateTime.MaxValue);
     public string Subreddit => GetFilterValue("sub");

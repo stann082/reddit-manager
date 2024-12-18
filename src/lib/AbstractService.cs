@@ -4,6 +4,16 @@ namespace lib;
 
 public abstract class AbstractService
 {
+
+    #region Enums
+
+    private enum SortOption
+    {
+        Date,
+        Score
+    }
+
+    #endregion
     
     #region Shared Methods
 
@@ -57,21 +67,19 @@ public abstract class AbstractService
             filteredComments = filteredComments.Where(c => c.Subreddit.Equals(sub, StringComparison.OrdinalIgnoreCase));
         }
 
-        if (options.IsDescending)
-        {
-            filteredComments = filteredComments.OrderByDescending(c => c.Date);
-        }
-
-        if (options.ScoreGreaterThan != int.MinValue)
-        {
-            filteredComments = filteredComments.Where(c => c.Score >= options.ScoreGreaterThan);
-        }
-        else if (options.ScoreLessThan != int.MaxValue)
-        {
-            filteredComments = filteredComments.Where(c => c.Score <= options.ScoreLessThan);
-        }
-        
+        filteredComments = ApplySorting(filteredComments, SortOption.Date, options.IsDescending);
+        filteredComments = ApplySorting(filteredComments, SortOption.Score, options.IsDescending);
         return filteredComments;
+    }
+
+    private static IEnumerable<CommentPreview> ApplySorting(IEnumerable<CommentPreview> comments, SortOption sortOption, bool isDescending)
+    {
+        return sortOption switch
+        {
+            SortOption.Date => isDescending ? comments.OrderByDescending(c => c.Date) : comments.OrderBy(c => c.Date),
+            SortOption.Score => isDescending ? comments.OrderByDescending(c => c.Score) : comments.OrderBy(c => c.Score),
+            _ => comments
+        };
     }
 
     #endregion
