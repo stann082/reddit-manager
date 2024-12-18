@@ -20,6 +20,8 @@ public class WebOptions : IOptions
     public int Limit { get; set; } = 25;
 
     public string Query { get; set; } = string.Empty;
+    public int ScoreGreaterThan { get; set; } = int.MinValue;
+    public int ScoreLessThan { get; set; } = int.MaxValue;
 
     public bool ShowId { get; set; } = false;
     public bool ShouldExport { get; set; } = false;

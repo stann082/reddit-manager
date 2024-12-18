@@ -13,6 +13,10 @@
     <div class="form-group mb-3">
         <InputNumber class="form-control" placeholder="Total Results" @bind-Value="FilterOptions.Limit"/>
     </div>
+    <div class="form-group mb-3 d-flex align-items-center">
+        <InputCheckbox class="form-check-input" id="archive" @bind-Value="FilterOptions.IsArchive"/>
+        <label class="form-check-label" for="archive">Search in local archive</label>
+    </div>
     <div class="d-flex align-items-center">
         <button class="btn btn-primary" type="submit">Search</button>
     </div>

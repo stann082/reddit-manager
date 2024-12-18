@@ -15,6 +15,8 @@ public interface IOptions
     
     string Query { get; }
     
+    int ScoreGreaterThan { get; }
+    int ScoreLessThan { get; }
     bool ShowId { get; }
     bool ShouldExport { get; }
     public DateTime StartDate { get; }

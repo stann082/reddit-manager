@@ -49,6 +49,7 @@
         {
             Log.Debug("Fetching saved comments with {@Options}", _filterWebOptions);
             await Task.Delay(250);
+
             var filteredComments = await SavedService.GetFilteredItemsAsync(_filterWebOptions);
             _comments = filteredComments.Item1;
         }

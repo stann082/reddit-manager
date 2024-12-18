@@ -61,6 +61,15 @@ public abstract class AbstractService
         {
             filteredComments = filteredComments.OrderByDescending(c => c.Date);
         }
+
+        if (options.ScoreGreaterThan != int.MinValue)
+        {
+            filteredComments = filteredComments.Where(c => c.Score >= options.ScoreGreaterThan);
+        }
+        else if (options.ScoreLessThan != int.MaxValue)
+        {
+            filteredComments = filteredComments.Where(c => c.Score <= options.ScoreLessThan);
+        }
         
         return filteredComments;
     }

@@ -1,14 +1,19 @@
-﻿using Newtonsoft.Json;
-using Reddit;
+﻿using Reddit;
 using Reddit.Exceptions;
 using Reddit.Inputs.Users;
 using Reddit.Things;
-using Serilog;
 
 namespace lib;
 
 public class SearchService(ApplicationConfig config) : AbstractService, ISearchService
 {
+    
+    #region Variables
+
+    private readonly RedditClient _redditClient = new(config.AppId, config.RefreshToken, accessToken: config.AccessToken);
+    private readonly string _me = Environment.GetEnvironmentVariable("MY_REDDIT_USERNAME");
+
+    #endregion
     
     #region Public Methods
 
@@ -16,71 +21,26 @@ public class SearchService(ApplicationConfig config) : AbstractService, ISearchS
     {
         CommentPreview[] comments;
 
-        if (options.IsArchive)
+        try
         {
-            comments = (await GetCommentsFromPushshiftArchive(options))
-                .Select(m => new CommentPreview(m))
-                .OrderByDescending(m => m.Date).ToArray();
+            comments = (await GetCommentsFromReddit(options.Author))
+                .Select(c => new CommentPreview(c))
+                .OrderByDescending(c => c.Date).ToArray();
         }
-        else
+        catch (RedditForbiddenException ex)
         {
-            
-            try
-            {
-                comments = (await GetCommentsFromReddit(options.Author))
-                    .Select(c => new CommentPreview(c))
-                    .OrderByDescending(c => c.Date).ToArray();
-            }
-            catch (RedditForbiddenException ex)
-            {
-                LoggingManager.LogException(ex);
-                return ([], 0);
-            }
+            LoggingManager.LogException(ex);
+            return ([], 0);
         }
 
-        CommentPreview[] filteredComments = FilterComments(comments, options).ToArray();
-        CommentPreview[] pagedComments = filteredComments.Take(options.Limit).ToArray();
+        var filteredComments = FilterComments(comments, options).ToArray();
+        var pagedComments = filteredComments.Take(options.Limit).ToArray();
         return (pagedComments, filteredComments.Length);
     }
 
     #endregion
 
-    #region Variables
-
-    private readonly RedditClient _redditClient = new(config.AppId, config.RefreshToken, accessToken: config.AccessToken);
-    private readonly string _me = Environment.GetEnvironmentVariable("MY_REDDIT_USERNAME");
-
-    #endregion
-
     #region Helper Methods
-
-    private static async Task<CommentModel[]> GetCommentsFromPushshiftArchive(IOptions options)
-    {
-        List<string> files = [];
-
-        string subreddit = options.Subreddit;
-        string subredditFolderPattern = !string.IsNullOrEmpty(subreddit) ? subreddit : "*";
-        var dirs = Directory.GetDirectories(@"E:\PushshiftDumps\user_comments\author", subredditFolderPattern, SearchOption.AllDirectories);
-        foreach (string dir in dirs)
-        {
-            string[] allFiles = Directory.GetFiles(dir, "*.json", SearchOption.AllDirectories);
-            if (allFiles.Length == 0) continue;
-            files.AddRange(allFiles);
-        }
-
-        string author = options.Author;
-        if (!string.IsNullOrEmpty(author))
-        {
-            files = files.Where(f => f.Contains(author, StringComparison.OrdinalIgnoreCase)).ToList();
-        }
-
-        List<CommentModel> comments = [];
-        comments.AddRange(from file in files
-            from comment in StreamCommentsFromFile(file)
-            select new CommentModel(comment));
-
-        return await Task.FromResult(comments.ToArray());
-    }
 
     private async Task<CommentModel[]> GetCommentsFromReddit(string username)
     {
@@ -112,15 +72,6 @@ public class SearchService(ApplicationConfig config) : AbstractService, ISearchS
         return comments.Select(c => new CommentModel(c)).ToArray();
     }
 
-    private static IEnumerable<PushshiftModel> StreamCommentsFromFile(string filePath)
-    {
-        using var reader = new StreamReader(filePath);
-        while (reader.ReadLine() is { } line)
-        {
-            yield return JsonConvert.DeserializeObject<PushshiftModel>(line);
-        }
-    }
-
     #endregion
-    
+
 }
