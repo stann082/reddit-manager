@@ -44,7 +44,8 @@ public class SavedService(IMongoDatabase database) : AbstractService, ISavedServ
 
         string subreddit = options.Subreddit;
         string subredditFolderPattern = !string.IsNullOrEmpty(subreddit) ? subreddit : "*";
-        var dirs = Directory.GetDirectories(@"E:\PushshiftDumps\user_comments\author", subredditFolderPattern, SearchOption.AllDirectories);
+        var basePath = Environment.GetEnvironmentVariable("PUSHSHIFT_PATH") ?? @"E:\PushshiftDumps\user_comments\author";
+        var dirs = Directory.GetDirectories(basePath, subredditFolderPattern, SearchOption.AllDirectories);
         foreach (string dir in dirs)
         {
             string[] allFiles = Directory.GetFiles(dir, "*.json", SearchOption.AllDirectories);

@@ -1,3 +1,6 @@
+### Project-specific exclusions
+data/
+
 ### Code ###
 .vscode/*
 !.vscode/settings.json

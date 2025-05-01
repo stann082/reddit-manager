@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redditapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redditapp
+  template:
+    metadata:
+      labels:
+        app: redditapp
+    spec:
+      containers:
+      - name: redditapp
+        image: redditapp:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8080
+        env:
+        - name: PUSHSHIFT_PATH
+          value: "/app/data/user_comments/author"
+
