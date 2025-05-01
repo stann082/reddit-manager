@@ -16,7 +16,7 @@ builder.Configuration.AddConfiguration(configuration);
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddSingleton(_ => new MongoClient("mongodb://localhost:27017").GetDatabase("reddit"));
+builder.Services.AddSingleton(_ => new MongoClient("mongodb://host.docker.internal:27017").GetDatabase("reddit"));
 builder.Services.AddSingleton<SavedService>();
 
 var app = builder.Build();
