@@ -1,4 +1,7 @@
-﻿using System.Text.RegularExpressions;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace lib;
 
@@ -67,8 +70,15 @@ public abstract class AbstractService
             filteredComments = filteredComments.Where(c => c.Subreddit.Equals(sub, StringComparison.OrdinalIgnoreCase));
         }
 
-        filteredComments = ApplySorting(filteredComments, SortOption.Date, options.IsDescending);
-        filteredComments = ApplySorting(filteredComments, SortOption.Score, options.IsDescending);
+        if (options.SortByDate)
+        {
+            filteredComments = ApplySorting(filteredComments, SortOption.Date, options.IsDescending);
+        }
+        else if (options.SortByScore)
+        {
+            filteredComments = ApplySorting(filteredComments, SortOption.Score, options.IsDescending);
+        }
+        
         return filteredComments;
     }
 

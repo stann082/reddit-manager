@@ -30,7 +30,9 @@ public abstract class AbstractCommand(IOptions options)
             Console.WriteLine($"Subreddit:   {comment.Subreddit}");
             Console.WriteLine($"Date posted: {comment.Date}");
             Console.WriteLine($"Score:       {comment.Score}");
-            Console.WriteLine($"Link:        https://old.reddit.com{comment.Permalink}");
+            
+            string urlPrefix = comment.Body == "[removed]" ? "https://undelete.pullpush.io" : "https://old.reddit.com";
+            Console.WriteLine($"Link:        {urlPrefix}{comment.Permalink}");
             PrintBody(comment.Body, options.Query);
 
             Console.WriteLine();

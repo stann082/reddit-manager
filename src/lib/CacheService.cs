@@ -7,6 +7,14 @@ namespace lib;
 
 public class CacheService(ApplicationConfig config, IMongoDatabase database) : ICacheService
 {
+    
+    #region Variables
+
+    private readonly RedditClient _redditClient = new(config.AppId, config.RefreshToken, accessToken: config.AccessToken);
+    private readonly string _me = Environment.GetEnvironmentVariable("MY_REDDIT_USERNAME");
+
+    #endregion
+    
     #region Public Methods
 
     public async Task CacheSavedCommentsAsync()
@@ -74,12 +82,4 @@ public class CacheService(ApplicationConfig config, IMongoDatabase database) : I
 
     #endregion
 
-    #region Variables
-
-    private readonly RedditClient _redditClient =
-        new(config.AppId, config.RefreshToken, accessToken: config.AccessToken);
-
-    private readonly string _me = Environment.GetEnvironmentVariable("MY_REDDIT_USERNAME");
-
-    #endregion
 }
