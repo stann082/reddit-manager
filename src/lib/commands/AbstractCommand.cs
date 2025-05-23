@@ -36,9 +36,7 @@ public abstract class AbstractCommand(IOptions options)
             
             string urlPrefix = comment.Body == "[removed]" ? "https://undelete.pullpush.io" : "https://old.reddit.com";
             Console.WriteLine($"Link:        {urlPrefix}{comment.Permalink}");
-
-            CommentBlock[] parts = CommentParser.Parse(comment.Body);
-            PrintBody(parts, options.Query);
+            PrintBody(comment.ParsedBlocks, options.Query);
 
             Console.WriteLine();
         }

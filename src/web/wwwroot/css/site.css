@@ -67,6 +67,22 @@ a, .btn-link {
         content: "An error has occurred."
     }
 
+mark {
+    background-color: yellow;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+
+.reddit-quote {
+    border-left: 3px solid #ccc;
+    padding-left: 1em;
+    margin: 0.5em 0;
+    color: #6a737d;
+    background-color: #f8f9fa;
+    font-style: italic;
+    white-space: pre-wrap;
+}
+
 .spinner-overlay {
     position: fixed;
     top: 0;
