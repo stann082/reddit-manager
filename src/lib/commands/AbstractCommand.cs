@@ -33,7 +33,9 @@ public abstract class AbstractCommand(IOptions options)
             
             string urlPrefix = comment.Body == "[removed]" ? "https://undelete.pullpush.io" : "https://old.reddit.com";
             Console.WriteLine($"Link:        {urlPrefix}{comment.Permalink}");
-            PrintBody(comment.Body, options.Query);
+
+            CommentBlock[] parts = CommentParser.Parse(comment.Body);
+            PrintBody(parts, options.Query);
 
             Console.WriteLine();
         }
@@ -46,41 +48,45 @@ public abstract class AbstractCommand(IOptions options)
 
     #region Helper Methods
 
-    private static void PrintBody(string text, string query = null)
+    private static void PrintBody(CommentBlock[] blocks, string query = null)
     {
-        var parts = text.Split(["\n\n"], StringSplitOptions.None);
-        foreach (var originalPart in parts)
+        foreach (CommentBlock block in blocks)
         {
-            var part = originalPart.StartsWith("&gt;") ? originalPart.Replace("&gt;", ">") : originalPart;
-            var isQuote = originalPart.StartsWith("&gt;");
-            if (isQuote) Console.ForegroundColor = ConsoleColor.Green;
+            if (block is QuoteBlock)
+                Console.ForegroundColor = ConsoleColor.Green;
 
             if (!string.IsNullOrEmpty(query))
             {
                 var startIndex = 0;
-                var index = part.IndexOf(query, StringComparison.OrdinalIgnoreCase);
+                var index = block.Text.IndexOf(query, StringComparison.OrdinalIgnoreCase);
                 while (index != -1)
                 {
-                    Console.Write(part.Substring(startIndex, index - startIndex));
+                    // Print normal text before query match
+                    Console.Write(block.Text.Substring(startIndex, index - startIndex));
+
+                    // Print query in red
                     Console.ForegroundColor = ConsoleColor.Red;
-                    Console.Write(part.Substring(index, query.Length));
-                    if (isQuote)
+                    Console.Write(block.Text.Substring(index, query.Length));
+
+                    // Reset color to block type
+                    if (block is QuoteBlock)
                         Console.ForegroundColor = ConsoleColor.Green;
                     else
                         Console.ResetColor();
 
                     startIndex = index + query.Length;
-                    index = part.IndexOf(query, startIndex, StringComparison.OrdinalIgnoreCase);
+                    index = block.Text.IndexOf(query, startIndex, StringComparison.OrdinalIgnoreCase);
                 }
 
-                Console.Write(part[startIndex..]);
+                // Print remaining text
+                Console.Write(block.Text[startIndex..]);
             }
             else
             {
-                Console.Write(part);
+                Console.Write(block.Text);
             }
 
-            if (isQuote) Console.ResetColor();
+            Console.ResetColor();
             Console.Write("\n\n");
         }
     }
