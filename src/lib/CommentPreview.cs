@@ -1,4 +1,6 @@
-﻿namespace lib;
+﻿using System;
+
+namespace lib;
 
 public class CommentPreview(CommentModel comment)
 {

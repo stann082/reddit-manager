@@ -1,4 +1,6 @@
-﻿namespace lib;
+﻿using System;
+
+namespace lib;
 
 public abstract class CommentBlock
 {

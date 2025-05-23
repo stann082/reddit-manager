@@ -1,4 +1,6 @@
-﻿namespace lib.commands;
+﻿using System.Threading.Tasks;
+
+namespace lib.commands;
 
 public class CacheCommand(ICacheService service)
 {

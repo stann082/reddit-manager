@@ -1,4 +1,6 @@
-﻿using lib;
+﻿using System;
+using System.Threading.Tasks;
+using lib;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;
 using Serilog;

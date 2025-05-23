@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Serilog;
 
 namespace lib.commands;

@@ -1,4 +1,5 @@
-﻿using MongoDB.Bson;
+﻿using System;
+using MongoDB.Bson;
 using Reddit.Things;
 
 // ReSharper disable UnusedAutoPropertyAccessor.Global

@@ -1,4 +1,7 @@
-﻿namespace lib;
+﻿using System;
+using System.Collections.Generic;
+
+namespace lib;
 
 public abstract class CommentParser
 {
