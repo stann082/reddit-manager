@@ -4,12 +4,45 @@
         <h5 class="card-title">
             <a href="@($"https://www.reddit.com/u/{Comment?.Author}")">@Comment?.Author</a>
         </h5>
-        <p class="card-text">@Comment?.Body</p>
+        
+        @if (Comment?.ParsedBlocks.Length > 0)
+        {
+            <div @ref="_textContainerRef">
+                @foreach (var block in Comment.ParsedBlocks)
+                {
+                    if (block is QuoteBlock)
+                    {
+                        <blockquote class="reddit-quote">@block.Text</blockquote>
+                    }
+                    else
+                    {
+                        <p>@block.Text</p>
+                    }
+                }
+            </div>
+        }
+
         <a class="card-link" href="@($"https://www.reddit.com{Comment?.Permalink}")">Comment</a>
         <a class="card-link" href="@($"https://www.reddit.com/r/{Comment?.Subreddit}")">r/@Comment?.Subreddit</a>
     </div>
 </div>
 
 @code {
-    [Parameter] public CommentPreview? Comment { get; set; }
+    
+    [Parameter] public CommentPreview Comment { get; set; }
+    [Parameter] public string SearchTerm { get; set; }
+    [Parameter] public bool CaseSensitive { get; set; }
+    private List<string> SearchTerms => [SearchTerm];
+    [Inject] private IJSRuntime Js { get; set; }
+
+    private ElementReference _textContainerRef;
+    
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (SearchTerms != null && SearchTerms.Any())
+        {
+            await Js.InvokeVoidAsync("highlightText", _textContainerRef, SearchTerms, CaseSensitive);
+        }
+    }
+    
 }

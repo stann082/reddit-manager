@@ -1,4 +1,6 @@
-﻿namespace lib;
+﻿using System;
+
+namespace lib;
 
 public class CommentPreview(CommentModel comment)
 {
@@ -8,12 +10,12 @@ public class CommentPreview(CommentModel comment)
     public string Author { get; } = comment.Author;
 
     public string Body { get; } = comment.Body;
-    public string BodyHtml { get; } = comment.BodyHtml;
 
     public DateTime? Date { get; } = GetValidaDate(comment);
 
     public string Id { get; } = comment.CommentId;
 
+    public CommentBlock[] ParsedBlocks => !string.IsNullOrWhiteSpace(Body) ? CommentParser.Parse(Body) : [];
     public string Permalink { get; } = comment.Permalink;
 
     public int Score { get; } = comment.Score;

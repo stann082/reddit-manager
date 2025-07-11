@@ -1,6 +1,9 @@
-﻿namespace lib;
+﻿using System;
+using System.Collections.Generic;
 
-public abstract class CommentParser
+namespace lib;
+
+public static class CommentParser
 {
 
     #region Public Methods
@@ -16,6 +19,8 @@ public abstract class CommentParser
         {
             var isQuote = originalPart.StartsWith("&gt;") || originalPart.StartsWith(">");
             var cleanText = originalPart.Replace("&gt;", ">");
+            cleanText = cleanText.Replace("> ", string.Empty);
+            cleanText = cleanText.Replace(">", string.Empty);
 
             if (isQuote)
             {

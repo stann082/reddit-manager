@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 
 namespace lib;
