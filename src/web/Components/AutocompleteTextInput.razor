@@ -1,0 +1,53 @@
+﻿@using System.Threading
+
+<div class="autocomplete-wrapper position-relative">
+    <InputText class="form-control" @bind-Value="Value" @bind-Value:event="oninput" @oninput="OnInput" placeholder="@Placeholder" />
+    @if (_suggestions?.Any() == true)
+    {
+        <ul class="autocomplete-list list-group position-absolute w-100 z-index-100">
+            @foreach (var suggestion in _suggestions)
+            {
+                <li class="list-group-item list-group-item-action" @onclick="() => SelectSuggestion(suggestion)">
+                    @suggestion
+                </li>
+            }
+        </ul>
+    }
+</div>
+
+@code {
+    [Parameter] public string Value { get; set; }
+    [Parameter] public EventCallback<string> ValueChanged { get; set; }
+    [Parameter] public string Placeholder { get; set; }
+    [Parameter] public Func<string, Task<List<string>>> SuggestionProvider { get; set; }
+
+    private List<string> _suggestions = [];
+    private CancellationTokenSource _cts = new();
+
+    private async Task OnInput(ChangeEventArgs e)
+    {
+        if (e?.Value is string val)
+        {
+            await ValueChanged.InvokeAsync(val);
+
+            await _cts.CancelAsync(); // debounce previous
+            _cts.Dispose();
+            _cts = new CancellationTokenSource();
+
+            try
+            {
+                await Task.Delay(250, _cts.Token); // debounce
+
+                if (SuggestionProvider != null)
+                    _suggestions = await SuggestionProvider(val);
+            }
+            catch (TaskCanceledException) { }
+        }
+    }
+
+    private async Task SelectSuggestion(string suggestion)
+    {
+        await ValueChanged.InvokeAsync(suggestion);
+        _suggestions.Clear();
+    }
+}

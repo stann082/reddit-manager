@@ -4,6 +4,7 @@ using lib;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;
 using Serilog;
+using StackExchange.Redis;
 
 namespace cli;
 
@@ -21,6 +22,8 @@ public static class Program
                 .AddSingleton(config)
                 .AddSingleton<App>()
                 .AddSingleton(_ => new MongoClient("mongodb://localhost:27017").GetDatabase("reddit"))
+                .AddSingleton<IConnectionMultiplexer>(await ConnectionMultiplexer.ConnectAsync("localhost:6379"))
+                .AddScoped(sp => sp.GetRequiredService<IConnectionMultiplexer>().GetDatabase())
                 .AddScoped<ICacheService, CacheService>()
                 .AddScoped<ISearchService, SearchService>()
                 .AddScoped<ISavedService, SavedService>()

@@ -5,10 +5,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using MongoDB.Driver;
 using Newtonsoft.Json;
+using StackExchange.Redis;
 
 namespace lib;
 
-public class SavedService(IMongoDatabase database) : AbstractService, ISavedService
+public class SavedService(IMongoDatabase database, IDatabase redis) : AbstractService, ISavedService
 {
 
     #region Public Methods
@@ -37,6 +38,25 @@ public class SavedService(IMongoDatabase database) : AbstractService, ISavedServ
         CommentPreview[] filteredComments = FilterComments(allComments, options).ToArray();
         CommentPreview[] pagedComments = filteredComments.Take(options.Limit).ToArray();
         return (pagedComments, filteredComments.Length);
+    }
+    
+    public async Task<List<string>> GetSuggestionsAsync(string type, string input)
+    {
+        if (string.IsNullOrWhiteSpace(input)) return [];
+
+        string redisKey = type switch
+        {
+            "author" => "autocomplete:authors",
+            "subreddit" => "autocomplete:subreddits",
+            _ => throw new ArgumentException("Unknown suggestion type")
+        };
+
+        var allItems = await redis.SetMembersAsync(redisKey);
+        return allItems
+            .Select(i => i.ToString())
+            .Where(i => i.Contains(input, StringComparison.OrdinalIgnoreCase))
+            .Take(10)
+            .ToList();
     }
 
     #endregion

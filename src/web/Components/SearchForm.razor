@@ -1,11 +1,21 @@
-﻿@using web.Data
+﻿@using lib
+@using web.Data
+@inject SavedService SavedService
 
 <EditForm Model="@FilterOptions" OnValidSubmit="HandleSubmit">
     <div class="form-group mb-2">
-        <InputText class="form-control" placeholder="Author" @bind-Value="FilterOptions.Author"/>
+        <AutocompleteTextInput 
+            Value="@FilterOptions.Author"
+            ValueChanged="val => FilterOptions.Author = val"
+            Placeholder="Author"
+            SuggestionProvider="GetAuthorSuggestions" />
     </div>
     <div class="form-group mb-2">
-        <InputText class="form-control" placeholder="Subreddit" @bind-Value="FilterOptions.Subreddit"/>
+        <AutocompleteTextInput 
+            Value="@FilterOptions.Subreddit"
+            ValueChanged="val => FilterOptions.Subreddit = val"
+            Placeholder="Subreddit"
+            SuggestionProvider="GetSubredditSuggestions" />
     </div>
     <div class="form-group mb-2">
         <InputText class="form-control" placeholder="Query" @bind-Value="FilterOptions.Query"/>
@@ -32,6 +42,12 @@
     #endregion
 
     #region Helper Methods
+    
+    private Task<List<string>> GetAuthorSuggestions(string input) =>
+        SavedService.GetSuggestionsAsync("author", input);
+
+    private Task<List<string>> GetSubredditSuggestions(string input) =>
+        SavedService.GetSuggestionsAsync("subreddit", input);
 
     private async Task HandleSubmit()
     {
