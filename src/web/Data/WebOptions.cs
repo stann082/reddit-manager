@@ -13,7 +13,7 @@ public class WebOptions : IOptions
     public bool IsArchive { get; set; } = false;
     public string Id { get; set; } = string.Empty;
     public bool IsDescending { get; set; } = false;
-    public bool IsExactWord { get; set; } = false;
+    public bool IsExactWord { get; set; } = true;
 
     public bool IsFilterEnabled =>
         !string.IsNullOrEmpty(Author) || !string.IsNullOrEmpty(Subreddit) || !string.IsNullOrEmpty(Query);
