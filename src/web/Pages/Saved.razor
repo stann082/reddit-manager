@@ -15,7 +15,7 @@
     <button type="button" class="btn btn-link" @onclick="ShowAdvancedFilter">Advanced Filter</button>
     <button type="button" class="btn btn-link" @onclick="ResetAdvancedFilter">Reset Filter</button>
     <AdvancedFilter @ref="_advancedFilterComponent" OnApplyFilters="ApplyAdvancedFilters"/>
-    <ResultDisplay Comments="@_comments" IsLoading="@_isLoading" ErrorMessage="@_errorMessage"/>
+    <ResultDisplay Comments="@_comments" IsLoading="@_isLoading" ErrorMessage="@_errorMessage" SearchTerm="@_filterWebOptions.Query"/>
 </div>
 
 @code {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace lib;
 
-public abstract class CommentParser
+public static class CommentParser
 {
 
     #region Public Methods
@@ -19,6 +19,8 @@ public abstract class CommentParser
         {
             var isQuote = originalPart.StartsWith("&gt;") || originalPart.StartsWith(">");
             var cleanText = originalPart.Replace("&gt;", ">");
+            cleanText = cleanText.Replace("> ", string.Empty);
+            cleanText = cleanText.Replace(">", string.Empty);
 
             if (isQuote)
             {

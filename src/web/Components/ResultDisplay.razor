@@ -15,7 +15,7 @@ else
     foreach (var comment in Comments)
     {
         <div class="mb-3">
-            <CommentCard Comment="@comment"/>
+            <CommentCard Comment="@comment" SearchTerm="@SearchTerm"/>
         </div>
     }
 }
@@ -27,6 +27,7 @@ else
     [Parameter] public CommentPreview[] Comments { get; set; }
     [Parameter] public bool IsLoading { get; set; }
     [Parameter] public string ErrorMessage { get; set; }
+    [Parameter] public string SearchTerm { get; set; }
 
     #endregion
     

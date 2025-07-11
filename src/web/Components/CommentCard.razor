@@ -31,8 +31,8 @@
     
     [Parameter] public CommentPreview Comment { get; set; }
     [Parameter] public string SearchTerm { get; set; }
-    [Parameter] public List<string> SearchTerms { get; set; }
     [Parameter] public bool CaseSensitive { get; set; }
+    private List<string> SearchTerms => [SearchTerm];
     [Inject] private IJSRuntime Js { get; set; }
 
     private ElementReference _textContainerRef;
