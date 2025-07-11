@@ -27,9 +27,10 @@
         "CleanBuild",
         "CleanPub",
         "DeepClean",
+        "Deploy",
         "DeployCli",
+        "DeployWeb",
         "PublishCli",
-        "PublishWeb",
         "Test"
       ]
     },

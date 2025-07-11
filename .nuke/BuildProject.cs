@@ -3,6 +3,8 @@ using System.IO;
 using System.Linq;
 using Nuke.Common;
 using Nuke.Common.IO;
+using Nuke.Common.Tooling;
+using Nuke.Common.Tools.Docker;
 using Nuke.Common.Tools.DotNet;
 using Serilog;
 
@@ -47,6 +49,9 @@ class BuildProject : NukeBuild
             }
         });
 
+    Target Deploy => _ => _
+        .DependsOn(DeployCli, DeployWeb);
+
     Target DeployCli => _ => _
         .DependsOn(Test, PublishCli)
         .Executes(() =>
@@ -64,6 +69,14 @@ class BuildProject : NukeBuild
             Log.Information("Deployed {TargetFile} to {TargetDirectory}", fileName, targetDirectory);
         });
 
+    Target DeployWeb => _ => _
+        .DependsOn(Test, PublishCli)
+        .Executes(() =>
+        {
+            ProcessTasks.StartProcess("docker", "build --no-cache -t redditapp:latest .").AssertZeroExitCode();
+            ProcessTasks.StartProcess("kubectl", "rollout restart deployment redditapp").AssertZeroExitCode();
+        });
+
     Target PublishCli => _ => _
         .DependsOn(CleanBuild)
         .Before(DeployCli)
@@ -77,24 +90,11 @@ class BuildProject : NukeBuild
                 .SetOutput("pubcli"));
         });
 
-    Target PublishWeb => _ => _
-        .DependsOn(CleanBuild)
-        .Before(DeployCli)
-        .Executes(() =>
-        {
-            RemovePubWebDir();
-            DotNetTasks.DotNetPublish(s => s
-                .SetProject(RootDirectory / "src" / "web" / "web.csproj")
-                .SetConfiguration(Configuration.Release)
-                .SetVerbosity(DotNetVerbosityLevel)
-                .SetOutput("pubweb"));
-        });
-
     Target Test => _ => _
         .Executes(() =>
         {
             DotNetTasks.DotNetTest(s => s
-                .SetProjectFile(RootDirectory / "reddit.sln")
+                .SetProjectFile(RootDirectory / "reddit.slnx")
                 .SetVerbosity(DotNetVerbosityLevel));
         });
 
@@ -117,5 +117,5 @@ class BuildProject : NukeBuild
     }
 
     #endregion
-    
+
 }
