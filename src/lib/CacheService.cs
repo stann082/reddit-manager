@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using lib.options;
 using MongoDB.Driver;
 using Reddit;
 using Reddit.Inputs.Users;
@@ -8,7 +9,7 @@ using Serilog;
 
 namespace lib;
 
-public class CacheService(ApplicationConfig config, IMongoDatabase database) : ICacheService
+public class CacheService(ApplicationConfig config, IMongoDatabase database, ISavedService savedService) : ICacheService
 {
     
     #region Variables
@@ -20,13 +21,27 @@ public class CacheService(ApplicationConfig config, IMongoDatabase database) : I
     
     #region Public Methods
 
-    public async Task CacheSavedCommentsAsync()
+    public async Task CacheSavedCommentsAsync(CacheOptions options)
     {
         var newCachedComments = 0;
         var existingCachedComments = 0;
         Log.Information("Caching saved comments into memory");
 
         var collection = database.GetCollection<CommentModel>("comments");
+
+        if (options.IsArchive)
+        {
+            CommentModel[] comments = await savedService.GetCommentsFromPushshiftArchive(options);
+            if (comments.Length == 0)
+            {
+                Log.Information("No comments found in archive");
+                return;
+            }
+            
+            await collection.InsertManyAsync(comments);
+            Log.Information("Inserted {CommentsLength} archived comments", comments.Length);
+            return;
+        }
 
         var after = "";
         int totalTopComments;

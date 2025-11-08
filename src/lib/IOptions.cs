@@ -7,7 +7,6 @@ public interface IOptions
     
     string Author { get; }
     
-    bool IsArchive { get; }
     string Id { get; }
     bool IsDescending { get; }
     bool IsExactWord { get; }
