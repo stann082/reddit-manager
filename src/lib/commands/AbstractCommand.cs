@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -18,7 +19,9 @@ public abstract class AbstractCommand(IOptions options)
             await File.WriteAllTextAsync(@"C:\Users\sbennett\reddit-backup.json", jsonString);
             return 0;
         }
-
+        
+        Console.OutputEncoding = Encoding.UTF8;
+        
         Console.Write("Fetching records, please wait...");
         var comments = await GetFilteredComments(options);
 
