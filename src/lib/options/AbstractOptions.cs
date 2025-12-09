@@ -26,6 +26,9 @@ public abstract class AbstractOptions
     [Option('q', "query", HelpText = "Search for a specific word.")]
     public string Query { get; set; }
 
+    [Option("exclude-archived", HelpText = "Exclude archived submissions from search.")]
+    public bool ShouldExcludeArchived { get; set; }
+    
     [Option("export", HelpText = "Export all saved posts to JSON.")]
     public bool ShouldExport { get; set; }
 

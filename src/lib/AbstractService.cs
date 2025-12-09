@@ -30,6 +30,11 @@ public abstract class AbstractService
 
         IEnumerable<CommentPreview> filteredComments = comments;
 
+        if (options.ShouldExcludeArchived)
+        {
+            filteredComments = filteredComments.Where(c => !c.IsArchive);
+        }
+        
         if (options.StartDate > DateTime.MinValue)
         {
             filteredComments = filteredComments.Where(c => c.Date >= options.StartDate);

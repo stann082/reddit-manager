@@ -19,6 +19,7 @@ public interface IOptions
     bool SortByDate { get; }
     bool SortByScore { get; }
     bool ShowId { get; }
+    bool ShouldExcludeArchived { get; }
     bool ShouldExport { get; }
     public DateTime StartDate { get; }
     public DateTime StopDate { get; }

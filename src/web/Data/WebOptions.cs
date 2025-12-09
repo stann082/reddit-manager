@@ -25,6 +25,7 @@ public class WebOptions : IOptions
     public bool SortByDate { get; } = false;
     public bool SortByScore { get; } = false;
     public bool ShowId { get; set; } = false;
+    public bool ShouldExcludeArchived { get; set; }
     public bool ShouldExport { get; set; } = false;
     public DateTime StartDate { get; set; } = new DateTime(2012, 1, 1);
     public DateTime StopDate { get; set; } = DateTime.Today;

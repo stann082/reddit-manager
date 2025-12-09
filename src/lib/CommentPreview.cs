@@ -14,6 +14,8 @@ public class CommentPreview(CommentModel comment)
     public DateTime? Date { get; } = GetValidaDate(comment);
 
     public string Id { get; } = comment.CommentId;
+    
+    public bool IsArchive { get; } = comment.IsArchive;
 
     public CommentBlock[] ParsedBlocks => !string.IsNullOrWhiteSpace(Body) ? CommentParser.Parse(Body) : [];
     public string Permalink { get; } = comment.Permalink;
