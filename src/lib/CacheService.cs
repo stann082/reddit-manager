@@ -37,9 +37,21 @@ public class CacheService(ApplicationConfig config, IMongoDatabase database, ISa
                 Log.Information("No comments found in archive");
                 return;
             }
-            
-            await collection.InsertManyAsync(comments);
-            Log.Information("Inserted {CommentsLength} archived comments", comments.Length);
+
+            foreach (var comment in comments)
+            {
+                comment.IsArchive = true;
+            }
+
+            var ops = comments.Select(m =>
+                new ReplaceOneModel<CommentModel>(Builders<CommentModel>.Filter.Eq(x => x.CommentId, m.CommentId), m)
+                {
+                    IsUpsert = true
+                });
+
+            var result = await collection.BulkWriteAsync(ops);
+            Log.Information("Inserted: {UpsertsCount}", result.Upserts.Count);
+            Log.Information("Modified: {ModifiedCount}", result.ModifiedCount);
             return;
         }
 

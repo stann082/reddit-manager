@@ -17,9 +17,6 @@ public abstract class AbstractOptions
 
     #region Parameters
 
-    [Option('c', "comment", Default = true, HelpText = "Specify if you're searching for comment.")]
-    public bool Comment { get; set; }
-
     [Option('f', "filter", HelpText = "Filters by sub, author, date (e.g., -f author=foomanchu&sub=news.")]
     public string Filter { get; set; }
 

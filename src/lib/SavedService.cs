@@ -37,7 +37,6 @@ public class SavedService(IMongoDatabase database) : AbstractService, ISavedServ
         comments.AddRange(from file in files
             from comment in StreamCommentsFromFile(file)
             select new CommentModel(comment));
-
         return await Task.FromResult(comments.ToArray());
     }
 

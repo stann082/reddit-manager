@@ -1,5 +1,5 @@
 ﻿using System;
-using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 using Reddit.Things;
 
 // ReSharper disable UnusedAutoPropertyAccessor.Global
@@ -10,34 +10,10 @@ namespace lib;
 
 public class CommentModel
 {
-
     #region Constructors
 
     public CommentModel()
     {
-    }
-
-    public CommentModel(CommentModel comment)
-    {
-        Author = comment.Author;
-        Body = comment.Body;
-        BodyHtml = comment.BodyHtml;
-        CommentId = comment.CommentId;
-        Controversiality = comment.Controversiality;
-        Created = comment.Created;
-        CreatedUtc = comment.CreatedUtc;
-        Edited = comment.Edited;
-        Id = comment.Id;
-        LinkId = comment.LinkId;
-        Name = comment.Name;
-        NoFollow = comment.NoFollow;
-        ParentId = comment.ParentId;
-        Permalink = comment.Permalink;
-        Removed = comment.Removed;
-        Score = comment.Score;
-        Subreddit = comment.Subreddit;
-        SubredditId = comment.SubredditId;
-        SubredditType = comment.SubredditType;
     }
 
     public CommentModel(Comment comment)
@@ -89,15 +65,17 @@ public class CommentModel
 
     #region Properties
 
+    [BsonId]
+    public string CommentId { get; set; }
+
     public string Author { get; set; }
     public string Body { get; set; }
     public string BodyHtml { get; set; }
-    public string CommentId { get; set; }
     public int Controversiality { get; set; }
     public DateTime Created { get; set; }
     public DateTime CreatedUtc { get; set; }
     public DateTime Edited { get; set; }
-    public ObjectId Id { get; set; }
+    public bool IsArchive { get; set; }
     public string LinkId { get; set; }
     public string Name { get; set; }
     public bool NoFollow { get; set; }
@@ -110,7 +88,7 @@ public class CommentModel
     public string SubredditType { get; set; }
 
     #endregion
-    
+
     #region Helper Methods
 
     private static DateTime ConvertFromUnixTimestamp(long unixTimeStamp)
