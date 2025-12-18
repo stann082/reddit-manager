@@ -19,7 +19,7 @@ public class App(
         return await Parser.Default
             .ParseArguments<AuthenticationOptions, SavedOptions, SearchOptions, CacheOptions>(args)
             .MapResult(
-                async (AuthenticationOptions opts) => await AuthenticationCommand.Execute(opts),
+                async (AuthenticationOptions _) => await AuthenticationCommand.Execute(),
                 async (SearchOptions opts) => await new SearchCommand(opts, searchService).Execute(),
                 async (SavedOptions opts) => await new SavedCommand(opts, savedService).Execute(),
                 async (CacheOptions opts) => await new CacheCommand(opts, cacheService).Execute(),
