@@ -1,6 +1,5 @@
 ﻿using System;
 using MongoDB.Bson.Serialization.Attributes;
-using Reddit.Things;
 
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable once UnusedMember.Global
@@ -16,26 +15,26 @@ public class CommentModel
     {
     }
 
-    public CommentModel(Comment comment)
+    public CommentModel(RedditComment comment)
     {
         Author = comment.Author;
         Body = comment.Body;
-        BodyHtml = comment.BodyHTML;
+        BodyHtml = comment.Body_Html;
         CommentId = comment.Id;
-        Controversiality = comment.Controversiality;
-        Created = comment.Created;
-        CreatedUtc = comment.CreatedUTC;
-        Edited = comment.Edited;
-        LinkId = comment.LinkId;
+        Controversiality = comment.Controversiality ?? 0;
+        Created = DateTimeOffset.FromUnixTimeSeconds((long)(comment.Created ?? 0)).LocalDateTime;
+        CreatedUtc = DateTimeOffset.FromUnixTimeSeconds((long)(comment.Created_Utc ?? 0)).UtcDateTime;
+        Edited = DateTime.MinValue;
+        LinkId = comment.Link_Id;
         Name = comment.Name;
-        NoFollow = comment.NoFollow;
-        ParentId = comment.ParentId;
+        NoFollow = comment.No_Follow ?? true;
+        ParentId = comment.Parent_Id;
         Permalink = comment.Permalink;
-        Removed = comment.Removed;
-        Score = comment.Score;
+        Removed = !string.IsNullOrEmpty(comment.Removal_Reason);
+        Score = comment.Score ?? 0;
         Subreddit = comment.Subreddit;
-        SubredditId = comment.SubredditId;
-        SubredditType = comment.SubredditType;
+        SubredditId = comment.Subreddit_Id;
+        SubredditType = comment.Subreddit_Type;
     }
 
     public CommentModel(PushshiftModel comment)

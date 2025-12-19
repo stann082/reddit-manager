@@ -1,88 +1,66 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using lib.options;
 using MongoDB.Driver;
-using Reddit;
-using Reddit.Inputs.Users;
 using Serilog;
 
 namespace lib;
 
-public class CacheService(ApplicationConfig config, IMongoDatabase database, ISavedService savedService) : ICacheService
+public class CacheService(IRedditClient redditClient, IMongoDatabase database, ISavedService savedService) : ICacheService
 {
-    
-    #region Variables
 
-    private readonly RedditClient _redditClient = new(config.AppId, config.RefreshToken, accessToken: config.AccessToken);
-    private readonly string _me = Environment.GetEnvironmentVariable("MY_REDDIT_USERNAME");
+    #region Constants/Static Fields
+
+    private static readonly JsonSerializerOptions JsonOpts = new() { PropertyNameCaseInsensitive = true };
+    private const int PageLimit = 100;
 
     #endregion
-    
+
     #region Public Methods
 
     public async Task CacheSavedCommentsAsync(CacheOptions options)
     {
+        string loggedInUser = await redditClient.LogIn();
+        if (string.IsNullOrWhiteSpace(loggedInUser))
+        {
+            Log.Error("Unable to log in to Reddit");
+            return;
+        }
+        
         var newCachedComments = 0;
         var existingCachedComments = 0;
-        Log.Information("Caching saved comments into memory");
 
-        var collection = database.GetCollection<CommentModel>("comments");
+        Log.Information("Caching saved comments into MongoDB");
+        IMongoCollection<CommentModel> collection = database.GetCollection<CommentModel>("comments");
 
         if (options.IsArchive)
         {
-            CommentModel[] comments = await savedService.GetCommentsFromPushshiftArchive(options);
-            if (comments.Length == 0)
-            {
-                Log.Information("No comments found in archive");
-                return;
-            }
-
-            foreach (var comment in comments)
-            {
-                comment.IsArchive = true;
-            }
-
-            var ops = comments.Select(m =>
-                new ReplaceOneModel<CommentModel>(Builders<CommentModel>.Filter.Eq(x => x.CommentId, m.CommentId), m)
-                {
-                    IsUpsert = true
-                });
-
-            var result = await collection.BulkWriteAsync(ops);
-            Log.Information("Inserted: {UpsertsCount}", result.Upserts.Count);
-            Log.Information("Modified: {ModifiedCount}", result.ModifiedCount);
+            await CacheArchivedComments(options, collection);
             return;
         }
 
-        var after = "";
-        int totalTopComments;
-        do
+        string after = null;
+        while (true)
         {
-            var topComments = await Task.Run(() => GetComments(after));
-            if (topComments.Length == 0)
+            var page = await GetSavedCommentsPageAsync(loggedInUser, after);
+            if (page.Comments.Length == 0)
             {
-                totalTopComments = 0;
-                continue;
+                break;
             }
 
-            foreach (var topComment in topComments)
+            var (inserted, modified, matched) = await BulkUpsertByCommentIdAsync(collection, page.Comments);
+            newCachedComments += inserted;
+            existingCachedComments += Math.Max(0, matched - modified);
+
+            after = page.NextAfter;
+            if (string.IsNullOrWhiteSpace(after))
             {
-                var filter = Builders<CommentModel>.Filter.Eq("CommentId", topComment.CommentId);
-                var document = collection.Find(filter).FirstOrDefault();
-                if (document != null)
-                {
-                    existingCachedComments++;
-                    continue;
-                }
-
-                await collection.InsertOneAsync(topComment);
-                newCachedComments++;
+                break;
             }
-
-            after = topComments.Last().Name;
-            totalTopComments = topComments.Length;
-        } while (totalTopComments > 0);
+        }
 
         Log.Information(
             "Cached {NewCachedComments} new comments. Skipped {ExistingCachedComments} comments that were already cached",
@@ -94,22 +72,118 @@ public class CacheService(ApplicationConfig config, IMongoDatabase database, ISa
 
     #region Helper Methods
 
-    private CommentModel[] GetComments(string after)
+    private static async Task<(int Inserted, int Modified, int Matched)> BulkUpsertByCommentIdAsync(
+        IMongoCollection<CommentModel> collection,
+        IReadOnlyList<CommentModel> models)
+    {
+        if (models.Count == 0)
+        {
+            return (0, 0, 0);
+        }
+
+        var ops = models.Select(m =>
+                new ReplaceOneModel<CommentModel>(
+                        Builders<CommentModel>.Filter.Eq(x => x.CommentId, m.CommentId),
+                        m)
+                    { IsUpsert = true })
+            .ToList();
+
+        var result = await collection.BulkWriteAsync(ops, new BulkWriteOptions { IsOrdered = false });
+        var inserted = result.Upserts.Count;
+        var modified = (int)result.ModifiedCount;
+        var matched = (int)result.MatchedCount;
+        return (inserted, modified, matched);
+    }
+
+    private async Task CacheArchivedComments(CacheOptions options, IMongoCollection<CommentModel> collection)
+    {
+        CommentModel[] comments = await savedService.GetCommentsFromPushshiftArchive(options);
+        if (comments.Length == 0)
+        {
+            Log.Information("No comments found in archive");
+            return;
+        }
+
+        foreach (var comment in comments)
+        {
+            comment.IsArchive = true;
+        }
+
+        var ops = comments.Select(m =>
+            new ReplaceOneModel<CommentModel>(Builders<CommentModel>.Filter.Eq(x => x.CommentId, m.CommentId), m)
+            {
+                IsUpsert = true
+            });
+
+        var result = await collection.BulkWriteAsync(ops);
+        Log.Information("Inserted: {UpsertsCount}", result.Upserts.Count);
+        Log.Information("Modified: {ModifiedCount}", result.ModifiedCount);
+    }
+
+    private async Task<(CommentModel[] Comments, string NextAfter)> GetSavedCommentsPageAsync(string username, string? after)
     {
         try
         {
-            var history = _redditClient.Models.Users.CommentHistory(_me, "saved",
-                new UsersHistoryInput("comments", after: after, sort: "top", context: 10, limit: 100));
-            var comments = history.Data.Children.Select(c => c.Data);
-            return comments.Select(c => new CommentModel(c)).ToArray();
+            var qs = new List<string>
+            {
+                $"limit={PageLimit}",
+                "sort=top",
+                "type=comments",
+                "context=10"
+            };
+            if (!string.IsNullOrWhiteSpace(after))
+            {
+                qs.Add($"after={Uri.EscapeDataString(after)}");
+            }
+
+            var url = $"https://oauth.reddit.com/user/{Uri.EscapeDataString(username)}/saved?{string.Join("&", qs)}";
+            var json = await redditClient.GetJsonAsync(url);
+            var listing = JsonSerializer.Deserialize<RedditListing<RedditThing<JsonElement>>>(json, JsonOpts);
+            var children = listing?.Data?.Children;
+            if (children is null || children.Count == 0)
+            {
+                return ([], null);
+            }
+
+            var results = new List<CommentModel>(capacity: children.Count);
+            results.AddRange(from child in children
+                where string.Equals(child.Kind, "t1", StringComparison.OrdinalIgnoreCase)
+                select child.Data.Deserialize<RedditComment>(JsonOpts)
+                into comment
+                where comment is not null
+                select new CommentModel(comment));
+
+            // IMPORTANT: use listing cursor, not Last().Name
+            return (results.ToArray(), listing.Data?.After);
         }
         catch (Exception ex)
         {
             LoggingManager.LogException(ex);
-            return [];
+            return ([], null);
         }
     }
 
+    #endregion
+    
+    #region Reddit Models
+    
+    private sealed class RedditListing<TChild>
+    {
+        public RedditListingData<TChild> Data { get; set; } = new();
+    }
+
+    private sealed class RedditListingData<TChild>
+    {
+        public string? After { get; set; }
+        public List<TChild> Children { get; set; } = new();
+    }
+
+    private sealed class RedditThing<TData>
+    {
+        public string Kind { get; set; } = "";
+        public TData Data { get; set; } = default!;
+    }
+    
     #endregion
 
 }

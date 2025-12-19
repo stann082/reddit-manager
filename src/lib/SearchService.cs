@@ -2,22 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Reddit;
-using Reddit.Exceptions;
-using Reddit.Inputs.Users;
-using Reddit.Things;
 
 namespace lib;
 
-public class SearchService(ApplicationConfig config) : AbstractService, ISearchService
+public class SearchService(IRedditClient redditClient) : AbstractService, ISearchService
 {
-    
-    #region Variables
-
-    private readonly RedditClient _redditClient = new(config.AppId, config.RefreshToken, accessToken: config.AccessToken);
-    private readonly string _me = Environment.GetEnvironmentVariable("MY_REDDIT_USERNAME");
-
-    #endregion
     
     #region Public Methods
 
@@ -31,7 +20,7 @@ public class SearchService(ApplicationConfig config) : AbstractService, ISearchS
                 .Select(c => new CommentPreview(c))
                 .OrderByDescending(c => c.Date).ToArray();
         }
-        catch (RedditForbiddenException ex)
+        catch (Exception ex)
         {
             LoggingManager.LogException(ex);
             return ([], 0);
@@ -48,34 +37,35 @@ public class SearchService(ApplicationConfig config) : AbstractService, ISearchS
 
     private async Task<CommentModel[]> GetCommentsFromReddit(string username)
     {
-        List<Comment> comments = [];
-
-        var after = "";
-        int totalComments;
-        do
-        {
-            var commentsBatch = await Task.Run(() =>
-            {
-                var history = _redditClient.Models.Users.CommentHistory(
-                    !string.IsNullOrEmpty(username) ? username : _me, "comments",
-                    new UsersHistoryInput("comments", after: after, context: 10, limit: 100));
-                return history.Data.Children.Select(c => c.Data).ToArray();
-            });
-
-            if (commentsBatch.Length == 0)
-            {
-                totalComments = 0;
-                continue;
-            }
-
-            comments.AddRange(commentsBatch);
-            after = commentsBatch.Last().Name;
-            totalComments = commentsBatch.Length;
-        } while (totalComments > 0);
-
-        return comments.Select(c => new CommentModel(c)).ToArray();
+        // TODO: Implement Reddit API search
+        // List<Comment> comments = [];
+        //
+        // var after = "";
+        // int totalComments;
+        // do
+        // {
+        //     var commentsBatch = await Task.Run(() =>
+        //     {
+        //         var history = _redditClient.Models.Users.CommentHistory(
+        //             !string.IsNullOrEmpty(username) ? username : _me, "comments",
+        //             new UsersHistoryInput("comments", after: after, context: 10, limit: 100));
+        //         return history.Data.Children.Select(c => c.Data).ToArray();
+        //     });
+        //
+        //     if (commentsBatch.Length == 0)
+        //     {
+        //         totalComments = 0;
+        //         continue;
+        //     }
+        //
+        //     comments.AddRange(commentsBatch);
+        //     after = commentsBatch.Last().Name;
+        //     totalComments = commentsBatch.Length;
+        // } while (totalComments > 0);
+        //
+        // return comments.Select(c => new CommentModel(c)).ToArray();
+        return [];
     }
 
     #endregion
-
 }

@@ -2,38 +2,51 @@
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace lib;
 
-public sealed class RedditClient(RedditTokenProvider tokens, string userAgent)
+public sealed class RedditClient : IRedditClient
 {
 
+    #region Constants
+    
+    private const string UserAgent = "windows:mekkeron_saved_cache:1.0 (by /u/mekkeron)";
+    
+    #endregion
+
+    #region Variables
+
+    private readonly RedditTokenProvider _tokens = new(ApplicationConfig.AppConfigFilePath, UserAgent);
+
+    #endregion
+    
     #region Public Methods
 
     public async Task<string> GetJsonAsync(string pathOrUrl)
     {
-        var url = pathOrUrl.StartsWith("http", StringComparison.OrdinalIgnoreCase)
+        string url = pathOrUrl.StartsWith("http", StringComparison.OrdinalIgnoreCase)
             ? pathOrUrl
             : $"https://oauth.reddit.com/{pathOrUrl.TrimStart('/')}";
 
         async Task<HttpResponseMessage> SendAsync(string accessToken)
         {
             var http = new HttpClient();
-            http.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", userAgent);
+            http.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", UserAgent);
             http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
             http.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             return await http.GetAsync(url);
         }
 
-        var token = await tokens.GetValidAccessTokenAsync();
+        var token = await _tokens.GetValidAccessTokenAsync();
         var res = await SendAsync(token);
 
         if (res.StatusCode == HttpStatusCode.Unauthorized)
         {
             // One refresh + retry
-            await tokens.ForceRefreshAsync();
-            token = await tokens.GetValidAccessTokenAsync();
+            await _tokens.ForceRefreshAsync();
+            token = await _tokens.GetValidAccessTokenAsync();
             res = await SendAsync(token);
         }
 
@@ -53,6 +66,22 @@ public sealed class RedditClient(RedditTokenProvider tokens, string userAgent)
         return body;
     }
 
+    public async Task<string> LogIn()
+    {
+        return await GetLoggedInUsername();
+    }
+
     #endregion
     
+    #region Helper Methods
+    
+    private async Task<string> GetLoggedInUsername()
+    {
+        string me = await GetJsonAsync("api/v1/me");
+        using JsonDocument meDoc = JsonDocument.Parse(me);
+        return meDoc.RootElement.GetProperty("name").GetString();
+    }
+    
+    #endregion
+
 }

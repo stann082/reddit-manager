@@ -21,6 +21,7 @@ public static class Program
                 .AddSingleton(config)
                 .AddSingleton<App>()
                 .AddSingleton(_ => new MongoClient("mongodb://localhost:27017").GetDatabase("reddit"))
+                .AddScoped<IRedditClient, RedditClient>()
                 .AddScoped<ICacheService, CacheService>()
                 .AddScoped<ISearchService, SearchService>()
                 .AddScoped<ISavedService, SavedService>()

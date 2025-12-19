@@ -1,0 +1,81 @@
+﻿using System.Text.Json;
+
+namespace lib;
+
+public sealed class RedditComment
+{
+    public JsonElement All_Awardings { get; set; }
+    public JsonElement Associated_Award { get; set; }
+    public JsonElement Author_Flair_Richtext { get; set; }
+    public JsonElement Awarders { get; set; }
+    public JsonElement Comment_Type { get; set; }
+    public JsonElement Gildings { get; set; }
+    public JsonElement Media_Metadata { get; set; }
+    public JsonElement Mod_Reports { get; set; }
+    public JsonElement Replies { get; set; }
+    public JsonElement Report_Reasons { get; set; }
+    public JsonElement Treatment_Tags { get; set; }
+    public JsonElement User_Reports { get; set; }
+    public bool? Archived { get; set; }
+    public bool? Author_Is_Blocked { get; set; }
+    public bool? Author_Patreon_Flair { get; set; }
+    public bool? Author_Premium { get; set; }
+    public bool? Can_Gild { get; set; }
+    public bool? Can_Mod_Post { get; set; }
+    public bool? Collapsed { get; set; }
+    public bool? Is_Submitter { get; set; }
+    public bool? Likes { get; set; }
+    public bool? Locked { get; set; }
+    public bool? No_Follow { get; set; }
+    public bool? Over_18 { get; set; }
+    public bool? Quarantine { get; set; }
+    public bool? Saved { get; set; }
+    public bool? Score_Hidden { get; set; }
+    public bool? Send_Replies { get; set; }
+    public bool? Stickied { get; set; }
+    public double? Approved_At_Utc { get; set; }
+    public double? Banned_At_Utc { get; set; }
+    public double? Created { get; set; }
+    public double? Created_Utc { get; set; }
+    public int? Controversiality { get; set; }
+    public int? Downs { get; set; }
+    public int? Gilded { get; set; }
+    public int? Num_Comments { get; set; }
+    public int? Score { get; set; }
+    public int? Total_Awards_Received { get; set; }
+    public int? Ups { get; set; }
+    public string Approved_By { get; set; }
+    public string Author { get; set; }
+    public string Author_Flair_Background_Color { get; set; }
+    public string Author_Flair_Css_Class { get; set; }
+    public string Author_Flair_Template_Id { get; set; }
+    public string Author_Flair_Text { get; set; }
+    public string Author_Flair_Text_Color { get; set; }
+    public string Author_Flair_Type { get; set; }
+    public string Author_Fullname { get; set; }
+    public string Banned_By { get; set; }
+    public string Body { get; set; }
+    public string Body_Html { get; set; }
+    public string Collapsed_Because_Crowd_Control { get; set; }
+    public string Collapsed_Reason { get; set; }
+    public string Collapsed_Reason_Code { get; set; }
+    public string Distinguished { get; set; }
+    public string Id { get; set; }
+    public string Link_Author { get; set; }
+    public string Link_Id { get; set; }
+    public string Link_Permalink { get; set; }
+    public string Link_Title { get; set; }
+    public string Link_Url { get; set; }
+    public string Mod_Note { get; set; }
+    public string Mod_Reason_By { get; set; }
+    public string Mod_Reason_Title { get; set; }
+    public string Name { get; set; }
+    public string Parent_Id { get; set; }
+    public string Permalink { get; set; }
+    public string Removal_Reason { get; set; }
+    public string Subreddit { get; set; }
+    public string Subreddit_Id { get; set; }
+    public string Subreddit_Name_Prefixed { get; set; }
+    public string Subreddit_Type { get; set; }
+    public string Unrepliable_Reason { get; set; }
+}
