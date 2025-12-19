@@ -27,10 +27,11 @@ public sealed class RedditTokenProvider(string configPath, string userAgent)
     {
         var cfg = LoadConfig();
         if (IsAccessTokenFresh(cfg) && !string.IsNullOrWhiteSpace(cfg.access_token))
+        {
             return cfg.access_token;
+        }
 
         var (token, expiresIn) = await RefreshAsync(cfg.app_id, cfg.refresh_token);
-
         cfg.access_token = token;
         cfg.expires_at_utc = DateTime.UtcNow.AddSeconds(expiresIn);
         SaveConfig(cfg);
@@ -51,11 +52,25 @@ public sealed class RedditTokenProvider(string configPath, string userAgent)
 
     private RedditConfig LoadConfig()
     {
+        if (!File.Exists(configPath))
+        {
+            var appId = Environment.GetEnvironmentVariable("REDDIT_API_CLIENT_ID");
+            var refreshToken = Environment.GetEnvironmentVariable("REDDIT_API_REFRESH_TOKEN");
+            if (string.IsNullOrWhiteSpace(appId) || string.IsNullOrWhiteSpace(refreshToken))
+            {
+                throw new InvalidOperationException("Could not find REDDIT_API_CLIENT_ID or REDDIT_API_REFRESH_TOKEN in environment variables.");
+            }
+            
+            return new RedditConfig { app_id = appId, refresh_token = refreshToken };
+        }
+        
         var json = File.ReadAllText(configPath);
-        var cfg = JsonSerializer.Deserialize<RedditConfig>(json)!;
-        if (string.IsNullOrWhiteSpace(cfg.app_id) ||
-            string.IsNullOrWhiteSpace(cfg.refresh_token))
+        var cfg = JsonSerializer.Deserialize<RedditConfig>(json);
+        if (string.IsNullOrWhiteSpace(cfg.app_id) || string.IsNullOrWhiteSpace(cfg.refresh_token))
+        {
             throw new InvalidOperationException("config.json must include app_id and refresh_token.");
+        }
+        
         return cfg;
     }
 

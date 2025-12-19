@@ -17,7 +17,7 @@ public static class AuthenticationCommand
         string me = await reddit.GetJsonAsync("api/v1/me");
         using JsonDocument meDoc = JsonDocument.Parse(me);
         var user = meDoc.RootElement.GetProperty("name").GetString();
-        Log.Information("@{Me} is logged in", user);
+        Log.Information("{Me} is logged in", user);
 
         // TODO: Use this to fetch comments from saved or search
         // var saved = await reddit.GetJsonAsync($"user/{user}/saved?limit=100");
