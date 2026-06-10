@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Serilog;
 
@@ -30,6 +31,16 @@ public class SearchCommand(IOptions options, ISearchService service) : AbstractC
     {
         Log.Debug("Fetching comments from Reddit API with {@Options}", options);
         
+        // If ThreadId is provided, fetch all comments from that specific thread
+        if (!string.IsNullOrWhiteSpace(options.ThreadId))
+        {
+            Log.Debug("Fetching comments from thread {ThreadId}", options.ThreadId);
+            var threadComments = await service.GetThreadCommentsAsync(options.ThreadId);
+            var previews = threadComments.Select(c => new CommentPreview(c)).ToArray();
+            return (previews, previews.Length);
+        }
+        
+        // Otherwise, use search API for comment search
         // Reddit API uses cursor-based pagination (NextAfter token) and doesn't provide a total count.
         // We return the comments length as the total since we're fetching a single page of results.
         var (comments, nextAfter) = await service.SearchCommentsAsync(options);

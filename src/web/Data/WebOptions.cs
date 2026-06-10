@@ -34,6 +34,7 @@ public class WebOptions : IOptions
     public string Sort { get; set; } = "relevance";
     public string Time { get; set; } = "all";
     public string After { get; set; } = null;
+    public string ThreadId { get; set; } = null;
 
     #endregion
 

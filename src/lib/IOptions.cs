@@ -29,5 +29,6 @@ public interface IOptions
     string Sort { get; }
     string Time { get; }
     string After { get; }
+    string ThreadId { get; }
     
 }

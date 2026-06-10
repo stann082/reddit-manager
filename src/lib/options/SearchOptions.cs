@@ -14,7 +14,11 @@ public class SearchOptions : AbstractOptions, IOptions
     [Option("after", HelpText = "Pagination token for fetching next page of results.")]
     public string AfterValue { get; set; }
 
+    [Option("thread-id", HelpText = "Fetch all comments from a specific thread by ID.")]
+    public string ThreadIdValue { get; set; }
+
     public override string Sort => SortValue;
     public override string Time => TimeValue;
     public override string After => AfterValue;
+    public override string ThreadId => ThreadIdValue;
 }
