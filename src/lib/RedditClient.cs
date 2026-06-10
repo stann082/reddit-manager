@@ -7,6 +7,21 @@ using System.Threading.Tasks;
 
 namespace lib;
 
+/// <summary>
+/// Custom HTTP client for interacting with the Reddit OAuth API.
+/// This replaces the functionality previously provided by third-party Reddit libraries.
+/// 
+/// Features:
+/// - Automatic OAuth2 Bearer token management via RedditTokenProvider
+/// - Token refresh on expiration
+/// - JSON response parsing
+/// - Proper User-Agent headers for Reddit API compliance
+/// - Support for both oauth.reddit.com and regular reddit.com endpoints
+/// 
+/// Authentication:
+/// All requests are authenticated using OAuth2 Bearer tokens obtained from Reddit's OAuth service.
+/// Tokens are managed by RedditTokenProvider which handles refresh logic.
+/// </summary>
 public sealed class RedditClient : IRedditClient
 {
 

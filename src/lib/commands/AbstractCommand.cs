@@ -100,7 +100,7 @@ public abstract class AbstractCommand(IOptions options)
     #region Abstract Methods
 
     protected abstract Task<CommentModel[]> GetAllComments();
-    protected abstract Task<(CommentPreview[], int)> GetFilteredComments(IOptions options);
+    protected abstract Task<(CommentPreview[] Comments, int total)> GetFilteredComments(IOptions options);
 
     #endregion
 }

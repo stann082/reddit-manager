@@ -120,7 +120,7 @@ public class CacheService(IRedditClient redditClient, IMongoDatabase database, I
         Log.Information("Modified: {ModifiedCount}", result.ModifiedCount);
     }
 
-    private async Task<(CommentModel[] Comments, string NextAfter)> GetSavedCommentsPageAsync(string username, string? after)
+    private async Task<(CommentModel[] Comments, string NextAfter)> GetSavedCommentsPageAsync(string username, string after)
     {
         try
         {
@@ -165,25 +165,4 @@ public class CacheService(IRedditClient redditClient, IMongoDatabase database, I
 
     #endregion
     
-    #region Reddit Models
-    
-    private sealed class RedditListing<TChild>
-    {
-        public RedditListingData<TChild> Data { get; set; } = new();
-    }
-
-    private sealed class RedditListingData<TChild>
-    {
-        public string? After { get; set; }
-        public List<TChild> Children { get; set; } = new();
-    }
-
-    private sealed class RedditThing<TData>
-    {
-        public string Kind { get; set; } = "";
-        public TData Data { get; set; } = default!;
-    }
-    
-    #endregion
-
 }

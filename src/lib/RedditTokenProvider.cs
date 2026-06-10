@@ -9,6 +9,33 @@ using System.Threading.Tasks;
 
 namespace lib;
 
+/// <summary>
+/// Manages OAuth2 token refresh and caching for Reddit API authentication.
+/// This is part of the custom Reddit library implementation.
+/// 
+/// Features:
+/// - Automatic token refresh when expired
+/// - Token expiration tracking (stores expires_at_utc)
+/// - Configuration persistence to JSON file
+/// - Thread-safe token validation
+/// 
+/// OAuth2 Flow:
+/// 1. Load stored app_id, refresh_token from config file
+/// 2. Use refresh_token to obtain new access_token from Reddit's OAuth endpoint
+/// 3. Store new access_token and expiration timestamp
+/// 4. Reuse token until expiration, then refresh
+/// 
+/// Configuration:
+/// Stores credentials in appsettings.json under the "reddit" section:
+/// {
+///   "reddit": {
+///     "app_id": "your-app-id",
+///     "refresh_token": "your-refresh-token",
+///     "access_token": "current-token",
+///     "expires_at_utc": "2024-06-10T15:30:00Z"
+///   }
+/// }
+/// </summary>
 public sealed class RedditTokenProvider(string configPath, string userAgent)
 {
 

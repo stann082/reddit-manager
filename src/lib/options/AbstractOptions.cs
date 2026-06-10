@@ -52,6 +52,11 @@ public abstract class AbstractOptions
     public DateTime StartDate => ParseDate("start", DateTime.MinValue);
     public DateTime StopDate => ParseDate("stop", DateTime.MaxValue);
     public string Subreddit => GetFilterValue("sub");
+    
+    // Search-specific options with default values
+    public virtual string Sort => "relevance";
+    public virtual string Time => "all";
+    public virtual string After => null;
 
     private Dictionary<string, string> FilterMap => CreateFilterMap();
 
