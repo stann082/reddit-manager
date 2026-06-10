@@ -109,5 +109,88 @@ public class SearchService(IRedditClient redditClient) : AbstractService, ISearc
         }
     }
 
+    /// <summary>
+    /// Fetch all comments from a Reddit thread by thread ID.
+    /// 
+    /// API Details:
+    /// - Endpoint: GET /comments/{threadId}.json
+    /// - Returns a listing array with thread info and comments
+    /// - Comments are nested in a tree structure with replies
+    /// - Top-level comments are in the second element of the response array
+    /// </summary>
+    public async Task<List<CommentModel>> GetThreadCommentsAsync(string threadId)
+    {
+        try
+        {
+            // Fetch the thread - returns array: [thread_info, comments_listing]
+            var json = await redditClient.GetJsonAsync($"comments/{threadId}.json");
+            var threadData = JsonSerializer.Deserialize<List<RedditListing<RedditThing<JsonElement>>>>(json, JsonOpts);
+            
+            var comments = new List<CommentModel>();
+            
+            if (threadData?.Count >= 2)
+            {
+                // Second element contains the comments listing
+                var commentListing = threadData[1];
+                await ProcessCommentsAsync(commentListing.Data.Children, comments);
+            }
+            
+            return comments;
+        }
+        catch (Exception ex)
+        {
+            LoggingManager.LogException(ex);
+            throw new Exception($"Failed to fetch thread comments for thread {threadId}: {ex.Message}", ex);
+        }
+    }
+
+    #endregion
+
+    #region Private Methods
+
+    /// <summary>
+    /// Recursively process comments from a Reddit listing, including nested replies.
+    /// Handles both regular comments (t1) and more_comments tokens.
+    /// </summary>
+    private async Task ProcessCommentsAsync(List<RedditThing<JsonElement>> children, List<CommentModel> allComments)
+    {
+        foreach (var child in children)
+        {
+            // t1 = Comment
+            if (child.Kind == "t1")
+            {
+                var comment = child.Data.Deserialize<RedditComment>(JsonOpts);
+                if (comment != null)
+                {
+                    allComments.Add(new CommentModel(comment));
+                    
+                    // Recursively process nested replies if they exist
+                    if (!comment.Replies.Equals(default(JsonElement)) && comment.Replies.ValueKind != System.Text.Json.JsonValueKind.Null)
+                    {
+                        try
+                        {
+                            var repliesListing = comment.Replies.Deserialize<RedditListing<RedditThing<JsonElement>>>(JsonOpts);
+                            if (repliesListing?.Data?.Children.Count > 0)
+                            {
+                                await ProcessCommentsAsync(repliesListing.Data.Children, allComments);
+                            }
+                        }
+                        catch
+                        {
+                            // Silently ignore if replies can't be deserialized
+                        }
+                    }
+                }
+            }
+            // more = MoreComments token (additional comments not yet loaded)
+            else if (child.Kind == "more")
+            {
+                // Optional enhancement: Implement loading of "more_comments" by calling /api/info
+                // This would require making additional API requests with the comment IDs
+                // For now, we skip more_comments tokens
+            }
+        }
+    }
+
     #endregion
 }
