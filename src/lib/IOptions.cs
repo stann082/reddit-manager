@@ -25,4 +25,9 @@ public interface IOptions
     public DateTime StopDate { get; }
     string Subreddit { get; }
     
+    // Search-specific options (optional, used by SearchService)
+    string Sort { get; }
+    string Time { get; }
+    string After { get; }
+    
 }

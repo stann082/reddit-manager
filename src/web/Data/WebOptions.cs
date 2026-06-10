@@ -30,6 +30,10 @@ public class WebOptions : IOptions
     public DateTime StartDate { get; set; } = new DateTime(2012, 1, 1);
     public DateTime StopDate { get; set; } = DateTime.Today;
     public string Subreddit { get; set; } = string.Empty;
+    
+    public string Sort { get; set; } = "relevance";
+    public string Time { get; set; } = "all";
+    public string After { get; set; } = null;
 
     #endregion
 

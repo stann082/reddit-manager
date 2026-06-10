@@ -4,5 +4,5 @@ namespace lib;
 
 public interface ISearchService
 {
-    Task<(CommentPreview[], int)> Search(IOptions savedOptions);
+    Task<(CommentPreview[] Comments, string NextAfter)> SearchCommentsAsync(IOptions options); 
 }
