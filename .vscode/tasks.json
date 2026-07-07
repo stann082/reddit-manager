@@ -1,0 +1,51 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "command": "dotnet",
+            "type": "shell",
+            "args": [
+                "build"
+            ],
+            "problemMatcher": "$msCompile",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "run-cli",
+            "command": "dotnet",
+            "type": "shell",
+            "args": [
+                "run",
+                "--project",
+                "src/cli/cli.csproj",
+                "--",
+                "search",
+                "--help"
+            ],
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "dependsOn": [
+                "build"
+            ],
+            "isBackground": false
+        },
+        {
+            "label": "run-tests",
+            "command": "dotnet",
+            "type": "shell",
+            "args": [
+                "test"
+            ],
+            "group": {
+                "kind": "test"
+            },
+            "problemMatcher": "$msCompile"
+        }
+    ]
+}
