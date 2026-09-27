@@ -89,7 +89,7 @@ A .NET-based application for searching, caching, and managing Reddit comments. T
 - **.NET 10.0** or later
 - **MongoDB 5.0+** (local or remote instance)
 - **Reddit API Credentials** (OAuth App)
-- **PowerShell 5.0+** (for build scripts on Windows)
+- **PowerShell 7+** and **[Task](https://taskfile.dev)** (for build/deploy tasks)
 
 ## 🔧 Setup
 
@@ -294,7 +294,7 @@ reddit/
 ├── data/                 # Cached/archived comments
 ├── Dockerfile            # Docker image definition
 ├── deployment.yaml       # Kubernetes deployment
-└── build.ps1            # PowerShell build script
+└── Taskfile.yml          # Build/deploy tasks (https://taskfile.dev)
 ```
 
 ### Building the Project

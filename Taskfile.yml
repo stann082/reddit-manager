@@ -1,0 +1,55 @@
+version: '3'
+
+tasks:
+  default:
+    desc: Deploy both CLI and web app
+    cmds:
+      - task: cli
+      - task: web
+
+  cli:
+    desc: Test, publish and install reddit.exe to %APPDATA%\utils
+    cmds:
+      - task: test
+      - task: publish-cli
+      - pwsh -NoProfile -File scripts/deploy-cli.ps1
+
+  web:
+    desc: Test, build the Docker image and restart the Kubernetes deployment
+    cmds:
+      - task: test
+      - docker build --no-cache -t redditapp:latest .
+      - kubectl rollout restart deployment redditapp
+
+  publish-cli:
+    desc: Publish the CLI to pubcli
+    cmds:
+      - task: clean
+      - pwsh -NoProfile -File scripts/clean-pub.ps1 pubcli
+      - dotnet publish src/cli/cli.csproj -c Release -o pubcli -v quiet
+
+  test:
+    desc: Run all tests
+    cmds:
+      - dotnet test reddit.slnx -v quiet
+
+  clean:
+    desc: Remove all bin and obj directories
+    cmds:
+      - pwsh -NoProfile -File scripts/clean.ps1
+
+  clean-pub:
+    desc: Remove the pubcli and pubweb directories
+    cmds:
+      - pwsh -NoProfile -File scripts/clean-pub.ps1
+
+  deep-clean:
+    desc: Remove bin, obj and publish directories
+    cmds:
+      - task: clean
+      - task: clean-pub
+
+  run:
+    desc: Run the CLI (pass arguments after --, e.g. task run -- search --help)
+    cmds:
+      - dotnet run --project src/cli/cli.csproj -- {{.CLI_ARGS}}
