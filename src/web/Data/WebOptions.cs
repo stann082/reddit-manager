@@ -31,9 +31,6 @@ public class WebOptions : IOptions
     public DateTime StopDate { get; set; } = DateTime.Today;
     public string Subreddit { get; set; } = string.Empty;
     
-    public string Sort { get; set; } = "relevance";
-    public string Time { get; set; } = "all";
-    public string After { get; set; } = null;
     public string ThreadId { get; set; } = null;
 
     #endregion

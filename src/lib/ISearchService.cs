@@ -5,7 +5,7 @@ namespace lib;
 
 public interface ISearchService
 {
-    Task<(CommentPreview[] Comments, string NextAfter)> SearchCommentsAsync(IOptions options);
+    Task<(CommentPreview[] Comments, int Total)> SearchCommentsAsync(IOptions options);
     
     Task<List<CommentModel>> GetThreadCommentsAsync(string threadId);
 }

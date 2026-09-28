@@ -54,9 +54,6 @@ public abstract class AbstractOptions
     public string Subreddit => GetFilterValue("sub");
     
     // Search-specific options with default values
-    public virtual string Sort => "relevance";
-    public virtual string Time => "all";
-    public virtual string After => null;
     public virtual string ThreadId => null;
 
     private Dictionary<string, string> FilterMap => CreateFilterMap();

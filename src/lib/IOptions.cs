@@ -26,9 +26,6 @@ public interface IOptions
     string Subreddit { get; }
     
     // Search-specific options (optional, used by SearchService)
-    string Sort { get; }
-    string Time { get; }
-    string After { get; }
     string ThreadId { get; }
     
 }

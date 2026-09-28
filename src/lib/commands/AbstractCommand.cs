@@ -25,7 +25,7 @@ public abstract class AbstractCommand(IOptions options)
         Console.Write("Fetching records, please wait...");
         var comments = await GetFilteredComments(options);
 
-        Console.Write("\r" + new string(' ', Console.WindowWidth) + "\r");
+        if (!Console.IsOutputRedirected) Console.Write("\r" + new string(' ', Console.WindowWidth) + "\r");
         Console.WriteLine();
 
         foreach (var comment in comments.Item1)
